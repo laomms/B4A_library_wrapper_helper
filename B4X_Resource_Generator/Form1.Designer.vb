@@ -30,6 +30,7 @@ Partial Class Form1
         Me.Button3 = New System.Windows.Forms.Button()
         Me.GroupBox1 = New System.Windows.Forms.GroupBox()
         Me.BackgroundWorker1 = New System.ComponentModel.BackgroundWorker()
+        Me.BackgroundWorker2 = New System.ComponentModel.BackgroundWorker()
         Me.GroupBox1.SuspendLayout()
         Me.SuspendLayout()
         '
@@ -40,7 +41,7 @@ Partial Class Form1
         Me.TextBox1.Name = "TextBox1"
         Me.TextBox1.Size = New System.Drawing.Size(401, 20)
         Me.TextBox1.TabIndex = 1
-        Me.TextBox1.Text = "Drag and drop or open java source folder"
+        Me.TextBox1.Text = "Drag and drop or open java project folder"
         Me.TextBox1.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
         '
         'Button1
@@ -95,6 +96,9 @@ Partial Class Form1
         'BackgroundWorker1
         '
         '
+        'BackgroundWorker2
+        '
+        '
         'Form1
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -119,4 +123,5 @@ Partial Class Form1
     Friend WithEvents Button3 As Button
     Friend WithEvents GroupBox1 As GroupBox
     Friend WithEvents BackgroundWorker1 As System.ComponentModel.BackgroundWorker
+    Friend WithEvents BackgroundWorker2 As System.ComponentModel.BackgroundWorker
 End Class

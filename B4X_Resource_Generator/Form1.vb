@@ -5,6 +5,8 @@ Imports System.Text.RegularExpressions
 Public Class Form1
     Private WrapperList As List(Of List(Of String))
     Private packageName As String = String.Empty
+    Private minSdkVersion As String
+    Private targetSdkVersion As String
     Private Sub TextBox1_DragEnter(sender As Object, e As DragEventArgs) Handles TextBox1.DragEnter
         If e.Data.GetDataPresent(DataFormats.FileDrop) Then
             e.Effect = DragDropEffects.Copy
@@ -113,14 +115,42 @@ Public Class Form1
         End If
         Dim directories As List(Of String) = (From x In Directory.EnumerateDirectories(TextBox1.Text, "*", SearchOption.AllDirectories) Select x.Substring(TextBox1.Text.Length)).ToList()
         Dim srcPath As String = directories.Where(Function(x) x.Contains("src") And x.Contains("res")).FirstOrDefault()
+        Dim buildFiles() As String = System.IO.Directory.GetFiles(TextBox1.Text, "*build.gradle*", SearchOption.AllDirectories)
+        Dim dependenciesList As New List(Of String)
+        If buildFiles.Count > 0 Then
+            For Each buildFile In buildFiles
+                Dim fileContent As String = File.ReadAllText(buildFile)
+                Dim lines = File.ReadAllLines(buildFile).ToList()
+                Dim list As List(Of String) = lines.Where(Function(x) x.Contains("minSdkVersion")).Select(Function(x) x.Trim.Replace("minSdkVersion", "").Trim).ToList()
+                If list.Count > 0 Then minSdkVersion = list(0)
+                list = lines.Where(Function(x) x.Contains("targetSdkVersion")).Select(Function(x) x.Trim.Replace("targetSdkVersion", "").Trim).ToList()
+                If list.Count > 0 Then targetSdkVersion = list(0)
+                Dim matches As MatchCollection = Regex.Matches(fileContent, "dependencies.[\s\S]*?}", RegexOptions.Multiline Or RegexOptions.IgnoreCase)
+                For Each match As Match In matches
+                    Dim lineMatch = match.Value.Split({vbCrLf, vbLf, vbCr}, StringSplitOptions.RemoveEmptyEntries)
+                    For Each line In lineMatch
+                        If line.Contains("implementation") Then
+                            dependenciesList.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'"))
+                        ElseIf line.Contains("compile") Then
+                            dependenciesList.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'"))
+                        End If
+                    Next
+                Next
+            Next
+        End If
         Dim matchFiles() As String = System.IO.Directory.GetFiles(TextBox1.Text, "*AndroidManifest.xml*", SearchOption.AllDirectories)
         If matchFiles.Count > 0 Then
-            Dim ManifestPath As String = matchFiles.Where(Function(x) x.Contains("src")).FirstOrDefault()
+            Dim ManifestPath As String = matchFiles.Where(Function(x) x.Contains("src")).FirstOrDefault()           
             Dim fileContent As String = File.ReadAllText(ManifestPath)
             Dim lines = File.ReadAllLines(ManifestPath).ToList()
             Dim list As List(Of String) = lines.Where(Function(x) x.Contains("package")).Select(Function(x) New Regex("(?<=package=\"").[\s\S]*?(?=[\p{P}\p{S}-[._]])").Match(x).Value.Trim).ToList()
             If list.Count > 0 Then
                 packageName = list(0)
+            End If
+             If BackgroundWorker2.IsBusy = False Then
+                Dim arguments As New List(Of String)
+                arguments.Add(ManifestPath)
+                BackgroundWorker2.RunWorkerAsync(arguments)
             End If
         End If
         Dim javafiles() As String = Directory.GetFiles(TextBox1.Text, "*.*", SearchOption.AllDirectories).Where(Function(f) New List(Of String) From {".kt", ".java"}.IndexOf(Path.GetExtension(f)) >= 0).ToArray()
@@ -128,16 +158,11 @@ Public Class Form1
             If BackgroundWorker1.IsBusy = False Then
                 Dim arguments As New List(Of Object)
                 arguments.Add(javafiles)
-                BackgroundWorker1.RunWorkerAsync(javafiles)
+                BackgroundWorker1.RunWorkerAsync(arguments)
             End If
         Else
             MsgBox("No java source folder found", vbInformation + vbMsgBoxSetForeground, "Error") : Return
         End If
-        'If Not srcPath Is Nothing And Not ManifestPath Is Nothing Then
-        '    srcPath = TextBox1.Text + srcPath
-        'Else
-        '    MsgBox("No java source folder found", vbInformation + vbMsgBoxSetForeground, "Error") : Return
-        'End If
 
     End Sub
 
@@ -160,9 +185,48 @@ Public Class Form1
             End Using
         End Using
     End Sub
+    Private Sub BackgroundWorker2_DoWork(sender As Object, e As System.ComponentModel.DoWorkEventArgs) Handles BackgroundWorker2.DoWork
+        Dim arguments As List(Of String) = TryCast(e.Argument, List(Of String))
+        Dim PermissionList As New List(Of String)
+        Dim fileContent As String = File.ReadAllText(arguments(0))
+        Dim lines = File.ReadAllLines(arguments(0)).ToList()
+        If fileContent.Contains("uses-permission") Then
+            Dim list As List(Of String) = lines.Where(Function(x) x.Contains("uses-permission")).Select(Function(x) New Regex("(?<=android:name=\"").[\s\S]*?(?=[\p{P}\p{S}-[._]])").Match(x).Value.Trim).ToList()
+            PermissionList.AddRange(list)
+        End If
+        Dim supports_screens As String = New Regex("<supports-screens[\s\S]*?/>").Match(fileContent).Value.Trim
+        Dim application As String = New Regex("<application[\s\S]*?>").Match(fileContent).Value.Trim
+        Dim activityList As New List(Of String)
+        Dim matches As MatchCollection = Regex.Matches(fileContent, "<activity.[\s\S]*?</activity>", RegexOptions.Multiline Or RegexOptions.IgnoreCase)
+        For Each match As Match In matches
+            If match.Value.Contains("intent-filter") Then
+                activityList.Add(Regex.Replace(match.Value, "<intent-filter[\s\S]*?intent-filter>", "").ToString.Replace(""".", """" + packageName + "."))
+            Else
+                activityList.Add(match.Value.ToString.Replace(""".", """" + packageName + "."))
+            End If
+        Next
+        Dim serviceList As New List(Of String)
+        matches = Regex.Matches(fileContent, "<service[\s\S]*?\/service>", RegexOptions.IgnoreCase)
+        For Each match As Match In matches
+            serviceList.Add(match.Value.ToString.Replace(""".", """" + packageName + "."))
+        Next
 
+        Dim receiverList As New List(Of String)
+        matches = Regex.Matches(fileContent, "<receiver[\s\S]*?<\/receiver>", RegexOptions.IgnoreCase)
+        For Each match As Match In matches
+            receiverList.Add(match.Value.ToString.Replace(""".", """" + packageName + "."))
+        Next
+
+        Dim metadataList As New List(Of String)
+        matches = Regex.Matches(fileContent, "<meta-data[\s\S]*?\/>", RegexOptions.IgnoreCase)
+        For Each match As Match In matches
+            metadataList.Add(match.Value.ToString.Replace(""".", """" + packageName + "."))
+        Next
+
+
+    End Sub
     Private Sub BackgroundWorker1_DoWork(sender As Object, e As System.ComponentModel.DoWorkEventArgs) Handles BackgroundWorker1.DoWork
-        Dim arguments() As String = TryCast(e.Argument, String())
+        Dim arguments As List(Of Object) = TryCast(e.Argument, List(Of Object))
         Dim idList As New List(Of String)
         Dim layoutList As New List(Of String)
         Dim stringList As New List(Of String)
@@ -174,7 +238,7 @@ Public Class Form1
         Dim dimenList As New List(Of String)
         Dim styleableList As New List(Of String)
         Dim styleableListArray As New List(Of String)
-        For Each java As String In arguments
+        For Each java As String In arguments(0)
             Dim fileContent As String = File.ReadAllText(java)
             Dim lines = File.ReadAllLines(java).ToList()
             If fileContent.Contains("R.id.") Then
@@ -318,4 +382,6 @@ Public Class Form1
 
 
     End Sub
+
+
 End Class
