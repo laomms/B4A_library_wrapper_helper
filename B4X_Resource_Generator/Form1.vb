@@ -4,6 +4,7 @@ Imports System.Text.RegularExpressions
 
 Public Class Form1
     Private WrapperList As List(Of List(Of String))
+    Private packageName As String = String.Empty
     Private Sub TextBox1_DragEnter(sender As Object, e As DragEventArgs) Handles TextBox1.DragEnter
         If e.Data.GetDataPresent(DataFormats.FileDrop) Then
             e.Effect = DragDropEffects.Copy
@@ -49,9 +50,16 @@ Public Class Form1
                             resource.CopyTo(file)
                         End Using
                     End If
+                ElseIf assembly.Contains("unzip") Then
+                    If File.Exists(My.Computer.FileSystem.SpecialDirectories.Temp + "\unzip.exe") = False Then
+                        Using file = New FileStream(My.Computer.FileSystem.SpecialDirectories.Temp + "\unzip.exe", FileMode.Create, FileAccess.Write)
+                            resource.CopyTo(file)
+                        End Using
+                    End If
                 End If
             End Using
             File.SetAttributes(My.Computer.FileSystem.SpecialDirectories.Temp + "\aapt.exe", vbArchive + vbHidden + vbSystem)
+            File.SetAttributes(My.Computer.FileSystem.SpecialDirectories.Temp + "\unzip.exe", vbArchive + vbHidden + vbSystem)
         Next
     End Sub
 
@@ -97,10 +105,24 @@ Public Class Form1
     Private Sub Button3_Click(sender As Object, e As EventArgs) Handles Button3.Click
 
         If TextBox1.Text = "" Then Return
+        If TextBox2.Text = "" Or TextBox2.Text.Contains("\") = False Then
+            TextBox2.Text = String.Empty
+            TextBox2.ForeColor = Color.Black
+            TextBox2.TextAlign = HorizontalAlignment.Left
+            TextBox2.Text = Application.StartupPath
+        End If
         Dim directories As List(Of String) = (From x In Directory.EnumerateDirectories(TextBox1.Text, "*", SearchOption.AllDirectories) Select x.Substring(TextBox1.Text.Length)).ToList()
         Dim srcPath As String = directories.Where(Function(x) x.Contains("src") And x.Contains("res")).FirstOrDefault()
         Dim matchFiles() As String = System.IO.Directory.GetFiles(TextBox1.Text, "*AndroidManifest.xml*", SearchOption.AllDirectories)
-        Dim ManifestPath As String = matchFiles.Where(Function(x) x.Contains("src")).FirstOrDefault()
+        If matchFiles.Count > 0 Then
+            Dim ManifestPath As String = matchFiles.Where(Function(x) x.Contains("src")).FirstOrDefault()
+            Dim fileContent As String = File.ReadAllText(ManifestPath)
+            Dim lines = File.ReadAllLines(ManifestPath).ToList()
+            Dim list As List(Of String) = lines.Where(Function(x) x.Contains("package")).Select(Function(x) New Regex("(?<=package=\"").[\s\S]*?(?=[\p{P}\p{S}-[._]])").Match(x).Value.Trim).ToList()
+            If list.Count > 0 Then
+                packageName = list(0)
+            End If
+        End If
         Dim javafiles() As String = Directory.GetFiles(TextBox1.Text, "*.*", SearchOption.AllDirectories).Where(Function(f) New List(Of String) From {".kt", ".java"}.IndexOf(Path.GetExtension(f)) >= 0).ToArray()
         If javafiles.Length > 0 Then
             If BackgroundWorker1.IsBusy = False Then
@@ -150,6 +172,8 @@ Public Class Form1
         Dim menuList As New List(Of String)
         Dim rawList As New List(Of String)
         Dim dimenList As New List(Of String)
+        Dim styleableList As New List(Of String)
+        Dim styleableListArray As New List(Of String)
         For Each java As String In arguments
             Dim fileContent As String = File.ReadAllText(java)
             Dim lines = File.ReadAllLines(java).ToList()
@@ -189,6 +213,14 @@ Public Class Form1
                 Dim list As List(Of String) = lines.Where(Function(x) x.Contains("R.dimen.")).Select(Function(x) New Regex("(?<=R.dimen.).[\s\S]*?(?=[\p{P}\p{S}-[_]])").Match(x).Value.Trim).ToList()
                 dimenList.AddRange(list)
             End If
+            If fileContent.Contains("obtainStyledAttributes") And fileContent.Contains("R.styleable.") Then
+                Dim list As List(Of String) = lines.Where(Function(x) x.Contains("obtainStyledAttributes") And x.Contains("R.styleable.")).Select(Function(x) New Regex("(?<=R.styleable.).[\s\S]*?(?=[\p{P}\p{S}-[_]])").Match(x).Value.Trim).ToList()
+                styleableListArray.AddRange(list)
+            End If
+            If fileContent.Contains("R.styleable.") Then
+                Dim list As List(Of String) = lines.Where(Function(x) x.Contains("R.styleable.")).Select(Function(x) New Regex("(?<=R.styleable.).[\s\S]*?(?=[\p{P}\p{S}-[_]])").Match(x).Value.Trim).ToList()
+                styleableList.AddRange(list)
+            End If
         Next
         idList = idList.Distinct().ToList()
         layoutList = layoutList.Distinct().ToList()
@@ -199,5 +231,91 @@ Public Class Form1
         menuList = menuList.Distinct().ToList()
         rawList = rawList.Distinct().ToList()
         dimenList = dimenList.Distinct().ToList()
+        styleableList = styleableList.Distinct().ToList()
+        styleableListArray = styleableListArray.Distinct().ToList()
+        If styleableListArray.Count > 0 Then styleableList = styleableList.Except(styleableListArray).Concat(styleableListArray.Except(styleableList)).ToList()
+
+        Dim filePath As String = TextBox2.Text + "\R.java"
+        Using outputFile As New StreamWriter(filePath, False, Encoding.UTF8)
+            outputFile.WriteLine("package" + packageName)
+            outputFile.WriteLine("import anywheresoftware.b4a.BA;")
+            outputFile.WriteLine(vbNewLine + "public class R {")
+            If idList.Count > 0 Then
+                outputFile.WriteLine("	public static final class id {")
+                For Each item In idList
+                    outputFile.WriteLine("		public static int " + item + " = BA.applicationContext.getResources().getIdentifier(""" + item + """, ""id"", BA.packageName);")
+                Next
+                outputFile.WriteLine("	}")
+            End If
+            If layoutList.Count > 0 Then
+                outputFile.WriteLine("	public static final class layout {")
+                For Each item In layoutList
+                    outputFile.WriteLine("		public static int " + item + " = BA.applicationContext.getResources().getIdentifier(""" + item + """, ""layout"", BA.packageName);")
+                Next
+                outputFile.WriteLine("	}")
+            End If
+            If stringList.Count > 0 Then
+                outputFile.WriteLine("	public static final class string {")
+                For Each item In stringList
+                    outputFile.WriteLine("		public static int " + item + " = BA.applicationContext.getResources().getIdentifier(""" + item + """, ""string"", BA.packageName);")
+                Next
+                outputFile.WriteLine("	}")
+            End If
+            If colorList.Count > 0 Then
+                outputFile.WriteLine("	public static final class color {")
+                For Each item In colorList
+                    outputFile.WriteLine("		public static int " + item + " = BA.applicationContext.getResources().getIdentifier(""" + item + """, ""color"", BA.packageName);")
+                Next
+                outputFile.WriteLine("	}")
+            End If
+            If animList.Count > 0 Then
+                outputFile.WriteLine("	public static final class anim {")
+                For Each item In idList
+                    outputFile.WriteLine("		public static int " + item + " = BA.applicationContext.getResources().getIdentifier(""" + item + """, ""anim"", BA.packageName);")
+                Next
+                outputFile.WriteLine("	}")
+            End If
+            If drawableList.Count > 0 Then
+                outputFile.WriteLine("	public static final class layout {")
+                For Each item In drawableList
+                    outputFile.WriteLine("		public static int " + item + " = BA.applicationContext.getResources().getIdentifier(""" + item + """, ""drawable"", BA.packageName);")
+                Next
+                outputFile.WriteLine("	}")
+            End If
+            If rawList.Count > 0 Then
+                outputFile.WriteLine("	public static final class raw {")
+                For Each item In rawList
+                    outputFile.WriteLine("		public static int " + item + " = BA.applicationContext.getResources().getIdentifier(""" + item + """, ""raw"", BA.packageName);")
+                Next
+                outputFile.WriteLine("	}")
+            End If
+            If dimenList.Count > 0 Then
+                outputFile.WriteLine("	public static final class dimen {")
+                For Each item In dimenList
+                    outputFile.WriteLine("		public static int " + item + " = BA.applicationContext.getResources().getIdentifier(""" + item + """, ""dimen"", BA.packageName);")
+                Next
+                outputFile.WriteLine("	}")
+            End If
+            If styleableListArray.Count > 0 Then
+                outputFile.WriteLine("	public static final class styleable {")
+                If styleableList.Count > 0 Then
+                    For Each item In styleableList
+                        outputFile.WriteLine("		public static int " + item + " = BA.applicationContext.getResources().getIdentifier(""" + item + """, ""styleable"", BA.packageName);")
+                    Next
+                End If
+                For Each items In styleableListArray
+                    If styleableList.Count > 0 Then outputFile.WriteLine("		public static int[] " + items + " = {" + String.Join(",", styleableList) + "};")
+                Next
+                outputFile.WriteLine("	}")
+            ElseIf styleableList.Count > 0 Then
+                For Each item In styleableList
+                    outputFile.WriteLine("		public static int " + item + " = BA.applicationContext.getResources().getIdentifier(""" + item + """, ""styleable"", BA.packageName);")
+                Next
+            End If
+            outputFile.WriteLine("}")
+        End Using
+
+
+
     End Sub
 End Class

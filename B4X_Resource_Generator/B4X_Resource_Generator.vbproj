@@ -123,6 +123,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="unzip.exe" />
     <EmbeddedResource Include="aapt.exe" />
     <Content Include="icon.ico" />
   </ItemGroup>
