@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30621.155
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "B4X_Resource_Generator", "B4X_Resource_Generator\B4X_Resource_Generator.vbproj", "{7FCDC6C9-6E3D-4602-B079-0620D10AD743}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7FCDC6C9-6E3D-4602-B079-0620D10AD743}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7FCDC6C9-6E3D-4602-B079-0620D10AD743}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7FCDC6C9-6E3D-4602-B079-0620D10AD743}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7FCDC6C9-6E3D-4602-B079-0620D10AD743}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E4AA2D54-F2AA-42F7-8C5F-3BCFF347BA4B}
+	EndGlobalSection
+EndGlobal
