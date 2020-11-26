@@ -7,6 +7,7 @@ Public Class Form1
     Private packageName As String = String.Empty
     Private minSdkVersion As String
     Private targetSdkVersion As String
+    Private mainActivity As String
     Private Sub TextBox1_DragEnter(sender As Object, e As DragEventArgs) Handles TextBox1.DragEnter
         If e.Data.GetDataPresent(DataFormats.FileDrop) Then
             e.Effect = DragDropEffects.Copy
@@ -211,6 +212,7 @@ Public Class Form1
         Dim matches As MatchCollection = Regex.Matches(fileContent, "<activity.[\s\S]*?</activity>", RegexOptions.Multiline Or RegexOptions.IgnoreCase)
         For Each match As Match In matches
             If match.Value.Contains("intent-filter") Then
+                mainActivity = New Regex("(?<=activity android:name=\"").*?(?=[\p{P}\p{S}-[._]])").Match(match.Value).Value.Trim.TrimStart(".")
                 activityList.Add("        " + Regex.Replace(match.Value, "<intent-filter[\s\S]*?intent-filter>", "").ToString.Replace(""".", """" + packageName + "."))
             Else
                 activityList.Add("        " + match.Value.ToString.Replace(""".", """" + packageName + "."))
