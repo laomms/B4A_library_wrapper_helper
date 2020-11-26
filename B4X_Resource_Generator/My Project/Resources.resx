@@ -46,7 +46,7 @@
     
     mimetype: application/x-microsoft.net.object.binary.base64
     value   : The object must be serialized with 
-            : System.Serialization.Formatters.Binary.BinaryFormatter
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
             : and then encoded with base64 encoding.
     
     mimetype: application/x-microsoft.net.object.soap.base64
@@ -60,6 +60,7 @@
             : and then encoded with base64 encoding.
     -->
   <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
     <xsd:element name="root" msdata:IsDataSet="true">
       <xsd:complexType>
         <xsd:choice maxOccurs="unbounded">
@@ -68,9 +69,10 @@
               <xsd:sequence>
                 <xsd:element name="value" type="xsd:string" minOccurs="0" />
               </xsd:sequence>
-              <xsd:attribute name="name" type="xsd:string" />
+              <xsd:attribute name="name" use="required" type="xsd:string" />
               <xsd:attribute name="type" type="xsd:string" />
               <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
             </xsd:complexType>
           </xsd:element>
           <xsd:element name="assembly">
@@ -85,9 +87,10 @@
                 <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
                 <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
               </xsd:sequence>
-              <xsd:attribute name="name" type="xsd:string" msdata:Ordinal="1" />
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
               <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
               <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
             </xsd:complexType>
           </xsd:element>
           <xsd:element name="resheader">
@@ -109,9 +112,176 @@
     <value>2.0</value>
   </resheader>
   <resheader name="reader">
-    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <resheader name="writer">
-    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="AbsObjectWrapper" xml:space="preserve">
+    <value>package B4AWrapperClass;
+
+import anywheresoftware.b4a.AbsObjectWrapper;
+import anywheresoftware.b4a.BA;
+import anywheresoftware.b4a.BA.Hide;
+import anywheresoftware.b4a.BA.ShortName;
+import anywheresoftware.b4a.BA.Version;
+import anywheresoftware.b4a.BALayout;
+import anywheresoftware.b4a.BA.DependsOn;
+import anywheresoftware.b4a.BA.ActivityObject;
+import anywheresoftware.b4a.IOnActivityResult;
+import anywheresoftware.b4a.BA.Permissions;
+
+
+@Version(1.0f)
+@ShortName("LibraryName")
+@ActivityObject
+
+public class B4AWrapperClass extends AbsObjectWrapper&lt;ActivityName&gt; {
+
+    @Hide
+    public static BA ba;
+    @Hide
+    public static String eventName;
+    private static ActivityName activityx;
+    private IOnActivityResult ion;
+    BALayout layout;
+    Intent intent;
+    Context context;
+    private boolean waitingForVPNStart;
+
+    public void Initialize(BA paramBA, String EventName) {
+        eventName = EventName.toLowerCase(BA.cul);
+        ba = paramBA;
+        activityx = new ActivityName();
+        setObject(activityx);
+        intent = new Intent(BA.applicationContext, ActivityName.class);
+        ba.activity.setContentView(BA.applicationContext.getResources().getIdentifier("activity_vhosts", "layout", BA.packageName));
+        ba.activity.startActivity(new Intent(ba.activity.getApplicationContext(), ActivityName.class));
+    }  
+}</value>
+  </data>
+  <data name="FunctionWrapper" xml:space="preserve">
+    <value>package B4AWrapperClass;
+
+
+import anywheresoftware.b4a.AbsObjectWrapper;
+import anywheresoftware.b4a.BA;
+import anywheresoftware.b4a.objects.collections.List;
+import anywheresoftware.b4a.BA.Hide;
+import anywheresoftware.b4a.BA.ShortName;
+import anywheresoftware.b4a.BA.Version;
+import anywheresoftware.b4a.BA.ActivityObject;
+import anywheresoftware.b4a.IOnActivityResult;
+import anywheresoftware.b4a.BA.Permissions;
+import anywheresoftware.b4a.keywords.Bit;
+import anywheresoftware.b4a.objects.IntentWrapper;
+
+
+@Version(1.0f)
+@ShortName("LibraryName")
+@ActivityObject
+
+public class B4AWrapperClass extends AbsObjectWrapper&lt;ActivityName&gt;  {
+
+    @Hide
+    public static BA ba;
+    @Hide
+    public static String eventName;
+    private static MainActivity activityx;
+    private IOnActivityResult ion;
+    Intent intent;
+    Context context;
+
+    public void Initialize(BA paramBA, String paramString) {
+        eventName = paramString.toLowerCase(BA.cul);
+        ba = paramBA;
+        MainActivity activityx = new MainActivity();
+        String str = paramString.toLowerCase(BA.cul);
+        setObject(activityx);
+    }
+
+	
+     public void function() {
+		ion = new IOnActivityResult() {
+			
+			@Override
+			public void ResultArrived(int arg0, Intent data) {
+				BA.Log("ResultArrived");
+				B4AWrapperClass.ba.raiseEventFromDifferentThread(this, null, 0, B4AWrapperClass.eventName + "_result", true, new Object[] {object});
+                } else {
+                    
+                }
+			}
+		};
+		ba.startActivityForResult(ion, mIntent);
+	}
+}</value>
+  </data>
+  <data name="ViewWrapper" xml:space="preserve">
+    <value>package ViewNameWrapper;
+
+import android.view.Gravity;
+import android.view.ViewGroup;
+import android.widget.CompoundButton;
+import android.widget.Switch;
+import android.widget.CompoundButton.OnCheckedChangeListener;
+import com.suke.widget.ViewName;
+import anywheresoftware.b4a.AbsObjectWrapper;
+import anywheresoftware.b4a.BA;
+import anywheresoftware.b4a.BA.ActivityObject;
+import anywheresoftware.b4a.BA.DesignerProperties;
+import anywheresoftware.b4a.BA.Events;
+import anywheresoftware.b4a.BA.Hide;
+import anywheresoftware.b4a.BA.Property;
+import anywheresoftware.b4a.BA.RaisesSynchronousEvents;
+import anywheresoftware.b4a.BA.ShortName;
+import anywheresoftware.b4a.BA.Version;
+import anywheresoftware.b4a.keywords.Common.DesignerCustomView;
+import anywheresoftware.b4a.keywords.constants.Colors;
+import anywheresoftware.b4a.objects.CustomViewWrapper;
+import anywheresoftware.b4a.objects.LabelWrapper;
+import anywheresoftware.b4a.objects.PanelWrapper;
+import anywheresoftware.b4a.objects.ViewWrapper;
+import anywheresoftware.b4a.objects.collections.Map;
+
+@ShortName("ViewName")
+@ActivityObject
+@Events(values={"CheckedChange(Checked As Boolean)"})
+@DesignerProperties(values = {
+        @Property(key="Checked", displayName="Checked", defaultValue="False", fieldType="Boolean")
+})
+@Version(1.00f)
+
+public class ViewNameWrapper extends ViewWrapper&lt;ViewName&gt; implements DesignerCustomView{
+    private BA ba;
+    private String eventName;
+    private ViewName ViewName;
+
+    @Override
+    public void DesignerCreateView(PanelWrapper panelWrapper, LabelWrapper labelWrapper, Map map) {
+        ViewName = new ViewName(ba.context);        
+        ViewName.setOnCheckedChangeListener(new ViewName.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(ViewName view, boolean isChecked) {
+                ba.raiseEvent(this, eventName + "_checkedchange", isChecked);
+            }
+        });
+        panelWrapper.AddView(ViewName, 0, 0, panelWrapper.getWidth(), panelWrapper.getHeight());
+        panelWrapper.setColor(Colors.Transparent);
+    }
+
+    @Override
+    public void _initialize(final BA ba, Object o, String s) {
+
+        this.eventName = s.toLowerCase(BA.cul);
+        this.ba = ba;
+    }
+    public boolean getChecked() {
+        return getObject().isChecked();
+    }
+    public void setChecked(boolean Value) {
+        getObject().setChecked(Value);
+    }
+}</value>
+  </data>
 </root>
