@@ -127,8 +127,7 @@ Public Class Form1
                 If list.Count > 0 Then targetSdkVersion = list(0)
                 Dim matches As MatchCollection = Regex.Matches(fileContent, "dependencies.[\s\S]*?}", RegexOptions.Multiline Or RegexOptions.IgnoreCase)
                 For Each match As Match In matches
-                    Dim lineMatch = match.Value.Split({vbCrLf, vbLf, vbCr}, StringSplitOptions.RemoveEmptyEntries)
-                    For Each line In lineMatch
+                    For Each line In match.Value.Split({vbCrLf, vbLf, vbCr}, StringSplitOptions.RemoveEmptyEntries)
                         If line.Contains("implementation") Then
                             dependenciesList.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'"))
                         ElseIf line.Contains("compile") Then
@@ -196,167 +195,120 @@ Public Class Form1
         End If
         Dim supports_screens As String = New Regex("<supports-screens[\s\S]*?/>").Match(fileContent).Value.Trim
         Dim application As String = New Regex("<application[\s\S]*?>").Match(fileContent).Value.Trim
+        Dim applicationList As New List(Of String)
+        For Each line As String In application.Split({vbCrLf, vbLf, vbCr}, StringSplitOptions.RemoveEmptyEntries)
+            If line.Contains("android:icon") Then
+                applicationList.Add("SetApplicationAttribute(android:icon, ""@drawable/icon"")  'add your own app icon")
+            ElseIf line.Contains("android:label") Then
+                applicationList.Add("SetApplicationAttribute(android:label, ""$LABEL$"")  'add your own app label name")
+            ElseIf line.Contains("android:theme") Then
+                applicationList.Add("CreateResourceFromFile(Macro, Themes.DarkTheme)  'SetApplicationAttribute(android:theme,""@style/AppTheme""")
+            ElseIf line.Contains("android:") Then
+                applicationList.Add("SetApplicationAttribute(" + line.Replace("=", ",").Trim + ")")
+            End If
+        Next
         Dim activityList As New List(Of String)
         Dim matches As MatchCollection = Regex.Matches(fileContent, "<activity.[\s\S]*?</activity>", RegexOptions.Multiline Or RegexOptions.IgnoreCase)
         For Each match As Match In matches
             If match.Value.Contains("intent-filter") Then
-                activityList.Add(Regex.Replace(match.Value, "<intent-filter[\s\S]*?intent-filter>", "").ToString.Replace(""".", """" + packageName + "."))
+                activityList.Add("        " + Regex.Replace(match.Value, "<intent-filter[\s\S]*?intent-filter>", "").ToString.Replace(""".", """" + packageName + "."))
             Else
-                activityList.Add(match.Value.ToString.Replace(""".", """" + packageName + "."))
+                activityList.Add("        " + match.Value.ToString.Replace(""".", """" + packageName + "."))
             End If
         Next
         Dim serviceList As New List(Of String)
         matches = Regex.Matches(fileContent, "<service[\s\S]*?\/service>", RegexOptions.IgnoreCase)
         For Each match As Match In matches
-            serviceList.Add(match.Value.ToString.Replace(""".", """" + packageName + "."))
+            If match.Value.Contains("android:resource") = False Then
+                Dim serviceItem As String = Regex.Replace(match.Value, "android:icon=.*?(?=\n|\r|\r\n)", "")
+                serviceItem = Regex.Replace(serviceItem, "android:label=.*?(?=\n|\r|\r\n)", "")
+                serviceList.Add("        " + serviceItem.Replace(""".", """" + packageName + "."))
+            End If
         Next
 
         Dim receiverList As New List(Of String)
         matches = Regex.Matches(fileContent, "<receiver[\s\S]*?<\/receiver>", RegexOptions.IgnoreCase)
         For Each match As Match In matches
-            receiverList.Add(match.Value.ToString.Replace(""".", """" + packageName + "."))
+            If match.Value.Contains("android:resource") = False Then
+                Dim receiverItem As String = Regex.Replace(match.Value, "android:icon=.*?(?=\n|\r|\r\n)", "")
+                receiverItem = Regex.Replace(receiverItem, "android:label=.*?(?=\n|\r|\r\n)", "")
+                receiverList.Add("        " + receiverItem.Replace(""".", """" + packageName + "."))
+            End If
         Next
 
         Dim metadataList As New List(Of String)
         matches = Regex.Matches(fileContent, "<meta-data[\s\S]*?\/>", RegexOptions.IgnoreCase)
         For Each match As Match In matches
-            metadataList.Add(match.Value.ToString.Replace(""".", """" + packageName + "."))
+            If match.Value.Contains("android:resource") = False Then metadataList.Add("        " + match.Value.ToString.Replace(""".", """" + packageName + "."))
         Next
 
+        Dim filePath As String = TextBox2.Text + "\B4X_Manifest.txt"
+        Using outputFile As New StreamWriter(filePath, False, Encoding.UTF8)
+            outputFile.WriteLine("AddManifestText(")
+            If minSdkVersion <> "" Then outputFile.WriteLine("<uses-sdk android:minSdkVersion=""" + minSdkVersion + """ android:targetSdkVersion=""" + targetSdkVersion + """/>") Else outputFile.WriteLine("<uses-sdk android:minSdkVersion=""19"" android:targetSdkVersion=""28""/>")
+            outputFile.WriteLine(supports_screens)
+            outputFile.WriteLine(")")
+            If applicationList.Count > 0 Then outputFile.WriteLine(String.Join(vbNewLine, applicationList))
+            For Each item In PermissionList
+                outputFile.WriteLine("AddPermission(" + item + ")")
+            Next
+            outputFile.WriteLine(vbNewLine + "AddApplicationText(")
+            If activityList.Count > 0 Then outputFile.WriteLine(String.Join(vbNewLine, activityList))
+            If serviceList.Count > 0 Then outputFile.WriteLine(String.Join(vbNewLine, serviceList))
+            If receiverList.Count > 0 Then outputFile.WriteLine(String.Join(vbNewLine, receiverList))
+            If metadataList.Count > 0 Then outputFile.WriteLine(String.Join(vbNewLine, metadataList))
+            outputFile.WriteLine(")")
+        End Using
 
     End Sub
     Private Sub BackgroundWorker1_DoWork(sender As Object, e As System.ComponentModel.DoWorkEventArgs) Handles BackgroundWorker1.DoWork
         Dim arguments As List(Of Object) = TryCast(e.Argument, List(Of Object))
-        Dim idList As New List(Of String)
-        Dim layoutList As New List(Of String)
-        Dim stringList As New List(Of String)
-        Dim colorList As New List(Of String)
-        Dim animList As New List(Of String)
-        Dim drawableList As New List(Of String)
-        Dim menuList As New List(Of String)
-        Dim rawList As New List(Of String)
-        Dim dimenList As New List(Of String)
         Dim styleableList As New List(Of String)
         Dim styleableListArray As New List(Of String)
+        Dim sourceList As New List(Of String)
         For Each java As String In arguments(0)
             Dim fileContent As String = File.ReadAllText(java)
-            Dim lines = File.ReadAllLines(java).ToList()
-            If fileContent.Contains("R.id.") Then
-                Dim list As List(Of String) = lines.Where(Function(x) x.Contains("R.id.")).Select(Function(x) New Regex("(?<=R.id.).[\s\S]*?(?=[\p{P}\p{S}-[_]])").Match(x).Value.Trim).ToList()
-                idList.AddRange(list)
-            End If
-            If fileContent.Contains("R.layout.") Then
-                Dim list As List(Of String) = lines.Where(Function(x) x.Contains("R.layout.")).Select(Function(x) New Regex("(?<=R.layout.).[\s\S]*?(?=[\p{P}\p{S}-[_]])").Match(x).Value.Trim).ToList()
-                layoutList.AddRange(list)
-            End If
-            If fileContent.Contains("R.string.") Then
-                Dim list As List(Of String) = lines.Where(Function(x) x.Contains("R.string.")).Select(Function(x) New Regex("(?<=R.string.).[\s\S]*?(?=[\p{P}\p{S}-[_]])").Match(x).Value.Trim).ToList()
-                stringList.AddRange(list)
-            End If
-            If fileContent.Contains("R.color.") Then
-                Dim list As List(Of String) = lines.Where(Function(x) x.Contains("R.color.")).Select(Function(x) New Regex("(?<=R.color.).[\s\S]*?(?=[\p{P}\p{S}-[_]])").Match(x).Value.Trim).ToList()
-                colorList.AddRange(list)
-            End If
-            If fileContent.Contains("R.anim.") Then
-                Dim list As List(Of String) = lines.Where(Function(x) x.Contains("R.anim.")).Select(Function(x) New Regex("(?<=R.anim.).[\s\S]*?(?=[\p{P}\p{S}-[_]])").Match(x).Value.Trim).ToList()
-                animList.AddRange(list)
-            End If
-            If fileContent.Contains("R.drawable.") Then
-                Dim list As List(Of String) = lines.Where(Function(x) x.Contains("R.drawable.")).Select(Function(x) New Regex("(?<=R.drawable.).[\s\S]*?(?=[\p{P}\p{S}-[_]])").Match(x).Value.Trim).ToList()
-                drawableList.AddRange(list)
-            End If
-            If fileContent.Contains("R.menu.") Then
-                Dim list As List(Of String) = lines.Where(Function(x) x.Contains("R.menu.")).Select(Function(x) New Regex("(?<=R.menu.).[\s\S]*?(?=[\p{P}\p{S}-[_]])").Match(x).Value.Trim).ToList()
-                menuList.AddRange(list)
-            End If
-            If fileContent.Contains("R.raw.") Then
-                Dim list As List(Of String) = lines.Where(Function(x) x.Contains("R.raw.")).Select(Function(x) New Regex("(?<=R.raw.).[\s\S]*?(?=[\p{P}\p{S}-[_]])").Match(x).Value.Trim).ToList()
-                rawList.AddRange(list)
-            End If
-            If fileContent.Contains("R.dimen.") Then
-                Dim list As List(Of String) = lines.Where(Function(x) x.Contains("R.dimen.")).Select(Function(x) New Regex("(?<=R.dimen.).[\s\S]*?(?=[\p{P}\p{S}-[_]])").Match(x).Value.Trim).ToList()
-                dimenList.AddRange(list)
-            End If
-            If fileContent.Contains("obtainStyledAttributes") And fileContent.Contains("R.styleable.") Then
-                Dim list As List(Of String) = lines.Where(Function(x) x.Contains("obtainStyledAttributes") And x.Contains("R.styleable.")).Select(Function(x) New Regex("(?<=R.styleable.).[\s\S]*?(?=[\p{P}\p{S}-[_]])").Match(x).Value.Trim).ToList()
-                styleableListArray.AddRange(list)
-            End If
-            If fileContent.Contains("R.styleable.") Then
-                Dim list As List(Of String) = lines.Where(Function(x) x.Contains("R.styleable.")).Select(Function(x) New Regex("(?<=R.styleable.).[\s\S]*?(?=[\p{P}\p{S}-[_]])").Match(x).Value.Trim).ToList()
-                styleableList.AddRange(list)
+            If fileContent.Contains("R.") Then
+                If fileContent.Contains("obtainStyledAttributes") And fileContent.Contains("R.styleable.") Then
+                    Dim lines = File.ReadAllLines(java).ToList()
+                    Dim list As List(Of String) = lines.Where(Function(x) x.Contains("obtainStyledAttributes") And x.Contains("R.styleable.")).Select(Function(x) New Regex("(?<=R.styleable.).[\s\S]*?(?=[\p{P}\p{S}-[_]])").Match(x).Value.Trim).ToList()
+                    styleableListArray.AddRange(list)
+                    list = Regex.Matches(fileContent, "(?<=R.styleable.).[\s\S]*?(?=[\p{P}\p{S}-[_]])").Cast(Of Match)().Select(Function(m) m.Value).ToList()
+                    styleableList.AddRange(list)
+                ElseIf fileContent.Contains("R.styleable.") Then
+                    Dim list As List(Of String) = Regex.Matches(fileContent, "(?<=R.styleable.).[\s\S]*?(?=[\p{P}\p{S}-[_]])").Cast(Of Match)().Select(Function(m) m.Value).ToList()
+                    styleableList.AddRange(list)
+                Else
+                    Dim list As List(Of String) = Regex.Matches(fileContent, "(?<=R\.).[\s\S]*?(?=[\p{P}\p{S}-[._]])").Cast(Of Match)().Select(Function(m) m.Value).ToList()
+                    list = list.Where(Function(x) x.Contains(".")).ToList()
+                    sourceList.AddRange(list)
+                End If
             End If
         Next
-        idList = idList.Distinct().ToList()
-        layoutList = layoutList.Distinct().ToList()
-        stringList = stringList.Distinct().ToList()
-        colorList = colorList.Distinct().ToList()
-        animList = animList.Distinct().ToList()
-        drawableList = drawableList.Distinct().ToList()
-        menuList = menuList.Distinct().ToList()
-        rawList = rawList.Distinct().ToList()
-        dimenList = dimenList.Distinct().ToList()
+        sourceList.Sort()
+        sourceList = sourceList.Distinct().ToList()
+        Debug.Print(String.Join(vbNewLine, sourceList))
         styleableList = styleableList.Distinct().ToList()
         styleableListArray = styleableListArray.Distinct().ToList()
         If styleableListArray.Count > 0 Then styleableList = styleableList.Except(styleableListArray).Concat(styleableListArray.Except(styleableList)).ToList()
 
         Dim filePath As String = TextBox2.Text + "\R.java"
-        Using outputFile As New StreamWriter(filePath, False, Encoding.UTF8)
-            outputFile.WriteLine("package" + packageName)
+        Dim utf8WithoutBom As Encoding = Encoding.GetEncoding("ISO-8859-1")
+        Using outputFile As New StreamWriter(filePath, False, utf8WithoutBom)
+            outputFile.WriteLine("package " + packageName + ";")
             outputFile.WriteLine("import anywheresoftware.b4a.BA;")
             outputFile.WriteLine(vbNewLine + "public class R {")
-            If idList.Count > 0 Then
-                outputFile.WriteLine("	public static final class id {")
-                For Each item In idList
-                    outputFile.WriteLine("		public static int " + item + " = BA.applicationContext.getResources().getIdentifier(""" + item + """, ""id"", BA.packageName);")
-                Next
-                outputFile.WriteLine("	}")
-            End If
-            If layoutList.Count > 0 Then
-                outputFile.WriteLine("	public static final class layout {")
-                For Each item In layoutList
-                    outputFile.WriteLine("		public static int " + item + " = BA.applicationContext.getResources().getIdentifier(""" + item + """, ""layout"", BA.packageName);")
-                Next
-                outputFile.WriteLine("	}")
-            End If
-            If stringList.Count > 0 Then
-                outputFile.WriteLine("	public static final class string {")
-                For Each item In stringList
-                    outputFile.WriteLine("		public static int " + item + " = BA.applicationContext.getResources().getIdentifier(""" + item + """, ""string"", BA.packageName);")
-                Next
-                outputFile.WriteLine("	}")
-            End If
-            If colorList.Count > 0 Then
-                outputFile.WriteLine("	public static final class color {")
-                For Each item In colorList
-                    outputFile.WriteLine("		public static int " + item + " = BA.applicationContext.getResources().getIdentifier(""" + item + """, ""color"", BA.packageName);")
-                Next
-                outputFile.WriteLine("	}")
-            End If
-            If animList.Count > 0 Then
-                outputFile.WriteLine("	public static final class anim {")
-                For Each item In idList
-                    outputFile.WriteLine("		public static int " + item + " = BA.applicationContext.getResources().getIdentifier(""" + item + """, ""anim"", BA.packageName);")
-                Next
-                outputFile.WriteLine("	}")
-            End If
-            If drawableList.Count > 0 Then
-                outputFile.WriteLine("	public static final class layout {")
-                For Each item In drawableList
-                    outputFile.WriteLine("		public static int " + item + " = BA.applicationContext.getResources().getIdentifier(""" + item + """, ""drawable"", BA.packageName);")
-                Next
-                outputFile.WriteLine("	}")
-            End If
-            If rawList.Count > 0 Then
-                outputFile.WriteLine("	public static final class raw {")
-                For Each item In rawList
-                    outputFile.WriteLine("		public static int " + item + " = BA.applicationContext.getResources().getIdentifier(""" + item + """, ""raw"", BA.packageName);")
-                Next
-                outputFile.WriteLine("	}")
-            End If
-            If dimenList.Count > 0 Then
-                outputFile.WriteLine("	public static final class dimen {")
-                For Each item In dimenList
-                    outputFile.WriteLine("		public static int " + item + " = BA.applicationContext.getResources().getIdentifier(""" + item + """, ""dimen"", BA.packageName);")
+            If sourceList.Count > 0 Then
+                Dim className As String = ""
+                For Each item In sourceList
+                    If item.Split(".")(0) <> className Then
+                        If className <> "" Then outputFile.WriteLine("	}")
+                        className = item.Split(".")(0)
+                        outputFile.WriteLine("	public static final class " + item.Split(".")(0) + " {")
+                        outputFile.WriteLine("		public static int " + item.Split(".")(1) + " = BA.applicationContext.getResources().getIdentifier(""" + item.Split(".")(1) + """, ""styleable"", BA.packageName);")
+                    Else
+                        outputFile.WriteLine("		public static int " + item.Split(".")(1) + " = BA.applicationContext.getResources().getIdentifier(""" + item.Split(".")(1) + """, ""styleable"", BA.packageName);")
+                    End If
                 Next
                 outputFile.WriteLine("	}")
             End If
@@ -378,8 +330,6 @@ Public Class Form1
             End If
             outputFile.WriteLine("}")
         End Using
-
-
 
     End Sub
 
