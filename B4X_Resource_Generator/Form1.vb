@@ -42,28 +42,28 @@ Public Class Form1
         Me.AllowDrop = True
         TextBox1.AllowDrop = True
         TextBox2.AllowDrop = True
-        For Each assembly In System.Reflection.Assembly.GetExecutingAssembly.GetManifestResourceNames()
-            If Not assembly.EndsWith(".exe") Then
-                Continue For
-            End If
-            Using resource = System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceStream(assembly)
-                If assembly.Contains("aapt") Then
-                    If File.Exists(My.Computer.FileSystem.SpecialDirectories.Temp + "\aapt.exe") = False Then
-                        Using file = New FileStream(My.Computer.FileSystem.SpecialDirectories.Temp + "\aapt.exe", FileMode.Create, FileAccess.Write)
-                            resource.CopyTo(file)
-                        End Using
-                    End If
-                ElseIf assembly.Contains("unzip") Then
-                    If File.Exists(My.Computer.FileSystem.SpecialDirectories.Temp + "\unzip.exe") = False Then
-                        Using file = New FileStream(My.Computer.FileSystem.SpecialDirectories.Temp + "\unzip.exe", FileMode.Create, FileAccess.Write)
-                            resource.CopyTo(file)
-                        End Using
-                    End If
-                End If
-            End Using
-            File.SetAttributes(My.Computer.FileSystem.SpecialDirectories.Temp + "\aapt.exe", vbArchive + vbHidden + vbSystem)
-            File.SetAttributes(My.Computer.FileSystem.SpecialDirectories.Temp + "\unzip.exe", vbArchive + vbHidden + vbSystem)
-        Next
+        'For Each assembly In System.Reflection.Assembly.GetExecutingAssembly.GetManifestResourceNames()
+        '    If Not assembly.EndsWith(".exe") Then
+        '        Continue For
+        '    End If
+        '    Using resource = System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceStream(assembly)
+        '        If assembly.Contains("aapt") Then
+        '            If File.Exists(My.Computer.FileSystem.SpecialDirectories.Temp + "\aapt.exe") = False Then
+        '                Using file = New FileStream(My.Computer.FileSystem.SpecialDirectories.Temp + "\aapt.exe", FileMode.Create, FileAccess.Write)
+        '                    resource.CopyTo(file)
+        '                End Using
+        '            End If
+        '        ElseIf assembly.Contains("unzip") Then
+        '            If File.Exists(My.Computer.FileSystem.SpecialDirectories.Temp + "\unzip.exe") = False Then
+        '                Using file = New FileStream(My.Computer.FileSystem.SpecialDirectories.Temp + "\unzip.exe", FileMode.Create, FileAccess.Write)
+        '                    resource.CopyTo(file)
+        '                End Using
+        '            End If
+        '        End If
+        '    End Using
+        '    File.SetAttributes(My.Computer.FileSystem.SpecialDirectories.Temp + "\aapt.exe", vbArchive + vbHidden + vbSystem)
+        '    File.SetAttributes(My.Computer.FileSystem.SpecialDirectories.Temp + "\unzip.exe", vbArchive + vbHidden + vbSystem)
+        'Next
     End Sub
 
     Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
@@ -107,13 +107,15 @@ Public Class Form1
 
     Private Sub Button3_Click(sender As Object, e As EventArgs) Handles Button3.Click
 
-        If TextBox1.Text = "" Then Return
+        If TextBox1.Text = "" Or TextBox1.Text.Contains("\") = False Then Return
         If TextBox2.Text = "" Or TextBox2.Text.Contains("\") = False Then
             TextBox2.Text = String.Empty
             TextBox2.ForeColor = Color.Black
             TextBox2.TextAlign = HorizontalAlignment.Left
             TextBox2.Text = Application.StartupPath
         End If
+        ComboBox1.Items.Clear()
+        ComboBox1.Text = ""
         Dim directories As List(Of String) = (From x In Directory.EnumerateDirectories(TextBox1.Text, "*", SearchOption.AllDirectories) Select x.Substring(TextBox1.Text.Length)).ToList()
         Dim srcPath As String = directories.Where(Function(x) x.Contains("src") And x.Contains("res")).FirstOrDefault()
         Dim buildFiles() As String = System.IO.Directory.GetFiles(TextBox1.Text, "*build.gradle*", SearchOption.AllDirectories)
@@ -131,8 +133,10 @@ Public Class Form1
                     For Each line In match.Value.Split({vbCrLf, vbLf, vbCr}, StringSplitOptions.RemoveEmptyEntries)
                         If line.Contains("implementation") Then
                             dependenciesList.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'"))
+                            ComboBox1.Invoke(New MethodInvoker(Sub() ComboBox1.Items.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'"))))
                         ElseIf line.Contains("compile") Then
                             dependenciesList.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'"))
+                            ComboBox1.Invoke(New MethodInvoker(Sub() ComboBox1.Items.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'"))))
                         End If
                     Next
                 Next
@@ -166,13 +170,12 @@ Public Class Form1
 
     End Sub
 
-    Private Sub GeneratorRfile(ByVal aaptPath As String, ByVal srcPath As String, ByVal ManifestPath As String, ByVal androidPath As String)
-        If TextBox2.Text.Contains("\") = False Or TextBox2.Text = "" Then TextBox2.Text = Application.StartupPath
+    Private Sub GeneratorRfile(ByVal aaptPath As String, ByVal savePath As String, ByVal srcPath As String, ByVal ManifestPath As String, ByVal androidPath As String)
         Using p1 As New Process
             p1.StartInfo.CreateNoWindow = True
             p1.StartInfo.Verb = "runas"
             p1.StartInfo.FileName = "cmd.exe"
-            p1.StartInfo.Arguments = String.Format("{0}  package -v -f -m  -S ""{1}"" -J ""{2}"" -M ""{3}"" -I ""{4}"" ", aaptPath, srcPath, TextBox2.Text, ManifestPath, androidPath)
+            p1.StartInfo.Arguments = String.Format("{0}  package -v -f -m  -S ""{1}"" -J ""{2}"" -M ""{3}"" -I ""{4}"" ", aaptPath, srcPath, savePath, ManifestPath, androidPath)
             p1.StartInfo.WindowStyle = ProcessWindowStyle.Hidden
             p1.StartInfo.UseShellExecute = False
             p1.StartInfo.RedirectStandardOutput = True
@@ -185,6 +188,7 @@ Public Class Form1
             End Using
         End Using
     End Sub
+
     Private Sub BackgroundWorker2_DoWork(sender As Object, e As System.ComponentModel.DoWorkEventArgs) Handles BackgroundWorker2.DoWork
         Dim arguments As List(Of String) = TryCast(e.Argument, List(Of String))
         Dim PermissionList As New List(Of String)
@@ -213,6 +217,7 @@ Public Class Form1
         For Each match As Match In matches
             If match.Value.Contains("intent-filter") Then
                 mainActivity = New Regex("(?<=activity android:name=\"").*?(?=[\p{P}\p{S}-[._]])").Match(match.Value).Value.Trim.TrimStart(".")
+                ComboBox1.Invoke(New MethodInvoker(Sub() ComboBox1.Text = "mainActivity: " + mainActivity))
                 activityList.Add("        " + Regex.Replace(match.Value, "<intent-filter[\s\S]*?intent-filter>", "").ToString.Replace(""".", """" + packageName + "."))
             Else
                 activityList.Add("        " + match.Value.ToString.Replace(""".", """" + packageName + "."))
@@ -332,8 +337,5 @@ Public Class Form1
             End If
             outputFile.WriteLine("}")
         End Using
-
     End Sub
-
-
 End Class
