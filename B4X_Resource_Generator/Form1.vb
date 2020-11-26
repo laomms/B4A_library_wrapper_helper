@@ -1,6 +1,7 @@
 ﻿Imports System.IO
 Imports System.Text
 Imports System.Text.RegularExpressions
+Imports System.Threading
 
 Public Class Form1
     Private WrapperList As List(Of List(Of String))
@@ -37,33 +38,46 @@ Public Class Form1
             TextBox2.Text = path
         Next
     End Sub
+    Private Sub TextBox3_DragEnter(sender As Object, e As DragEventArgs) Handles TextBox3.DragEnter
+        If e.Data.GetDataPresent(DataFormats.FileDrop) Then
+            e.Effect = DragDropEffects.Copy
+        End If
+    End Sub
+    Private Sub TextBox3_DragDrop(sender As Object, e As DragEventArgs) Handles TextBox3.DragDrop
+        Dim files() As String = e.Data.GetData(DataFormats.FileDrop)
+        For Each path In files
+            TextBox3.Text = String.Empty
+            TextBox3.ForeColor = Color.Black
+            TextBox3.TextAlign = HorizontalAlignment.Left
+            TextBox3.Text = path
+            If TextBox3.Text.Contains("\") And TextBox3.Text <> "" Then
+                If File.Exists(TextBox3.Text + "\R.txt") = False Or File.Exists(TextBox3.Text + "\AndroidManifest.xml") = False Then Return
+                If Directory.Exists(TextBox3.Text + "\jars") = False Or Directory.Exists(TextBox3.Text + "\res") = False Then Return
+                Dim libname = IO.Path.GetFileName(TextBox3.Text) + ".aar"
+                PackAAR(My.Computer.FileSystem.SpecialDirectories.Temp + "\jar.exe", Application.StartupPath + "\" + libname, TextBox3.Text)
+            End If
+        Next
+    End Sub
     Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         Me.MaximizeBox = False
         Me.AllowDrop = True
         TextBox1.AllowDrop = True
         TextBox2.AllowDrop = True
-        'For Each assembly In System.Reflection.Assembly.GetExecutingAssembly.GetManifestResourceNames()
-        '    If Not assembly.EndsWith(".exe") Then
-        '        Continue For
-        '    End If
-        '    Using resource = System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceStream(assembly)
-        '        If assembly.Contains("aapt") Then
-        '            If File.Exists(My.Computer.FileSystem.SpecialDirectories.Temp + "\aapt.exe") = False Then
-        '                Using file = New FileStream(My.Computer.FileSystem.SpecialDirectories.Temp + "\aapt.exe", FileMode.Create, FileAccess.Write)
-        '                    resource.CopyTo(file)
-        '                End Using
-        '            End If
-        '        ElseIf assembly.Contains("unzip") Then
-        '            If File.Exists(My.Computer.FileSystem.SpecialDirectories.Temp + "\unzip.exe") = False Then
-        '                Using file = New FileStream(My.Computer.FileSystem.SpecialDirectories.Temp + "\unzip.exe", FileMode.Create, FileAccess.Write)
-        '                    resource.CopyTo(file)
-        '                End Using
-        '            End If
-        '        End If
-        '    End Using
-        '    File.SetAttributes(My.Computer.FileSystem.SpecialDirectories.Temp + "\aapt.exe", vbArchive + vbHidden + vbSystem)
-        '    File.SetAttributes(My.Computer.FileSystem.SpecialDirectories.Temp + "\unzip.exe", vbArchive + vbHidden + vbSystem)
-        'Next
+        TextBox3.AllowDrop = True
+        For Each assembly In System.Reflection.Assembly.GetExecutingAssembly.GetManifestResourceNames()
+            If Not assembly.EndsWith(".exe") And Not assembly.EndsWith(".dll") Then
+                Continue For
+            End If
+            Using resource = System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceStream(assembly)
+                Dim resourcefile = assembly.Replace(System.Reflection.Assembly.GetExecutingAssembly.GetName.Name + ".", "")
+                If File.Exists(My.Computer.FileSystem.SpecialDirectories.Temp + "\" + resourcefile) = False Then
+                    Using file = New FileStream(My.Computer.FileSystem.SpecialDirectories.Temp + "\" + resourcefile, FileMode.Create, FileAccess.Write)
+                        resource.CopyTo(file)
+                    End Using
+                    File.SetAttributes(My.Computer.FileSystem.SpecialDirectories.Temp + "\" + resourcefile, vbArchive + vbHidden + vbSystem)
+                End If
+            End Using
+        Next
     End Sub
 
     Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
@@ -93,7 +107,7 @@ Public Class Form1
                                               .CheckFileExists = False,
                                               .CheckPathExists = True,
                                               .FileName = "Folder selection",
-                                              .Filter = "All files (*.*)|*.*",
+                                              .Filter = "All files (*.*) Then|*.*",
                                               .FilterIndex = 1,
                                               .InitialDirectory = Application.StartupPath,
                                               .SupportMultiDottedExtensions = True,
@@ -144,14 +158,14 @@ Public Class Form1
         End If
         Dim matchFiles() As String = System.IO.Directory.GetFiles(TextBox1.Text, "*AndroidManifest.xml*", SearchOption.AllDirectories)
         If matchFiles.Count > 0 Then
-            Dim ManifestPath As String = matchFiles.Where(Function(x) x.Contains("src")).FirstOrDefault()           
+            Dim ManifestPath As String = matchFiles.Where(Function(x) x.Contains("src")).FirstOrDefault()
             Dim fileContent As String = File.ReadAllText(ManifestPath)
             Dim lines = File.ReadAllLines(ManifestPath).ToList()
             Dim list As List(Of String) = lines.Where(Function(x) x.Contains("package")).Select(Function(x) New Regex("(?<=package=\"").[\s\S]*?(?=[\p{P}\p{S}-[._]])").Match(x).Value.Trim).ToList()
             If list.Count > 0 Then
                 packageName = list(0)
             End If
-             If BackgroundWorker2.IsBusy = False Then
+            If BackgroundWorker2.IsBusy = False Then
                 Dim arguments As New List(Of String)
                 arguments.Add(ManifestPath)
                 BackgroundWorker2.RunWorkerAsync(arguments)
@@ -168,25 +182,6 @@ Public Class Form1
             MsgBox("No java source folder found", vbInformation + vbMsgBoxSetForeground, "Error") : Return
         End If
 
-    End Sub
-
-    Private Sub GeneratorRfile(ByVal aaptPath As String, ByVal savePath As String, ByVal srcPath As String, ByVal ManifestPath As String, ByVal androidPath As String)
-        Using p1 As New Process
-            p1.StartInfo.CreateNoWindow = True
-            p1.StartInfo.Verb = "runas"
-            p1.StartInfo.FileName = "cmd.exe"
-            p1.StartInfo.Arguments = String.Format("{0}  package -v -f -m  -S ""{1}"" -J ""{2}"" -M ""{3}"" -I ""{4}"" ", aaptPath, srcPath, savePath, ManifestPath, androidPath)
-            p1.StartInfo.WindowStyle = ProcessWindowStyle.Hidden
-            p1.StartInfo.UseShellExecute = False
-            p1.StartInfo.RedirectStandardOutput = True
-            p1.Start()
-            p1.WaitForExit()
-            Dim output As String
-            Using streamreader As System.IO.StreamReader = p1.StandardOutput
-                output = streamreader.ReadToEnd()
-                Debug.Print(output)
-            End Using
-        End Using
     End Sub
 
     Private Sub BackgroundWorker2_DoWork(sender As Object, e As System.ComponentModel.DoWorkEventArgs) Handles BackgroundWorker2.DoWork
@@ -337,5 +332,82 @@ Public Class Form1
             End If
             outputFile.WriteLine("}")
         End Using
+        MsgBox("Done!", vbInformation + vbMsgBoxSetForeground, "finished")
+    End Sub
+    Private Sub PackAAR(ByVal jarPath As String, ByVal savePath As String, ByVal sourcePath As String)
+        Dim startInfo = New ProcessStartInfo(jarPath)
+        Dim args As String = String.Format(" cvf ""{0}"" -C ""{1}""/ .", savePath, sourcePath)
+        startInfo.Arguments = args
+        startInfo.UseShellExecute = False
+        startInfo.RedirectStandardOutput = True
+        startInfo.CreateNoWindow = True
+        startInfo.WindowStyle = ProcessWindowStyle.Hidden
+        Using process As System.Diagnostics.Process = System.Diagnostics.Process.Start(startInfo)
+            Dim sr = process.StandardOutput
+            Debug.Print(sr.ReadToEnd)
+            MsgBox("The aar file has been packaged. Please check that directory:" + vbNewLine + savePath, vbInformation + vbMsgBoxSetForeground, "finished")
+        End Using
+    End Sub
+    Private Sub GeneratorRfile(ByVal aaptPath As String, ByVal savePath As String, ByVal srcPath As String, ByVal ManifestPath As String, ByVal androidPath As String)
+        Dim startInfo = New ProcessStartInfo(aaptPath)
+        Dim args As String = String.Format("{0}  package -v -f -m  -S {1} -J {2} -M {3} -I {4} ", aaptPath, srcPath, savePath, ManifestPath, androidPath)
+        startInfo.Arguments = args
+        startInfo.UseShellExecute = False
+        startInfo.RedirectStandardOutput = True
+        startInfo.CreateNoWindow = True
+        startInfo.WindowStyle = ProcessWindowStyle.Hidden
+        Using process As System.Diagnostics.Process = System.Diagnostics.Process.Start(startInfo)
+            Dim sr = process.StandardOutput
+            Debug.Print(sr.ReadToEnd)
+
+        End Using
+    End Sub
+
+    Private Sub Button4_Click(sender As Object, e As EventArgs) Handles Button4.Click
+        TextBox3.ForeColor = Color.Black
+        TextBox3.TextAlign = HorizontalAlignment.Left
+        If TextBox3.Text <> "" And TextBox3.Text.Contains("\") = True Then
+            If File.Exists(TextBox3.Text + "\R.txt") = False Or File.Exists(TextBox3.Text + "\AndroidManifest.xml") = False Then Return
+            If Directory.Exists(TextBox3.Text + "\jars") = False Or Directory.Exists(TextBox3.Text + "\res") = False Then Return
+            Dim libname = Path.GetFileName(TextBox3.Text) + ".aar"
+            PackAAR(My.Computer.FileSystem.SpecialDirectories.Temp + "\jar.exe", Application.StartupPath + "\" + libname, TextBox3.Text)
+        Else
+            TextBox3.Text = String.Empty
+            Using dlg As New OpenFileDialog With {.AddExtension = True,
+                                              .ValidateNames = False,
+                                              .CheckFileExists = False,
+                                              .CheckPathExists = True,
+                                              .FileName = "Folder Selection"
+                                              }
+                If dlg.ShowDialog = DialogResult.OK Then
+                    TextBox1.Text = System.IO.Path.GetDirectoryName(dlg.FileName)
+                    If File.Exists(TextBox3.Text + "\R.txt") = False Or File.Exists(TextBox3.Text + "\AndroidManifest.xml") = False Then Return
+                    If Directory.Exists(TextBox3.Text + "\jars") = False Or Directory.Exists(TextBox3.Text + "\res") = False Then Return
+                    Dim libname = Path.GetFileName(TextBox3.Text) + ".aar"
+                    PackAAR(My.Computer.FileSystem.SpecialDirectories.Temp + "\jar.exe", Application.StartupPath + "\" + libname, TextBox3.Text)
+                End If
+            End Using
+        End If
+
+    End Sub
+    Public Shared Function GetText() As String
+        Dim ReturnValue As String = String.Empty
+        Dim STAThread As Thread = New Thread(Sub()
+                                                 ReturnValue = System.Windows.Forms.Clipboard.GetText()
+                                             End Sub)
+        STAThread.SetApartmentState(ApartmentState.STA)
+        STAThread.Start()
+        STAThread.Join()
+        Return ReturnValue
+    End Function
+
+    Private Sub TextBox3_Click(sender As Object, e As EventArgs) Handles TextBox3.Click
+        Dim clipstring As String = GetText()
+        If New Regex("^(?:[c-zC-Z]\:|\\)(\\[a-zA-Z_\-\s0-9\.]+)+").Match(clipstring).Success Then
+            TextBox3.ForeColor = Color.Black
+            TextBox3.TextAlign = HorizontalAlignment.Left
+            TextBox3.Text = clipstring
+        End If
+
     End Sub
 End Class
