@@ -573,7 +573,7 @@ Public Class Form1
         rootNode.AppendChild(userNode)
         xmlDoc.Save(outPath)
     End Sub
-    Private Sub WriteBatch(xmlPath As String, outPath As String) 'Need to set %MAVEN_HOME%\bin environment variables
+    Private Sub WriteBatch(xmlPath As String, outPath As String) 'Need to set %MAVEN_HOME%\bin environment variables  see: https://www.youtube.com/watch?v=RQ_Z859Hd7Q
         If File.Exists(outPath) Then
             Try
                 File.Delete(outPath)
