@@ -2,6 +2,8 @@
 Imports System.Text
 Imports System.Text.RegularExpressions
 Imports System.Threading
+Imports System.Web
+Imports System.Xml
 
 Public Class Form1
     Private WrapperList As List(Of List(Of String))
@@ -159,10 +161,10 @@ Public Class Form1
                         Dim matches As MatchCollection = Regex.Matches(fileContent, "dependencies.[\s\S]*?}", RegexOptions.Multiline Or RegexOptions.IgnoreCase)
                         For Each match As Match In matches
                             For Each line In match.Value.Split({vbCrLf, vbLf, vbCr}, StringSplitOptions.RemoveEmptyEntries)
-                                If line.Contains("implementation") Then
+                                If line.Contains("implementation") And line.Contains("*.jar") = False Then
                                     dependenciesList.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'"))
                                     ComboBox1.Invoke(New MethodInvoker(Sub() ComboBox1.Items.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'"))))
-                                ElseIf line.Contains("compile") Then
+                                ElseIf line.Contains("compile") And line.Contains("*.jar") = False Then
                                     dependenciesList.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'"))
                                     ComboBox1.Invoke(New MethodInvoker(Sub() ComboBox1.Items.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'"))))
                                 End If
@@ -177,10 +179,10 @@ Public Class Form1
                         Dim matches As MatchCollection = Regex.Matches(fileContent, "dependencies.[\s\S]*?}", RegexOptions.Multiline Or RegexOptions.IgnoreCase)
                         For Each match As Match In matches
                             For Each line In match.Value.Split({vbCrLf, vbLf, vbCr}, StringSplitOptions.RemoveEmptyEntries)
-                                If line.Contains("implementation") Then
+                                If line.Contains("implementation") And line.Contains("*.jar") = False Then
                                     dependenciesList.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'"))
                                     ComboBox1.Invoke(New MethodInvoker(Sub() ComboBox1.Items.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'"))))
-                                ElseIf line.Contains("compile") Then
+                                ElseIf line.Contains("compile") And line.Contains("*.jar") = False Then
                                     dependenciesList.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'"))
                                     ComboBox1.Invoke(New MethodInvoker(Sub() ComboBox1.Items.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'"))))
                                 End If
@@ -382,7 +384,7 @@ Public Class Form1
         Next
         sourceList.Sort()
         sourceList = sourceList.Distinct().ToList()
-        Debug.Print(String.Join(vbNewLine, sourceList))
+        'Debug.Print(String.Join(vbNewLine, sourceList))
         styleableList = styleableList.Distinct().ToList()
         styleableListArray = styleableListArray.Distinct().ToList()
         If styleableListArray.Count > 0 Then styleableList = styleableList.Except(styleableListArray).Concat(styleableListArray.Except(styleableList)).ToList()
@@ -504,5 +506,88 @@ Public Class Form1
 
     End Sub
 
+    Private Async Function Button5_ClickAsync(sender As Object, e As EventArgs) As Task Handles Button5.Click
+        ItemsDictionary.Clear()
+        ItemsDictionary = Await DownloadLib.SearchIemt(ComboBox1.Text)
+        If ItemsDictionary.Count > 0 Then
+            SelectForm.ShowDialog()
+            If SelectItem <> "" Then
+                Dim url = ItemsDictionary(SelectItem.Split("-")(0).Trim)
+                ItemsDictionary.Clear()
+                ItemsDictionary = Await DownloadLib.GetVersion(url)
+                If ItemsDictionary.Count > 0 Then
+                    SelectForm.ShowDialog()
+                    If SelectItem <> "" Then
+                        url = url + "/" + SelectItem.Split("-")(0).Trim
+                        Dim Maven = Await DownloadLib.GetMaven(url)
+                        If Maven <> "" Then
+                            If File.Exists(TextBox2.Text + "\pom.xml") Then File.Delete(TextBox2.Text + "\pom.xml")
+                            WriteXML(Maven, TextBox2.Text + "\pom.xml")
+                            If File.Exists(TextBox2.Text + "\pom.xml") Then
+                                WriteBatch(TextBox2.Text + "\pom.xml", TextBox2.Text + "\download.bat")
+                                System.Diagnostics.Process.Start(TextBox2.Text + "\download.bat")
+                            End If
+                        End If
+                    End If
+                End If
+            End If
+        End If
+    End Function
+    Private Sub WriteXML(Maven As String, outPath As String)
+        Dim xmlDoc As New XmlDocument()
+        Dim xmlDeclaration As XmlDeclaration = xmlDoc.CreateXmlDeclaration("1.0", "UTF-8", Nothing)
+        xmlDoc.InsertBefore(xmlDeclaration, xmlDoc.DocumentElement)
+        Dim rootNode As XmlNode = xmlDoc.CreateElement("project")
+        Dim attribute As XmlAttribute
+        attribute = xmlDoc.CreateAttribute("xmlns")
+        attribute.Value = "http://maven.apache.org/POM/4.0.0"
+        rootNode.Attributes.Append(attribute)
 
+        attribute = xmlDoc.CreateAttribute("xsi", "schemaLocation", " ")
+        attribute.Value = "http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+        rootNode.Attributes.Append(attribute)
+
+        attribute = xmlDoc.CreateAttribute("xmlns:xsi")
+        attribute.Value = "http://www.w3.org/2001/XMLSchema-instance"
+        rootNode.Attributes.Append(attribute)
+        xmlDoc.AppendChild(rootNode)
+
+        Dim userNode As XmlNode = xmlDoc.CreateElement("modelVersion", xmlDoc.DocumentElement.NamespaceURI)
+        userNode.InnerText = "4.0.0"
+        rootNode.AppendChild(userNode)
+
+        userNode = xmlDoc.CreateElement("groupId", xmlDoc.DocumentElement.NamespaceURI)
+        userNode.InnerText = "test.download"
+        rootNode.AppendChild(userNode)
+
+        userNode = xmlDoc.CreateElement("artifactId", xmlDoc.DocumentElement.NamespaceURI)
+        userNode.InnerText = "test.download"
+        rootNode.AppendChild(userNode)
+
+        userNode = xmlDoc.CreateElement("version", xmlDoc.DocumentElement.NamespaceURI)
+        userNode.InnerText = "1.0.0"
+        rootNode.AppendChild(userNode)
+
+        userNode = xmlDoc.CreateElement("dependencies", xmlDoc.DocumentElement.NamespaceURI)
+        userNode.InnerXml = Maven
+        rootNode.AppendChild(userNode)
+        xmlDoc.Save(outPath)
+    End Sub
+    Private Sub WriteBatch(xmlPath As String, outPath As String) 'Need to set %MAVEN_HOME%\bin environment variables
+        If File.Exists(outPath) Then
+            Try
+                File.Delete(outPath)
+            Catch ex As Exception
+
+            End Try
+        End If
+        Using w As New StreamWriter(outPath)
+            w.WriteLine("call mvn -f " + xmlPath + " dependency:copy-dependencies")
+            w.WriteLine("@pause")
+            w.Close()
+        End Using
+
+
+    End Sub
 End Class
+

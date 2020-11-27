@@ -1,0 +1,89 @@
+﻿Imports System.Net
+Imports System.Web
+Imports HtmlAgilityPack
+
+Public Class DownloadLib
+    Public Shared mycookiecontainer As CookieContainer = New CookieContainer()
+    Private Shared UrlReferer = "https://mvnrepository.com/"
+    Private Shared redirecturl As String = ""
+    Public Shared Async Function SearchIemt(name As String) As Task(Of Dictionary(Of String, String))
+        Dim ItemDictionary As New Dictionary(Of String, String)
+        Dim Headerdics As New Dictionary(Of String, Object) From
+        {
+            {"Connection", "keep-alive"},
+            {"Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3"},
+            {"Accept-Encoding", "gzip, deflate, br"},
+            {"User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.111 Safari/537.36 Edg/86.0.622.51"},
+            {"Referer", "https://mvnrepository.com/"}
+        }
+        Dim url = "https://mvnrepository.com/search?q=" + HttpUtility.UrlEncode(name)
+        UrlReferer = url
+        Dim Res = HttpHelper.HttpClientGetAsync(url, Headerdics, mycookiecontainer, redirecturl)
+        If Await Res <> "" Then
+            Dim doc As New HtmlAgilityPack.HtmlDocument
+            doc.LoadHtml(Res.Result)
+            For Each Node As HtmlAgilityPack.HtmlNode In doc.DocumentNode.SelectNodes("//div//h2[@class='im-title']")
+                Try
+                    Dim title = Node.SelectNodes(".//a").Select(Function(x) x.InnerText.Trim())(0)
+                    Dim link = Node.SelectNodes(".//a").Select(Function(x) x.GetAttributeValue("href", ""))(0)
+                    ItemDictionary.Add(title.Trim, link.Trim)
+                Catch ex As Exception
+
+                End Try
+            Next
+        End If
+        Return ItemDictionary
+    End Function
+    Public Shared Async Function GetVersion(url As String) As Task(Of Dictionary(Of String, String))
+        Dim ItemDictionary As New Dictionary(Of String, String)
+        Dim Headerdics As New Dictionary(Of String, Object) From
+        {
+            {"Connection", "keep-alive"},
+            {"Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3"},
+            {"Accept-Encoding", "gzip, deflate, br"},
+            {"User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.111 Safari/537.36 Edg/86.0.622.51"},
+            {"Referer", UrlReferer}
+        }
+        url = "https://mvnrepository.com" + url
+        Dim Res = HttpHelper.HttpClientGetAsync(url, Headerdics, mycookiecontainer, redirecturl)
+        If Await Res <> "" Then
+            Dim doc As New HtmlAgilityPack.HtmlDocument
+            doc.LoadHtml(Res.Result)
+            For Each Node As HtmlAgilityPack.HtmlNode In doc.DocumentNode.SelectNodes("//div//table[@class='grid versions']//tbody//tr")
+                Try
+                    Dim title = Node.SelectNodes(".//td//a").Select(Function(x) x.InnerText.Trim())(0)
+                    Dim link = Node.SelectNodes(".//td//a").Select(Function(x) x.GetAttributeValue("href", ""))(0)
+                    ItemDictionary.Add(title, link)
+                Catch ex As Exception
+
+                End Try
+            Next
+        End If
+        UrlReferer = url
+        Return ItemDictionary
+    End Function
+    Public Shared Async Function GetMaven(url As String) As Task(Of String)
+        Dim Headerdics As New Dictionary(Of String, Object) From
+        {
+            {"Connection", "keep-alive"},
+            {"Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3"},
+            {"Accept-Encoding", "gzip, deflate, br"},
+            {"User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.111 Safari/537.36 Edg/86.0.622.51"},
+            {"Referer", UrlReferer}
+        }
+        url = "https://mvnrepository.com" + url
+        Dim Res = HttpHelper.HttpClientGetAsync(url, Headerdics, mycookiecontainer, redirecturl)
+        If Await Res <> "" Then
+            Dim doc As New HtmlAgilityPack.HtmlDocument
+            doc.LoadHtml(Res.Result)
+            For Each Node As HtmlAgilityPack.HtmlNode In doc.DocumentNode.SelectNodes("//textarea[@id='maven-a']")
+                Try
+                    Return HttpUtility.HtmlDecode(Node.InnerText)
+                Catch ex As Exception
+
+                End Try
+            Next
+        End If
+        Return ""
+    End Function
+End Class
