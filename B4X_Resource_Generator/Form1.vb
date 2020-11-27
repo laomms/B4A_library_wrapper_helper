@@ -8,7 +8,10 @@ Public Class Form1
     Private packageName As String = String.Empty
     Private minSdkVersion As String
     Private targetSdkVersion As String
-    Private mainActivity As String
+    Private ProjectPath As String
+    Private RPath As String
+    Private srcPath As String
+    Private javaPath As String
     Private Sub TextBox1_DragEnter(sender As Object, e As DragEventArgs) Handles TextBox1.DragEnter
         If e.Data.GetDataPresent(DataFormats.FileDrop) Then
             e.Effect = DragDropEffects.Copy
@@ -187,7 +190,7 @@ Public Class Form1
                 End If
             Next
         End If
-        ComboBox1.Invoke(New MethodInvoker(Sub() ComboBox1.SelectedIndex = 0))
+        If ComboBox1.Items.Count > 0 Then ComboBox1.Invoke(New MethodInvoker(Sub() ComboBox1.SelectedIndex = 0))
         Dim matchFiles() As String
         If buildFilePath <> "" Then
             matchFiles = Directory.GetFiles(Path.GetDirectoryName(buildFilePath), "*AndroidManifest.xml*", SearchOption.AllDirectories)
@@ -201,7 +204,36 @@ Public Class Form1
                 Dim list As List(Of String) = lines.Where(Function(x) x.Contains("package")).Select(Function(x) New Regex("(?<=package=\"").[\s\S]*?(?=[\p{P}\p{S}-[._]])").Match(x).Value.Trim).ToList()
                 If list.Count > 0 Then
                     packageName = list(0)
+                    If packageName.Contains(".") Then
+                        Dim projectName As String = packageName.Split(".")(packageName.Split(".").Count - 1)
+                        ProjectPath = TextBox2.Text + "\" + projectName + "lib"
+                    Else
+                        Dim projectName As String = packageName
+                        ProjectPath = TextBox2.Text + "\" + projectName + "lib"
+                    End If
+                    If Not Directory.Exists(ProjectPath) Then
+                        Directory.CreateDirectory(ProjectPath)
+                    Else
+                        For Each subDirectory In New DirectoryInfo(ProjectPath).GetDirectories
+                            subDirectory.Delete(True)
+                        Next subDirectory
+                        Directory.Delete(ProjectPath)
+                        Directory.CreateDirectory(ProjectPath)
+                        Directory.CreateDirectory(ProjectPath)
+                    End If
                 End If
+                If ManifestPath.Contains("src") Then
+                    srcPath = ManifestPath.Substring(0, ManifestPath.IndexOf("src") + 3)
+                    FileIO.FileSystem.CopyDirectory(srcPath, ProjectPath + "\src")
+                    If Directory.Exists(srcPath.Replace("src", "libs")) Then
+                        FileIO.FileSystem.CopyDirectory(srcPath.Replace("src", "libs"), ProjectPath + "\libs")
+                    Else
+                        Directory.CreateDirectory(ProjectPath + "\libs")
+                    End If
+                    Button7.Invoke(New MethodInvoker(Sub() Button7.Enabled = True))
+                End If
+                javaPath = Path.GetDirectoryName(ManifestPath) + "\java\" + packageName.Replace(".", "\")
+                RPath = javaPath.Replace(javaPath.Substring(0, javaPath.IndexOf("src")), ProjectPath + "\")
                 If BackgroundWorker2.IsBusy = False Then
                     Dim arguments As New List(Of String)
                     arguments.Add(ManifestPath)
@@ -252,6 +284,7 @@ Public Class Form1
             End If
         Next
         Dim activityList As New List(Of String)
+        Dim mainActivity As String
         Dim matches As MatchCollection = Regex.Matches(fileContent, "<activity.[\s\S]*?</activity>", RegexOptions.Multiline Or RegexOptions.IgnoreCase)
         For Each match As Match In matches
             If match.Value.Contains("intent-filter") Then
@@ -262,14 +295,14 @@ Public Class Form1
                 activityList.Add("        " + match.Value.ToString.Replace(""".", """" + packageName + "."))
             End If
         Next
-        If mainActivity <> "" Then
-            ComboBox2.Invoke(New MethodInvoker(Sub() ComboBox2.Text = "mainActivity name: " + mainActivity + ".java"))
-        Else
-            Dim srcPath = Path.GetDirectoryName(ManifestPath) + "\java\" + packageName.Replace(".", "\")
-            Dim javafiles = Directory.GetFiles(srcPath, "*.*", SearchOption.AllDirectories).Where(Function(f) New List(Of String) From {".java"}.IndexOf(Path.GetExtension(f)) >= 0).ToArray()
-            If javafiles.Count > 0 Then
+        javaPath = Path.GetDirectoryName(ManifestPath) + "\java\" + packageName.Replace(".", "\")
+        Dim javafiles = Directory.GetFiles(javaPath, "*.*", SearchOption.AllDirectories).Where(Function(f) New List(Of String) From {".java"}.IndexOf(Path.GetExtension(f)) >= 0).ToArray()
+        If javafiles.Count > 0 Then
+            If mainActivity <> "" Then
+                ComboBox2.Invoke(New MethodInvoker(Sub() ComboBox2.Text = javaPath + "\" + mainActivity + ".java"))
+            Else
                 If javafiles.Count = 1 Then
-                    ComboBox2.Invoke(New MethodInvoker(Sub() ComboBox2.Text = "mainActivity name: " + Path.GetFileName(javafiles(0))))
+                    ComboBox2.Invoke(New MethodInvoker(Sub() ComboBox2.Text = javafiles(0)))
                 Else
                     Dim bs As New BindingSource()
                     bs.DataSource = javafiles
@@ -277,6 +310,7 @@ Public Class Form1
                 End If
             End If
         End If
+
         Dim serviceList As New List(Of String)
         matches = Regex.Matches(fileContent, "<service[\s\S]*?\/service>", RegexOptions.IgnoreCase)
         For Each match As Match In matches
@@ -353,7 +387,7 @@ Public Class Form1
         styleableListArray = styleableListArray.Distinct().ToList()
         If styleableListArray.Count > 0 Then styleableList = styleableList.Except(styleableListArray).Concat(styleableListArray.Except(styleableList)).ToList()
 
-        Dim filePath As String = TextBox2.Text + "\R.java"
+        Dim filePath As String = RPath + "\R.java"
         Dim utf8WithoutBom As Encoding = Encoding.GetEncoding("ISO-8859-1")
         Using outputFile As New StreamWriter(filePath, False, utf8WithoutBom)
             outputFile.WriteLine("package " + packageName + ";")
