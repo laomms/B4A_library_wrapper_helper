@@ -68,6 +68,8 @@
     </Reference>
     <Reference Include="mscorlib" />
     <Reference Include="Microsoft.VisualBasic" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.IO.Compression.FileSystem" />
     <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.4.1, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.4.5.2\lib\netstandard1.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
     </Reference>
@@ -99,6 +101,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DecoderAPK.vb" />
+    <Compile Include="DownloadForm.Designer.vb">
+      <DependentUpon>DownloadForm.vb</DependentUpon>
+    </Compile>
+    <Compile Include="DownloadForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="DownloadLib.vb" />
     <Compile Include="Form1.vb">
       <SubType>Form</SubType>
@@ -135,6 +143,9 @@
     <Compile Include="SysEnvironment.vb" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="DownloadForm.resx">
+      <DependentUpon>DownloadForm.vb</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.vb</DependentUpon>
     </EmbeddedResource>

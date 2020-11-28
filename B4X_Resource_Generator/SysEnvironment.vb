@@ -45,7 +45,7 @@ Public Class SysEnvironment
     ''' </summary>
     ''' <returns>RegistryKey</returns>
     Private Shared Function OpenSysEnvironment() As RegistryKey
-        Dim regLocalMachine As RegistryKey = Registry.LocalMachine
+        Dim regLocalMachine As RegistryKey = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, IIf(Environment.Is64BitOperatingSystem, RegistryView.Registry64, RegistryView.Registry32))
         Dim regSYSTEM As RegistryKey = regLocalMachine.OpenSubKey("SYSTEM", True) '打开HKEY_LOCAL_MACHINE下的SYSTEM
         Dim regControlSet001 As RegistryKey = regSYSTEM.OpenSubKey("ControlSet001", True) '打开ControlSet001
         Dim regControl As RegistryKey = regControlSet001.OpenSubKey("Control", True) '打开Control
@@ -69,7 +69,7 @@ Public Class SysEnvironment
     ''' </summary>
     ''' <param name="name"></param>
     ''' <returns></returns>
-    Public Function CheckSysEnvironmentExist(ByVal name As String) As Boolean
+    Public Shared Function CheckSysEnvironmentExist(ByVal name As String) As Boolean
         If Not String.IsNullOrEmpty(GetSysEnvironmentByName(name)) Then
             Return True
         Else

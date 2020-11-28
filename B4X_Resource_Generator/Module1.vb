@@ -4,7 +4,7 @@ Imports System.Xml
 Module Module1
     Public ItemsDictionary As New Dictionary(Of String, String)
     Public SelectItem As String
-
+    Public downloadPath As String
     Public Sub WriteXML2(Maven As String, outPath As String)
         Using writer As New XmlTextWriter(outPath, System.Text.Encoding.UTF8)
             writer.WriteStartDocument()

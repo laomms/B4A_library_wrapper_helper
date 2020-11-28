@@ -1,4 +1,5 @@
 ﻿Imports System.IO
+Imports System.IO.Compression
 Imports System.Text
 Imports System.Text.RegularExpressions
 Imports System.Threading
@@ -83,6 +84,8 @@ Public Class Form1
                 End If
             End Using
         Next
+
+
     End Sub
 
     Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
@@ -135,7 +138,11 @@ Public Class Form1
         End If
         ComboBox1.Items.Clear()
         ComboBox1.Text = ""
-        ComboBox2.Items.Clear()
+        Try
+            If ComboBox2.Items.Count > 0 Then ComboBox2.Items.Clear()
+        Catch ex As Exception
+
+        End Try
         ComboBox2.Text = ""
         Dim directories As List(Of String) = (From x In Directory.EnumerateDirectories(TextBox1.Text, "*", SearchOption.AllDirectories) Select x.Substring(TextBox1.Text.Length)).ToList()
         Dim srcPath As String = directories.Where(Function(x) x.Contains("src") And x.Contains("res")).FirstOrDefault()
@@ -152,7 +159,11 @@ Public Class Form1
                         buildFilePath = buildFile
                         ComboBox1.Items.Clear()
                         ComboBox1.Text = ""
-                        ComboBox2.Items.Clear()
+                        Try
+                            If ComboBox2.Items.Count > 0 Then ComboBox2.Items.Clear()
+                        Catch ex As Exception
+
+                        End Try
                         ComboBox2.Text = ""
                         dependenciesList.Clear()
                         minSdkVersion = list(0)
@@ -161,10 +172,10 @@ Public Class Form1
                         Dim matches As MatchCollection = Regex.Matches(fileContent, "dependencies.[\s\S]*?}", RegexOptions.Multiline Or RegexOptions.IgnoreCase)
                         For Each match As Match In matches
                             For Each line In match.Value.Split({vbCrLf, vbLf, vbCr}, StringSplitOptions.RemoveEmptyEntries)
-                                If line.Contains("implementation") And line.Contains("*.jar") = False Then
+                                If line.Contains("implementation") And line.Contains("*.jar") = False And line.Contains("libs/") = False Then
                                     dependenciesList.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'"))
                                     ComboBox1.Invoke(New MethodInvoker(Sub() ComboBox1.Items.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'"))))
-                                ElseIf line.Contains("compile") And line.Contains("*.jar") = False Then
+                                ElseIf line.Contains("compile") And line.Contains("*.jar") = False And line.Contains("libs/") = False Then
                                     dependenciesList.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'"))
                                     ComboBox1.Invoke(New MethodInvoker(Sub() ComboBox1.Items.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'"))))
                                 End If
@@ -179,10 +190,10 @@ Public Class Form1
                         Dim matches As MatchCollection = Regex.Matches(fileContent, "dependencies.[\s\S]*?}", RegexOptions.Multiline Or RegexOptions.IgnoreCase)
                         For Each match As Match In matches
                             For Each line In match.Value.Split({vbCrLf, vbLf, vbCr}, StringSplitOptions.RemoveEmptyEntries)
-                                If line.Contains("implementation") And line.Contains("*.jar") = False Then
+                                If line.Contains("implementation") And line.Contains("*.jar") = False And line.Contains("libs/") = False Then
                                     dependenciesList.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'"))
                                     ComboBox1.Invoke(New MethodInvoker(Sub() ComboBox1.Items.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'"))))
-                                ElseIf line.Contains("compile") And line.Contains("*.jar") = False Then
+                                ElseIf line.Contains("compile") And line.Contains("*.jar") = False And line.Contains("libs/") = False Then
                                     dependenciesList.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'"))
                                     ComboBox1.Invoke(New MethodInvoker(Sub() ComboBox1.Items.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'"))))
                                 End If
@@ -286,7 +297,7 @@ Public Class Form1
             End If
         Next
         Dim activityList As New List(Of String)
-        Dim mainActivity As String
+        Dim mainActivity As String = ""
         Dim matches As MatchCollection = Regex.Matches(fileContent, "<activity.[\s\S]*?</activity>", RegexOptions.Multiline Or RegexOptions.IgnoreCase)
         For Each match As Match In matches
             If match.Value.Contains("intent-filter") Then
@@ -508,6 +519,33 @@ Public Class Form1
 
     Private Async Function Button5_ClickAsync(sender As Object, e As EventArgs) As Task Handles Button5.Click
         ItemsDictionary.Clear()
+        If SysEnvironment.CheckSysEnvironmentExist("MAVEN_HOME") = False Then
+            If MessageBox.Show("MAVEN_HOME environment variable is not detected, do you want to download and install !", "Error", MessageBoxButtons.YesNo, MessageBoxIcon.Asterisk) = DialogResult.Yes Then
+                'System.Diagnostics.Process.Start("http://maven.apache.org/download.cgi")
+                DownloadForm.ShowDialog()
+                If File.Exists(downloadPath + "\apache-maven.zip") Then
+                    Dim ExtractName As String = ""
+                    Using archive As ZipArchive = ZipFile.OpenRead(downloadPath + "\apache-maven.zip")
+                        For Each entry As ZipArchiveEntry In archive.Entries
+                            ExtractName = entry.FullName.Replace("/", "")
+                            Exit For
+                        Next entry
+                        If Directory.Exists("D:\apache-maven") = False Then
+                            ZipFile.ExtractToDirectory(downloadPath + "\apache-maven.zip", "D:\apache-maven")
+                        End If
+                        SysEnvironment.SetSysEnvironment("MAVEN_HOME", "D:\apache-maven\" + ExtractName)
+                        SysEnvironment.SetPathAfter("%MAVEN_HOME%\bin")
+                        SysEnvironment.SetPathAfter("%SystemRoot%\system32;%SystemRoot%;%SystemRoot%\System32\Wbem")
+                        MsgBox("The MAVEN_HOME environment variables have been set, please restart the system!", vbInformation + vbMsgBoxSetForeground, "finished")
+                        Return
+                    End Using
+                Else
+                    Return
+                End If
+            Else
+                Return
+            End If
+        End If
         ItemsDictionary = Await DownloadLib.SearchIemt(ComboBox1.Text)
         If ItemsDictionary.Count > 0 Then
             SelectForm.ShowDialog()
@@ -587,6 +625,11 @@ Public Class Form1
             w.Close()
         End Using
 
+
+    End Sub
+
+
+    Private Sub Button6_Click(sender As Object, e As EventArgs) Handles Button6.Click
 
     End Sub
 End Class
