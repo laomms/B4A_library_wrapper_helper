@@ -1,5 +1,6 @@
 ﻿Imports System.IO
 Imports System.IO.Compression
+Imports System.Net
 Imports System.Text
 Imports System.Text.RegularExpressions
 Imports System.Threading
@@ -15,6 +16,8 @@ Public Class Form1
     Private RPath As String
     Private srcPath As String
     Private javaPath As String
+    Private mycookiecontainer As CookieContainer = New CookieContainer()
+
     Private Sub TextBox1_DragEnter(sender As Object, e As DragEventArgs) Handles TextBox1.DragEnter
         If e.Data.GetDataPresent(DataFormats.FileDrop) Then
             e.Effect = DragDropEffects.Copy
@@ -84,7 +87,22 @@ Public Class Form1
                 End If
             End Using
         Next
+        If SysEnvironment.CheckSysEnvironmentExist("JAVA_HOME") Then CheckBox1.Checked = True : btn_JAVA_HOME.Enabled = False
+        If SysEnvironment.CheckSysEnvironmentExist("ANDROID_SDK_HOME") Then CheckBox2.Checked = True : btn_ANDROID_SDK_HOME.Enabled = False
+        If SysEnvironment.CheckSysEnvironmentExist("MAVEN_HOME") Then CheckBox3.Checked = True : btn_MAVEN_HOME.Enabled = False
+        If SysEnvironment.CheckSysEnvironmentExist("CLASSPATH") Then CheckBox4.Checked = True : btn_CLASSPATH.Enabled = False
 
+        With ListView1
+            .Items.Clear()
+            .GridLines = True
+            .View = View.Details
+            .FullRowSelect = True
+            .Columns.Add("id", 0, HorizontalAlignment.Center)
+            .Columns.Add("view type", 100, HorizontalAlignment.Center)
+            .Columns.Add("view name", 100, HorizontalAlignment.Center)
+            .Columns.Add("other", 150, HorizontalAlignment.Center)
+            '.Columns.Add("other", ListView1.Width - 100 - 100 - 100 - 5, HorizontalAlignment.Left)
+        End With
 
     End Sub
 
@@ -178,6 +196,15 @@ Public Class Form1
                                 ElseIf line.Contains("compile") And line.Contains("*.jar") = False And line.Contains("libs/") = False Then
                                     dependenciesList.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'"))
                                     ComboBox1.Invoke(New MethodInvoker(Sub() ComboBox1.Items.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'"))))
+                                ElseIf line.Contains("androidTestImplementation") And line.Contains("*.jar") = False And line.Contains("libs/") = False Then
+                                    dependenciesList.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'"))
+                                    ComboBox1.Invoke(New MethodInvoker(Sub() ComboBox1.Items.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'"))))
+                                ElseIf line.Contains("testImplementation") And line.Contains("*.jar") = False And line.Contains("libs/") = False Then
+                                    dependenciesList.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'"))
+                                    ComboBox1.Invoke(New MethodInvoker(Sub() ComboBox1.Items.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'"))))
+                                ElseIf line.Contains("implementation") And line.Contains("*.jar") = False And line.Contains("libs/") Then
+                                    dependenciesList.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'"))
+                                    ComboBox1.Invoke(New MethodInvoker(Sub() ComboBox1.Items.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'").Replace("libs/", ""))))
                                 End If
                             Next
                         Next
@@ -196,6 +223,15 @@ Public Class Form1
                                 ElseIf line.Contains("compile") And line.Contains("*.jar") = False And line.Contains("libs/") = False Then
                                     dependenciesList.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'"))
                                     ComboBox1.Invoke(New MethodInvoker(Sub() ComboBox1.Items.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'"))))
+                                ElseIf line.Contains("androidTestImplementation") And line.Contains("*.jar") = False And line.Contains("libs/") = False Then
+                                    dependenciesList.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'"))
+                                    ComboBox1.Invoke(New MethodInvoker(Sub() ComboBox1.Items.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'"))))
+                                ElseIf line.Contains("testImplementation") And line.Contains("*.jar") = False And line.Contains("libs/") = False Then
+                                    dependenciesList.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'"))
+                                    ComboBox1.Invoke(New MethodInvoker(Sub() ComboBox1.Items.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'"))))
+                                ElseIf line.Contains("implementation") And line.Contains("*.jar") = False And line.Contains("libs/") Then
+                                    dependenciesList.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'"))
+                                    ComboBox1.Invoke(New MethodInvoker(Sub() ComboBox1.Items.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'").Replace("libs/", ""))))
                                 End If
                             Next
                         Next
@@ -226,25 +262,28 @@ Public Class Form1
                     End If
                     If Not Directory.Exists(ProjectPath) Then
                         Directory.CreateDirectory(ProjectPath)
-                    Else
-                        For Each subDirectory In New DirectoryInfo(ProjectPath).GetDirectories
-                            subDirectory.Delete(True)
-                        Next subDirectory
-                        Directory.Delete(ProjectPath)
-                        Directory.CreateDirectory(ProjectPath)
-                        Directory.CreateDirectory(ProjectPath)
+                        'Else
+                        '    For Each subDirectory In New DirectoryInfo(ProjectPath).GetDirectories
+                        '        subDirectory.Delete(True)
+                        '    Next subDirectory
+                        '    Directory.Delete(ProjectPath)
+                        '    Directory.CreateDirectory(ProjectPath)
                     End If
                 End If
                 If ManifestPath.Contains("src") Then
                     srcPath = ManifestPath.Substring(0, ManifestPath.IndexOf("src") + 3)
-                    FileIO.FileSystem.CopyDirectory(srcPath, ProjectPath + "\src")
+                    FileIO.FileSystem.CopyDirectory(srcPath, ProjectPath + "\src", True)
                     If Directory.Exists(srcPath.Replace("src", "libs")) Then
-                        FileIO.FileSystem.CopyDirectory(srcPath.Replace("src", "libs"), ProjectPath + "\libs")
+                        FileIO.FileSystem.CopyDirectory(srcPath.Replace("src", "libs"), ProjectPath + "\libs", True)
                     Else
                         Directory.CreateDirectory(ProjectPath + "\libs")
                     End If
-                    Button7.Invoke(New MethodInvoker(Sub() Button7.Enabled = True))
+                    'Button7.Invoke(New MethodInvoker(Sub() Button7.Enabled = True))
                 End If
+                Dim newthread As New Thread(Sub()
+                                                extractResource(ManifestPath)
+                                            End Sub)
+                newthread.Start()
                 javaPath = Path.GetDirectoryName(ManifestPath) + "\java\" + packageName.Replace(".", "\")
                 RPath = javaPath.Replace(javaPath.Substring(0, javaPath.IndexOf("src")), ProjectPath + "\")
                 If BackgroundWorker2.IsBusy = False Then
@@ -252,6 +291,7 @@ Public Class Form1
                     arguments.Add(ManifestPath)
                     BackgroundWorker2.RunWorkerAsync(arguments)
                 End If
+
             End If
         End If
         Dim javafiles() As String
@@ -519,9 +559,45 @@ Public Class Form1
 
     Private Async Function Button5_ClickAsync(sender As Object, e As EventArgs) As Task Handles Button5.Click
         ItemsDictionary.Clear()
+        ItemsDictionary = Await DownloadLib.SearchIemt(ComboBox1.Text)
+        If ItemsDictionary.Count > 0 Then
+            SelectForm.ShowDialog()
+            If SelectItem <> "" Then
+                Dim url = ItemsDictionary(SelectItem.Split("-")(0).Trim)
+                ItemsDictionary.Clear()
+                ItemsDictionary = Await DownloadLib.GetVersion(url)
+                If ItemsDictionary.Count > 0 Then
+                    SelectForm.ShowDialog()
+                    If SelectItem <> "" Then
+                        url = url + "/" + SelectItem.Split("-")(0).Trim
+                        ItemsDictionary.Clear()
+                        ItemsDictionary = Await DownloadLib.GetPomFile(url)
+                        If ItemsDictionary.Count > 0 Then
+                            For Each keyPair In ItemsDictionary
+                                If keyPair.Key.Contains("pom") Then
+                                    Dim document As New XmlDocument()
+                                    document.Load(keyPair.Value)
+                                    If File.Exists(TextBox2.Text + "\pom.xml") Then File.Delete(TextBox2.Text + "\pom.xml")
+                                    File.WriteAllText(TextBox2.Text + "\pom.xml", document.InnerXml)
+                                ElseIf keyPair.Key.Contains("aar") Or keyPair.Key.Contains("jar") Then
+                                    downlink = keyPair.Value
+                                    targetPath = ProjectPath + "\libs\" + Path.GetFileName(keyPair.Value)
+                                    needSelect = False
+                                    DownloadForm.ShowDialog()
+                                End If
+
+                            Next
+                        End If
+                    End If
+                End If
+            End If
+        End If
+    End Function
+    Private Async Sub DownWithPom()
         If SysEnvironment.CheckSysEnvironmentExist("MAVEN_HOME") = False Then
             If MessageBox.Show("MAVEN_HOME environment variable is not detected, do you want to download and install !", "Error", MessageBoxButtons.YesNo, MessageBoxIcon.Asterisk) = DialogResult.Yes Then
                 'System.Diagnostics.Process.Start("http://maven.apache.org/download.cgi")
+                needSelect = True
                 DownloadForm.ShowDialog()
                 If File.Exists(downloadPath + "\apache-maven.zip") Then
                     Dim ExtractName As String = ""
@@ -570,7 +646,7 @@ Public Class Form1
                 End If
             End If
         End If
-    End Function
+    End Sub
     Private Sub WriteXML(Maven As String, outPath As String)
         Dim xmlDoc As New XmlDocument()
         Dim xmlDeclaration As XmlDeclaration = xmlDoc.CreateXmlDeclaration("1.0", "UTF-8", Nothing)
@@ -627,10 +703,140 @@ Public Class Form1
 
 
     End Sub
+    Private Sub extractResource(szPath As String)
+        Dim filename As String = ""
+        Dim viewtype As String = ""
+        Dim viewname As String = ""
+        Dim itemlist As New List(Of List(Of String))
+        Me.Invoke(New MethodInvoker(Sub() ListView1.Items.Clear()))
+        If Directory.Exists(Path.GetDirectoryName(szPath) + "\res") = True Then
+            Dim xmlfiles = Directory.GetFiles(Path.GetDirectoryName(szPath) + "\res", "*.*", SearchOption.AllDirectories).Where(Function(f) New List(Of String) From {".xml"}.IndexOf(Path.GetExtension(f)) >= 0).ToArray()
+            If xmlfiles.Count > 0 Then
+                For Each xmlfile In xmlfiles
+                    If xmlfile.Contains("styles.xml") Then
+                        Dim fileContent As String = File.ReadAllText(xmlfile)
+                        For Each line In fileContent.Split({vbCrLf, vbLf, vbCr}, StringSplitOptions.RemoveEmptyEntries)
+                            If line.Contains("style") And line.Contains("name") Then
+                                filename = New Regex("(?<=parent=\"").*?(?=[\p{P}\p{S}-[._]])").Match(line).Value.Trim
+                                viewtype = "style"
+                                viewname = New Regex("(?<=name=\"").*?(?=[\p{P}\p{S}-[._]])").Match(line).Value.Trim
+                                itemlist.Add(New List(Of String) From {viewtype, viewname, filename})
+                                Exit For
+                            End If
+                        Next
+                    ElseIf xmlfile.Contains("colors.xml") Then
+                        Dim fileContent As String = File.ReadAllText(xmlfile)
+                        For Each line In fileContent.Split({vbCrLf, vbLf, vbCr}, StringSplitOptions.RemoveEmptyEntries)
+                            If line.Contains("color") Then
+                                filename = New Regex("#.*?(?=[\p{P}\p{S}])").Match(line).Value.Trim
+                                viewtype = "color"
+                                viewname = New Regex("(?<=name=\"").*?(?=[\p{P}\p{S}-[._]])").Match(line).Value.Trim
+                                itemlist.Add(New List(Of String) From {viewtype, viewname, filename})
+                            End If
+                        Next
+                    ElseIf xmlfile.Contains("res\xml") Then
+                        Dim fileContent As String = File.ReadAllText(xmlfile)
+                        For Each line In fileContent.Split({vbCrLf, vbLf, vbCr}, StringSplitOptions.RemoveEmptyEntries)
+                            If line.Contains("@") Then
+                                filename = Path.GetFileName(xmlfile)
+                                viewtype = New Regex("(?<=:).*?(?=[\p{P}\p{S}])").Match(line).Value.Trim
+                                viewname = New Regex("(?<=@).*?(?=[\p{P}\p{S}-[/_]])").Match(line).Value.Trim
+                                itemlist.Add(New List(Of String) From {viewtype, viewname, filename})
+                            End If
+                        Next
+                    ElseIf xmlfile.Contains("strings.xml") = False Then
+                        Dim fileContent As String = File.ReadAllText(xmlfile)
+                        Dim matches As MatchCollection = Regex.Matches(fileContent, "<([^<]*)\/>", RegexOptions.Multiline Or RegexOptions.IgnoreCase)
+                        For Each match As Match In matches
+                            If match.Value.Contains("android:id") Then
+                                filename = Path.GetFileName(xmlfile)
+                                For Each line In match.Value.Split({vbCrLf, vbLf, vbCr}, StringSplitOptions.RemoveEmptyEntries)
+                                    If line.Contains("<") Then
+                                        viewtype = line.Replace("<", "").Trim
+                                    ElseIf line.Contains("android:id") Then
+                                        viewname = New Regex("(?<=id\/).*?(?=[\p{P}\p{S}-[._]])").Match(line).Value.Trim
+                                    End If
+                                Next
+                                itemlist.Add(New List(Of String) From {viewtype, viewname, filename})
+                            End If
+                        Next
+                    End If
+                Next
+            End If
+        End If
 
+        Me.Invoke(New MethodInvoker(Sub() ListView1.Items.AddRange(itemlist.Select(Function(row, index) New ListViewItem({index.ToString()}.Concat(row).ToArray())).ToArray())))
+    End Sub
 
     Private Sub Button6_Click(sender As Object, e As EventArgs) Handles Button6.Click
 
+    End Sub
+
+    Private Sub btn_ANDROID_SDK_HOME_Click(sender As Object, e As EventArgs) Handles btn_ANDROID_SDK_HOME.Click
+        Dim folderDlg As FolderBrowserDialog = New FolderBrowserDialog()
+        folderDlg.ShowNewFolderButton = True
+        Dim result As DialogResult = folderDlg.ShowDialog()
+        If result = DialogResult.OK Then
+            Dim path = folderDlg.SelectedPath
+            If MessageBox.Show(path + vbNewLine + " for ANDROID_SDK environment! Please confirm again!", "Confirm", MessageBoxButtons.YesNo, MessageBoxIcon.Asterisk) = DialogResult.Yes Then
+                SysEnvironment.SetSysEnvironment("ANDROID_SDK_HOME", path)
+                SysEnvironment.SetPathAfter("%ANDROID_SDK_HOME%\tools")
+                SysEnvironment.SetPathAfter("%ANDROID_SDK_HOME%\platform-tools")
+                CheckBox2.Checked = True
+                btn_ANDROID_SDK_HOME.Enabled = False
+                MsgBox("The ANDROID_SDK_HOME environment variables have been set, please restart the system!", vbInformation + vbMsgBoxSetForeground, "finished")
+            End If
+        End If
+    End Sub
+
+    Private Sub btn_JAVA_HOME_Click(sender As Object, e As EventArgs) Handles btn_JAVA_HOME.Click
+        Dim folderDlg As FolderBrowserDialog = New FolderBrowserDialog()
+        folderDlg.ShowNewFolderButton = True
+        Dim result As DialogResult = folderDlg.ShowDialog()
+        If result = DialogResult.OK Then
+            Dim path = folderDlg.SelectedPath
+            If MessageBox.Show(path + vbNewLine + " for JAVA environment! Please confirm again!", "Confirm", MessageBoxButtons.YesNo, MessageBoxIcon.Asterisk) = DialogResult.Yes Then
+                SysEnvironment.SetSysEnvironment("JAVA_HOME", path)
+                SysEnvironment.SetPathAfter("%JAVA_HOME%\bin")
+                SysEnvironment.SetPathAfter("%JAVA_HOME%\jre\bin")
+                CheckBox1.Checked = True
+                btn_JAVA_HOME.Enabled = False
+                MsgBox("The JAVA_HOME environment variables have been set, please restart the system!", vbInformation + vbMsgBoxSetForeground, "finished")
+            End If
+        End If
+    End Sub
+
+    Private Sub btn_MAVEN_HOME_Click(sender As Object, e As EventArgs) Handles btn_MAVEN_HOME.Click
+        Dim folderDlg As FolderBrowserDialog = New FolderBrowserDialog()
+        folderDlg.ShowNewFolderButton = True
+        Dim result As DialogResult = folderDlg.ShowDialog()
+        If result = DialogResult.OK Then
+            Dim path = folderDlg.SelectedPath
+            If MessageBox.Show(path + vbNewLine + " for MAVEN environment! Please confirm again!", "Confirm", MessageBoxButtons.YesNo, MessageBoxIcon.Asterisk) = DialogResult.Yes Then
+                SysEnvironment.SetSysEnvironment("MAVEN_HOME", path)
+                SysEnvironment.SetPathAfter("%MAVEN_HOME%\bin")
+                SysEnvironment.SetPathAfter("%SystemRoot%\system32;%SystemRoot%;%SystemRoot%\System32\Wbem")
+                CheckBox3.Checked = True
+                btn_MAVEN_HOME.Enabled = False
+                MsgBox("The MAVEN_HOME environment variables have been set, please restart the system!", vbInformation + vbMsgBoxSetForeground, "finished")
+            End If
+        End If
+    End Sub
+
+    Private Sub btn_CLASSPATH_Click(sender As Object, e As EventArgs) Handles btn_CLASSPATH.Click
+        Dim folderDlg As FolderBrowserDialog = New FolderBrowserDialog()
+        folderDlg.ShowNewFolderButton = True
+        Dim result As DialogResult = folderDlg.ShowDialog()
+        If result = DialogResult.OK Then
+            Dim path = folderDlg.SelectedPath
+            If MessageBox.Show(path + vbNewLine + " for CLASSPATH environment! Please confirm again!", "Confirm", MessageBoxButtons.YesNo, MessageBoxIcon.Asterisk) = DialogResult.Yes Then
+                SysEnvironment.SetSysEnvironment("CLASSPATH", path)
+                SysEnvironment.SetPathAfter(".;%JAVA_HOME%\lib\dt.jar;%JAVA_HOME%\lib\tools.jar;")
+                CheckBox3.Checked = True
+                btn_MAVEN_HOME.Enabled = False
+                MsgBox("The MAVEN_HOME environment variables have been set, please restart the system!", vbInformation + vbMsgBoxSetForeground, "finished")
+            End If
+        End If
     End Sub
 End Class
 

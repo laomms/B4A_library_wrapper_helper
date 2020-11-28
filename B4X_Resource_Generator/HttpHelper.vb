@@ -458,7 +458,7 @@ Module HttpHelper
                                 buffer = ms.ToArray()
                             End Using
                             File.WriteAllBytes(filepath, buffer)
-                            MsgBox("下载完成!")
+                            MsgBox("Download finished!")
                             buffer = Nothing
                             Return True
                         End Using

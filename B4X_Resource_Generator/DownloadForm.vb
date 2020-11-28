@@ -4,7 +4,7 @@ Imports System.Windows.Forms
 
 Public Class DownloadForm
     Private sw As New Stopwatch()
-    Dim downlink As String = ""
+
     Public Sub DownloadFile(ByVal urlAddress As String, ByVal location As String)
         Using WebClient = New WebClient()
             AddHandler WebClient.DownloadFileCompleted, AddressOf Completed
@@ -36,19 +36,23 @@ Public Class DownloadForm
         End If
     End Sub
     Private Sub DownloadForm_Load(sender As Object, e As EventArgs) Handles MyBase.Load
-        Dim sfd As New SaveFileDialog()
-        sfd.Filter = "Zip Files|*.zip|All files|*.*"
-        sfd.FilterIndex = 1
-        sfd.RestoreDirectory = True
-        sfd.FileName = "apache-maven.zip"
-        If sfd.ShowDialog() = System.Windows.Forms.DialogResult.OK Then
-            downloadPath = System.IO.Path.GetDirectoryName(sfd.FileName)
-            DownloadFile("https://downloads.apache.org/maven/maven-3/3.6.3/binaries/apache-maven-3.6.3-bin.zip", sfd.FileName)
-            Return
+        If needSelect = False Then
+            If targetPath = "" Then Me.Close()
+            DownloadFile(downlink, targetPath)
         Else
-            Me.Close()
+            Dim sfd As New SaveFileDialog()
+            sfd.Filter = "Zip Files|*.zip|All files|*.*"
+            sfd.FilterIndex = 1
+            sfd.RestoreDirectory = True
+            sfd.FileName = "apache-maven.zip"
+            If sfd.ShowDialog() = System.Windows.Forms.DialogResult.OK Then
+                downloadPath = System.IO.Path.GetDirectoryName(sfd.FileName)
+                DownloadFile("https://downloads.apache.org/maven/maven-3/3.6.3/binaries/apache-maven-3.6.3-bin.zip", sfd.FileName)
+                Return
+            Else
+                Me.Close()
+            End If
         End If
-
     End Sub
 
     Private Sub button1_Click(sender As Object, e As EventArgs)

@@ -42,8 +42,22 @@ Partial Class Form1
         Me.Button7 = New System.Windows.Forms.Button()
         Me.GroupBox2 = New System.Windows.Forms.GroupBox()
         Me.Label3 = New System.Windows.Forms.Label()
+        Me.GroupBox3 = New System.Windows.Forms.GroupBox()
+        Me.btn_CLASSPATH = New System.Windows.Forms.Button()
+        Me.CheckBox4 = New System.Windows.Forms.CheckBox()
+        Me.btn_MAVEN_HOME = New System.Windows.Forms.Button()
+        Me.btn_ANDROID_SDK_HOME = New System.Windows.Forms.Button()
+        Me.btn_JAVA_HOME = New System.Windows.Forms.Button()
+        Me.CheckBox3 = New System.Windows.Forms.CheckBox()
+        Me.CheckBox2 = New System.Windows.Forms.CheckBox()
+        Me.CheckBox1 = New System.Windows.Forms.CheckBox()
+        Me.FolderBrowserDialog1 = New System.Windows.Forms.FolderBrowserDialog()
+        Me.GroupBox4 = New System.Windows.Forms.GroupBox()
+        Me.ListView1 = New System.Windows.Forms.ListView()
         Me.GroupBox1.SuspendLayout()
         Me.GroupBox2.SuspendLayout()
+        Me.GroupBox3.SuspendLayout()
+        Me.GroupBox4.SuspendLayout()
         Me.SuspendLayout()
         '
         'TextBox1
@@ -176,6 +190,7 @@ Partial Class Form1
         '
         'Button6
         '
+        Me.Button6.Enabled = False
         Me.Button6.Location = New System.Drawing.Point(427, 49)
         Me.Button6.Name = "Button6"
         Me.Button6.Size = New System.Drawing.Size(68, 28)
@@ -219,11 +234,130 @@ Partial Class Form1
         Me.Label3.TabIndex = 14
         Me.Label3.Text = "Pack Aar:"
         '
+        'GroupBox3
+        '
+        Me.GroupBox3.Controls.Add(Me.btn_CLASSPATH)
+        Me.GroupBox3.Controls.Add(Me.CheckBox4)
+        Me.GroupBox3.Controls.Add(Me.btn_MAVEN_HOME)
+        Me.GroupBox3.Controls.Add(Me.btn_ANDROID_SDK_HOME)
+        Me.GroupBox3.Controls.Add(Me.btn_JAVA_HOME)
+        Me.GroupBox3.Controls.Add(Me.CheckBox3)
+        Me.GroupBox3.Controls.Add(Me.CheckBox2)
+        Me.GroupBox3.Controls.Add(Me.CheckBox1)
+        Me.GroupBox3.Location = New System.Drawing.Point(517, 4)
+        Me.GroupBox3.Name = "GroupBox3"
+        Me.GroupBox3.Size = New System.Drawing.Size(298, 143)
+        Me.GroupBox3.TabIndex = 16
+        Me.GroupBox3.TabStop = False
+        Me.GroupBox3.Text = "Environment variable"
+        '
+        'btn_CLASSPATH
+        '
+        Me.btn_CLASSPATH.Location = New System.Drawing.Point(191, 111)
+        Me.btn_CLASSPATH.Name = "btn_CLASSPATH"
+        Me.btn_CLASSPATH.Size = New System.Drawing.Size(96, 25)
+        Me.btn_CLASSPATH.TabIndex = 21
+        Me.btn_CLASSPATH.Text = "Setup"
+        Me.btn_CLASSPATH.UseVisualStyleBackColor = True
+        '
+        'CheckBox4
+        '
+        Me.CheckBox4.AutoSize = True
+        Me.CheckBox4.Enabled = False
+        Me.CheckBox4.Location = New System.Drawing.Point(12, 116)
+        Me.CheckBox4.Name = "CheckBox4"
+        Me.CheckBox4.Size = New System.Drawing.Size(89, 17)
+        Me.CheckBox4.TabIndex = 20
+        Me.CheckBox4.Text = "CLASSPATH"
+        Me.CheckBox4.UseVisualStyleBackColor = True
+        '
+        'btn_MAVEN_HOME
+        '
+        Me.btn_MAVEN_HOME.Location = New System.Drawing.Point(191, 80)
+        Me.btn_MAVEN_HOME.Name = "btn_MAVEN_HOME"
+        Me.btn_MAVEN_HOME.Size = New System.Drawing.Size(96, 25)
+        Me.btn_MAVEN_HOME.TabIndex = 19
+        Me.btn_MAVEN_HOME.Text = "Setup"
+        Me.btn_MAVEN_HOME.UseVisualStyleBackColor = True
+        '
+        'btn_ANDROID_SDK_HOME
+        '
+        Me.btn_ANDROID_SDK_HOME.Location = New System.Drawing.Point(191, 48)
+        Me.btn_ANDROID_SDK_HOME.Name = "btn_ANDROID_SDK_HOME"
+        Me.btn_ANDROID_SDK_HOME.Size = New System.Drawing.Size(96, 25)
+        Me.btn_ANDROID_SDK_HOME.TabIndex = 18
+        Me.btn_ANDROID_SDK_HOME.Text = "Setup"
+        Me.btn_ANDROID_SDK_HOME.UseVisualStyleBackColor = True
+        '
+        'btn_JAVA_HOME
+        '
+        Me.btn_JAVA_HOME.Location = New System.Drawing.Point(191, 16)
+        Me.btn_JAVA_HOME.Name = "btn_JAVA_HOME"
+        Me.btn_JAVA_HOME.Size = New System.Drawing.Size(96, 25)
+        Me.btn_JAVA_HOME.TabIndex = 17
+        Me.btn_JAVA_HOME.Text = "Setup"
+        Me.btn_JAVA_HOME.UseVisualStyleBackColor = True
+        '
+        'CheckBox3
+        '
+        Me.CheckBox3.AutoSize = True
+        Me.CheckBox3.Enabled = False
+        Me.CheckBox3.Location = New System.Drawing.Point(12, 85)
+        Me.CheckBox3.Name = "CheckBox3"
+        Me.CheckBox3.Size = New System.Drawing.Size(102, 17)
+        Me.CheckBox3.TabIndex = 2
+        Me.CheckBox3.Text = "MAVEN_HOME"
+        Me.CheckBox3.UseVisualStyleBackColor = True
+        '
+        'CheckBox2
+        '
+        Me.CheckBox2.AutoSize = True
+        Me.CheckBox2.Enabled = False
+        Me.CheckBox2.Location = New System.Drawing.Point(12, 53)
+        Me.CheckBox2.Name = "CheckBox2"
+        Me.CheckBox2.Size = New System.Drawing.Size(142, 17)
+        Me.CheckBox2.TabIndex = 1
+        Me.CheckBox2.Text = "ANDROID_SDK_HOME"
+        Me.CheckBox2.UseVisualStyleBackColor = True
+        '
+        'CheckBox1
+        '
+        Me.CheckBox1.AutoSize = True
+        Me.CheckBox1.Enabled = False
+        Me.CheckBox1.Location = New System.Drawing.Point(12, 22)
+        Me.CheckBox1.Name = "CheckBox1"
+        Me.CheckBox1.Size = New System.Drawing.Size(90, 17)
+        Me.CheckBox1.TabIndex = 0
+        Me.CheckBox1.Text = "JAVA_HOME"
+        Me.CheckBox1.UseVisualStyleBackColor = True
+        '
+        'GroupBox4
+        '
+        Me.GroupBox4.Controls.Add(Me.ListView1)
+        Me.GroupBox4.Location = New System.Drawing.Point(517, 153)
+        Me.GroupBox4.Name = "GroupBox4"
+        Me.GroupBox4.Size = New System.Drawing.Size(298, 190)
+        Me.GroupBox4.TabIndex = 17
+        Me.GroupBox4.TabStop = False
+        Me.GroupBox4.Text = "Resource Info"
+        '
+        'ListView1
+        '
+        Me.ListView1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+        Me.ListView1.HideSelection = False
+        Me.ListView1.Location = New System.Drawing.Point(7, 18)
+        Me.ListView1.Name = "ListView1"
+        Me.ListView1.Size = New System.Drawing.Size(284, 165)
+        Me.ListView1.TabIndex = 0
+        Me.ListView1.UseCompatibleStateImageBehavior = False
+        '
         'Form1
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(513, 348)
+        Me.ClientSize = New System.Drawing.Size(827, 348)
+        Me.Controls.Add(Me.GroupBox4)
+        Me.Controls.Add(Me.GroupBox3)
         Me.Controls.Add(Me.GroupBox2)
         Me.Controls.Add(Me.Button7)
         Me.Controls.Add(Me.GroupBox1)
@@ -231,11 +365,14 @@ Partial Class Form1
         Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
         Me.Name = "Form1"
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
-        Me.Text = "B4X_Resource_Generator V1.2"
+        Me.Text = "B4X_Resource_Generator V1.3"
         Me.GroupBox1.ResumeLayout(False)
         Me.GroupBox1.PerformLayout()
         Me.GroupBox2.ResumeLayout(False)
         Me.GroupBox2.PerformLayout()
+        Me.GroupBox3.ResumeLayout(False)
+        Me.GroupBox3.PerformLayout()
+        Me.GroupBox4.ResumeLayout(False)
         Me.ResumeLayout(False)
 
     End Sub
@@ -258,4 +395,16 @@ Partial Class Form1
     Friend WithEvents Button7 As Button
     Friend WithEvents GroupBox2 As GroupBox
     Friend WithEvents Label3 As Label
+    Friend WithEvents GroupBox3 As GroupBox
+    Friend WithEvents CheckBox3 As CheckBox
+    Friend WithEvents CheckBox2 As CheckBox
+    Friend WithEvents CheckBox1 As CheckBox
+    Friend WithEvents btn_MAVEN_HOME As Button
+    Friend WithEvents btn_ANDROID_SDK_HOME As Button
+    Friend WithEvents btn_JAVA_HOME As Button
+    Friend WithEvents FolderBrowserDialog1 As FolderBrowserDialog
+    Friend WithEvents GroupBox4 As GroupBox
+    Friend WithEvents btn_CLASSPATH As Button
+    Friend WithEvents CheckBox4 As CheckBox
+    Friend WithEvents ListView1 As ListView
 End Class
