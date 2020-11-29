@@ -25,12 +25,12 @@ Partial Class Form1
         Me.components = New System.ComponentModel.Container()
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(Form1))
         Me.TextBox1 = New System.Windows.Forms.TextBox()
-        Me.Button1 = New System.Windows.Forms.Button()
-        Me.Button2 = New System.Windows.Forms.Button()
+        Me.btn_Open = New System.Windows.Forms.Button()
+        Me.btn_Save = New System.Windows.Forms.Button()
         Me.TextBox2 = New System.Windows.Forms.TextBox()
-        Me.Button3 = New System.Windows.Forms.Button()
+        Me.btn_Generator = New System.Windows.Forms.Button()
         Me.GroupBox1 = New System.Windows.Forms.GroupBox()
-        Me.Button4 = New System.Windows.Forms.Button()
+        Me.btn_Pack = New System.Windows.Forms.Button()
         Me.TextBox3 = New System.Windows.Forms.TextBox()
         Me.BackgroundWorker1 = New System.ComponentModel.BackgroundWorker()
         Me.BackgroundWorker2 = New System.ComponentModel.BackgroundWorker()
@@ -38,9 +38,9 @@ Partial Class Form1
         Me.Label1 = New System.Windows.Forms.Label()
         Me.Label2 = New System.Windows.Forms.Label()
         Me.ComboBox2 = New System.Windows.Forms.ComboBox()
-        Me.Button5 = New System.Windows.Forms.Button()
-        Me.Button6 = New System.Windows.Forms.Button()
-        Me.Button7 = New System.Windows.Forms.Button()
+        Me.btn_Download = New System.Windows.Forms.Button()
+        Me.btn_Wrapper = New System.Windows.Forms.Button()
+        Me.btn_Compile = New System.Windows.Forms.Button()
         Me.GroupBox2 = New System.Windows.Forms.GroupBox()
         Me.Label3 = New System.Windows.Forms.Label()
         Me.CheckBox_CLASSPATH = New System.Windows.Forms.CheckBox()
@@ -49,17 +49,17 @@ Partial Class Form1
         Me.CheckBox_JAVA_HOME = New System.Windows.Forms.CheckBox()
         Me.FolderBrowserDialog1 = New System.Windows.Forms.FolderBrowserDialog()
         Me.ListView1 = New System.Windows.Forms.ListView()
+        Me.ContextMenuStrip1 = New System.Windows.Forms.ContextMenuStrip(Me.components)
+        Me.AddToRjavaToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.GroupBox3 = New System.Windows.Forms.GroupBox()
         Me.RichTextBox1 = New System.Windows.Forms.RichTextBox()
-        Me.ComboBox3 = New System.Windows.Forms.ComboBox()
-        Me.ContextMenuStrip1 = New System.Windows.Forms.ContextMenuStrip(Me.components)
         Me.ContextMenuStrip2 = New System.Windows.Forms.ContextMenuStrip(Me.components)
-        Me.AddToRjavaToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.WrapperMethodToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
+        Me.ComboBox3 = New System.Windows.Forms.ComboBox()
         Me.GroupBox1.SuspendLayout()
         Me.GroupBox2.SuspendLayout()
-        Me.GroupBox3.SuspendLayout()
         Me.ContextMenuStrip1.SuspendLayout()
+        Me.GroupBox3.SuspendLayout()
         Me.ContextMenuStrip2.SuspendLayout()
         Me.SuspendLayout()
         '
@@ -73,23 +73,23 @@ Partial Class Form1
         Me.TextBox1.Text = "Drag and drop or open java project folder"
         Me.TextBox1.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
         '
-        'Button1
+        'btn_Open
         '
-        Me.Button1.Location = New System.Drawing.Point(429, 15)
-        Me.Button1.Name = "Button1"
-        Me.Button1.Size = New System.Drawing.Size(68, 28)
-        Me.Button1.TabIndex = 2
-        Me.Button1.Text = "Open"
-        Me.Button1.UseVisualStyleBackColor = True
+        Me.btn_Open.Location = New System.Drawing.Point(429, 15)
+        Me.btn_Open.Name = "btn_Open"
+        Me.btn_Open.Size = New System.Drawing.Size(68, 28)
+        Me.btn_Open.TabIndex = 2
+        Me.btn_Open.Text = "Open"
+        Me.btn_Open.UseVisualStyleBackColor = True
         '
-        'Button2
+        'btn_Save
         '
-        Me.Button2.Location = New System.Drawing.Point(429, 52)
-        Me.Button2.Name = "Button2"
-        Me.Button2.Size = New System.Drawing.Size(68, 28)
-        Me.Button2.TabIndex = 5
-        Me.Button2.Text = "Save"
-        Me.Button2.UseVisualStyleBackColor = True
+        Me.btn_Save.Location = New System.Drawing.Point(429, 52)
+        Me.btn_Save.Name = "btn_Save"
+        Me.btn_Save.Size = New System.Drawing.Size(68, 28)
+        Me.btn_Save.TabIndex = 5
+        Me.btn_Save.Text = "Save"
+        Me.btn_Save.UseVisualStyleBackColor = True
         '
         'TextBox2
         '
@@ -101,36 +101,36 @@ Partial Class Form1
         Me.TextBox2.Text = "Select the directory to save"
         Me.TextBox2.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
         '
-        'Button3
+        'btn_Generator
         '
-        Me.Button3.Location = New System.Drawing.Point(205, 91)
-        Me.Button3.Name = "Button3"
-        Me.Button3.Size = New System.Drawing.Size(96, 40)
-        Me.Button3.TabIndex = 6
-        Me.Button3.Text = "Generator"
-        Me.Button3.UseVisualStyleBackColor = True
+        Me.btn_Generator.Location = New System.Drawing.Point(205, 91)
+        Me.btn_Generator.Name = "btn_Generator"
+        Me.btn_Generator.Size = New System.Drawing.Size(96, 40)
+        Me.btn_Generator.TabIndex = 6
+        Me.btn_Generator.Text = "Generator"
+        Me.btn_Generator.UseVisualStyleBackColor = True
         '
         'GroupBox1
         '
-        Me.GroupBox1.Controls.Add(Me.Button2)
+        Me.GroupBox1.Controls.Add(Me.btn_Save)
         Me.GroupBox1.Controls.Add(Me.TextBox2)
-        Me.GroupBox1.Controls.Add(Me.Button1)
+        Me.GroupBox1.Controls.Add(Me.btn_Open)
         Me.GroupBox1.Controls.Add(Me.TextBox1)
-        Me.GroupBox1.Controls.Add(Me.Button3)
+        Me.GroupBox1.Controls.Add(Me.btn_Generator)
         Me.GroupBox1.Location = New System.Drawing.Point(2, 37)
         Me.GroupBox1.Name = "GroupBox1"
         Me.GroupBox1.Size = New System.Drawing.Size(506, 143)
         Me.GroupBox1.TabIndex = 7
         Me.GroupBox1.TabStop = False
         '
-        'Button4
+        'btn_Pack
         '
-        Me.Button4.Location = New System.Drawing.Point(427, 88)
-        Me.Button4.Name = "Button4"
-        Me.Button4.Size = New System.Drawing.Size(68, 28)
-        Me.Button4.TabIndex = 7
-        Me.Button4.Text = "Pack"
-        Me.Button4.UseVisualStyleBackColor = True
+        Me.btn_Pack.Location = New System.Drawing.Point(427, 88)
+        Me.btn_Pack.Name = "btn_Pack"
+        Me.btn_Pack.Size = New System.Drawing.Size(68, 28)
+        Me.btn_Pack.TabIndex = 7
+        Me.btn_Pack.Text = "Pack"
+        Me.btn_Pack.UseVisualStyleBackColor = True
         '
         'TextBox3
         '
@@ -182,42 +182,42 @@ Partial Class Form1
         Me.ComboBox2.Size = New System.Drawing.Size(326, 21)
         Me.ComboBox2.TabIndex = 10
         '
-        'Button5
+        'btn_Download
         '
-        Me.Button5.Location = New System.Drawing.Point(427, 13)
-        Me.Button5.Name = "Button5"
-        Me.Button5.Size = New System.Drawing.Size(68, 28)
-        Me.Button5.TabIndex = 12
-        Me.Button5.Text = "Download"
-        Me.Button5.UseVisualStyleBackColor = True
+        Me.btn_Download.Location = New System.Drawing.Point(427, 13)
+        Me.btn_Download.Name = "btn_Download"
+        Me.btn_Download.Size = New System.Drawing.Size(68, 28)
+        Me.btn_Download.TabIndex = 12
+        Me.btn_Download.Text = "Download"
+        Me.btn_Download.UseVisualStyleBackColor = True
         '
-        'Button6
+        'btn_Wrapper
         '
-        Me.Button6.Enabled = False
-        Me.Button6.Location = New System.Drawing.Point(427, 49)
-        Me.Button6.Name = "Button6"
-        Me.Button6.Size = New System.Drawing.Size(68, 28)
-        Me.Button6.TabIndex = 13
-        Me.Button6.Text = "Wrapper"
-        Me.Button6.UseVisualStyleBackColor = True
+        Me.btn_Wrapper.Enabled = False
+        Me.btn_Wrapper.Location = New System.Drawing.Point(427, 49)
+        Me.btn_Wrapper.Name = "btn_Wrapper"
+        Me.btn_Wrapper.Size = New System.Drawing.Size(68, 28)
+        Me.btn_Wrapper.TabIndex = 13
+        Me.btn_Wrapper.Text = "Wrapper"
+        Me.btn_Wrapper.UseVisualStyleBackColor = True
         '
-        'Button7
+        'btn_Compile
         '
-        Me.Button7.Enabled = False
-        Me.Button7.Location = New System.Drawing.Point(207, 329)
-        Me.Button7.Name = "Button7"
-        Me.Button7.Size = New System.Drawing.Size(96, 40)
-        Me.Button7.TabIndex = 14
-        Me.Button7.Text = "Compile"
-        Me.Button7.UseVisualStyleBackColor = True
+        Me.btn_Compile.Enabled = False
+        Me.btn_Compile.Location = New System.Drawing.Point(207, 329)
+        Me.btn_Compile.Name = "btn_Compile"
+        Me.btn_Compile.Size = New System.Drawing.Size(96, 40)
+        Me.btn_Compile.TabIndex = 14
+        Me.btn_Compile.Text = "Compile"
+        Me.btn_Compile.UseVisualStyleBackColor = True
         '
         'GroupBox2
         '
         Me.GroupBox2.Controls.Add(Me.Label3)
-        Me.GroupBox2.Controls.Add(Me.Button4)
-        Me.GroupBox2.Controls.Add(Me.Button6)
+        Me.GroupBox2.Controls.Add(Me.btn_Pack)
+        Me.GroupBox2.Controls.Add(Me.btn_Wrapper)
         Me.GroupBox2.Controls.Add(Me.TextBox3)
-        Me.GroupBox2.Controls.Add(Me.Button5)
+        Me.GroupBox2.Controls.Add(Me.btn_Download)
         Me.GroupBox2.Controls.Add(Me.Label2)
         Me.GroupBox2.Controls.Add(Me.ComboBox2)
         Me.GroupBox2.Controls.Add(Me.Label1)
@@ -292,6 +292,18 @@ Partial Class Form1
         Me.ListView1.TabIndex = 0
         Me.ListView1.UseCompatibleStateImageBehavior = False
         '
+        'ContextMenuStrip1
+        '
+        Me.ContextMenuStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.AddToRjavaToolStripMenuItem})
+        Me.ContextMenuStrip1.Name = "ContextMenuStrip1"
+        Me.ContextMenuStrip1.Size = New System.Drawing.Size(145, 26)
+        '
+        'AddToRjavaToolStripMenuItem
+        '
+        Me.AddToRjavaToolStripMenuItem.Name = "AddToRjavaToolStripMenuItem"
+        Me.AddToRjavaToolStripMenuItem.Size = New System.Drawing.Size(144, 22)
+        Me.AddToRjavaToolStripMenuItem.Text = "Add to R.java"
+        '
         'GroupBox3
         '
         Me.GroupBox3.Controls.Add(Me.RichTextBox1)
@@ -313,6 +325,18 @@ Partial Class Form1
         Me.RichTextBox1.TabIndex = 1
         Me.RichTextBox1.Text = ""
         '
+        'ContextMenuStrip2
+        '
+        Me.ContextMenuStrip2.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.WrapperMethodToolStripMenuItem})
+        Me.ContextMenuStrip2.Name = "ContextMenuStrip2"
+        Me.ContextMenuStrip2.Size = New System.Drawing.Size(162, 26)
+        '
+        'WrapperMethodToolStripMenuItem
+        '
+        Me.WrapperMethodToolStripMenuItem.Name = "WrapperMethodToolStripMenuItem"
+        Me.WrapperMethodToolStripMenuItem.Size = New System.Drawing.Size(161, 22)
+        Me.WrapperMethodToolStripMenuItem.Text = "WrapperMethod"
+        '
         'ComboBox3
         '
         Me.ComboBox3.FormattingEnabled = True
@@ -320,30 +344,6 @@ Partial Class Form1
         Me.ComboBox3.Name = "ComboBox3"
         Me.ComboBox3.Size = New System.Drawing.Size(416, 21)
         Me.ComboBox3.TabIndex = 0
-        '
-        'ContextMenuStrip1
-        '
-        Me.ContextMenuStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.AddToRjavaToolStripMenuItem})
-        Me.ContextMenuStrip1.Name = "ContextMenuStrip1"
-        Me.ContextMenuStrip1.Size = New System.Drawing.Size(145, 26)
-        '
-        'ContextMenuStrip2
-        '
-        Me.ContextMenuStrip2.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.WrapperMethodToolStripMenuItem})
-        Me.ContextMenuStrip2.Name = "ContextMenuStrip2"
-        Me.ContextMenuStrip2.Size = New System.Drawing.Size(162, 26)
-        '
-        'AddToRjavaToolStripMenuItem
-        '
-        Me.AddToRjavaToolStripMenuItem.Name = "AddToRjavaToolStripMenuItem"
-        Me.AddToRjavaToolStripMenuItem.Size = New System.Drawing.Size(144, 22)
-        Me.AddToRjavaToolStripMenuItem.Text = "Add to R.java"
-        '
-        'WrapperMethodToolStripMenuItem
-        '
-        Me.WrapperMethodToolStripMenuItem.Name = "WrapperMethodToolStripMenuItem"
-        Me.WrapperMethodToolStripMenuItem.Size = New System.Drawing.Size(161, 22)
-        Me.WrapperMethodToolStripMenuItem.Text = "WrapperMethod"
         '
         'Form1
         '
@@ -355,7 +355,7 @@ Partial Class Form1
         Me.Controls.Add(Me.CheckBox_CLASSPATH)
         Me.Controls.Add(Me.GroupBox2)
         Me.Controls.Add(Me.CheckBox_MAVEN_HOME)
-        Me.Controls.Add(Me.Button7)
+        Me.Controls.Add(Me.btn_Compile)
         Me.Controls.Add(Me.GroupBox1)
         Me.Controls.Add(Me.CheckBox_JAVA_HOME)
         Me.Controls.Add(Me.CheckBox_ANDROID_SDK_HOME)
@@ -368,30 +368,30 @@ Partial Class Form1
         Me.GroupBox1.PerformLayout()
         Me.GroupBox2.ResumeLayout(False)
         Me.GroupBox2.PerformLayout()
-        Me.GroupBox3.ResumeLayout(False)
         Me.ContextMenuStrip1.ResumeLayout(False)
+        Me.GroupBox3.ResumeLayout(False)
         Me.ContextMenuStrip2.ResumeLayout(False)
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
     End Sub
     Friend WithEvents TextBox1 As TextBox
-    Friend WithEvents Button1 As Button
-    Friend WithEvents Button2 As Button
+    Friend WithEvents btn_Open As Button
+    Friend WithEvents btn_Save As Button
     Friend WithEvents TextBox2 As TextBox
-    Friend WithEvents Button3 As Button
+    Friend WithEvents btn_Generator As Button
     Friend WithEvents GroupBox1 As GroupBox
     Friend WithEvents BackgroundWorker1 As System.ComponentModel.BackgroundWorker
     Friend WithEvents BackgroundWorker2 As System.ComponentModel.BackgroundWorker
     Friend WithEvents ComboBox1 As ComboBox
     Friend WithEvents Label1 As Label
-    Friend WithEvents Button4 As Button
+    Friend WithEvents btn_Pack As Button
     Friend WithEvents TextBox3 As TextBox
     Friend WithEvents Label2 As Label
     Friend WithEvents ComboBox2 As ComboBox
-    Friend WithEvents Button5 As Button
-    Friend WithEvents Button6 As Button
-    Friend WithEvents Button7 As Button
+    Friend WithEvents btn_Download As Button
+    Friend WithEvents btn_Wrapper As Button
+    Friend WithEvents btn_Compile As Button
     Friend WithEvents GroupBox2 As GroupBox
     Friend WithEvents Label3 As Label
     Friend WithEvents CheckBox_MAVEN_HOME As CheckBox

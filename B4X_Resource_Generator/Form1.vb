@@ -105,7 +105,7 @@ Public Class Form1
 
     End Sub
 
-    Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
+    Private Sub btn_Open_Click(sender As Object, e As EventArgs) Handles btn_Open.Click
         TextBox1.Text = String.Empty
         TextBox1.ForeColor = Color.Black
         TextBox1.TextAlign = HorizontalAlignment.Left
@@ -121,7 +121,7 @@ Public Class Form1
         End Using
     End Sub
 
-    Private Sub Button2_Click(sender As Object, e As EventArgs) Handles Button2.Click
+    Private Sub btn_Save_Click(sender As Object, e As EventArgs) Handles btn_Save.Click
         TextBox2.Text = String.Empty
         TextBox2.ForeColor = Color.Black
         TextBox2.TextAlign = HorizontalAlignment.Left
@@ -144,7 +144,7 @@ Public Class Form1
         End Using
     End Sub
 
-    Private Sub Button3_Click(sender As Object, e As EventArgs) Handles Button3.Click
+    Private Sub btn_Generator_Click(sender As Object, e As EventArgs) Handles btn_Generator.Click
 
         If TextBox1.Text = "" Or TextBox1.Text.Contains("\") = False Then Return
         If TextBox2.Text = "" Or TextBox2.Text.Contains("\") = False Then
@@ -209,15 +209,17 @@ Public Class Form1
                                         dependenciesList.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'"))
                                         ComboBox1.Invoke(New MethodInvoker(Sub() ComboBox1.Items.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'"))))
                                     ElseIf line.Contains("implementation") And line.Contains("*.jar") = False And line.Contains("libs/") Then
-                                        dependenciesList.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'"))
+                                        dependenciesList.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'").Replace("libs/", ""))
                                         ComboBox1.Invoke(New MethodInvoker(Sub() ComboBox1.Items.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'").Replace("libs/", ""))))
                                     End If
                                 Next
+                                DependsOn = "@DependsOn(values={""" + String.Join(""", """, dependenciesList) + """}"
                             Next
                             Exit For
                         ElseIf fileContent.Contains("com.android.application") Then
                             buildFilePath = buildFile
                             minSdkVersion = list(0)
+                            dependenciesList.Clear()
                             list = lines.Where(Function(x) x.Contains("targetSdkVersion")).Select(Function(x) x.Trim.Replace("targetSdkVersion", "").Trim).ToList()
                             If list.Count > 0 Then targetSdkVersion = list(0)
                             Dim matches As MatchCollection = Regex.Matches(fileContent, "dependencies.[\s\S]*?}", RegexOptions.Multiline Or RegexOptions.IgnoreCase)
@@ -236,10 +238,11 @@ Public Class Form1
                                         dependenciesList.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'"))
                                         ComboBox1.Invoke(New MethodInvoker(Sub() ComboBox1.Items.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'"))))
                                     ElseIf line.Contains("implementation") And line.Contains("*.jar") = False And line.Contains("libs/") Then
-                                        dependenciesList.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'"))
+                                        dependenciesList.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'").Replace("libs/", ""))
                                         ComboBox1.Invoke(New MethodInvoker(Sub() ComboBox1.Items.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'").Replace("libs/", ""))))
                                     End If
                                 Next
+                                DependsOn = "@DependsOn(values={""" + String.Join(""", """, dependenciesList) + """}"
                             Next
                         End If
                     End If
@@ -520,7 +523,7 @@ Public Class Form1
         End Using
     End Sub
 
-    Private Sub Button4_Click(sender As Object, e As EventArgs) Handles Button4.Click
+    Private Sub btn_Pack_Click(sender As Object, e As EventArgs) Handles btn_Pack.Click
         TextBox3.ForeColor = Color.Black
         TextBox3.TextAlign = HorizontalAlignment.Left
         If TextBox3.Text <> "" And TextBox3.Text.Contains("\") = True Then
@@ -568,7 +571,7 @@ Public Class Form1
 
     End Sub
 
-    Private Async Function Button5_ClickAsync(sender As Object, e As EventArgs) As Task Handles Button5.Click
+    Private Async Function btn_Download_Click(sender As Object, e As EventArgs) As Task Handles btn_Download.Click
         ItemsDictionary.Clear()
         ItemsDictionary = Await DownloadLib.SearchIemt(ComboBox1.Text)
         If ItemsDictionary.Count > 0 Then
@@ -911,6 +914,18 @@ Public Class Form1
     Private Sub ListView1_ColumnClick(ByVal sender As Object, ByVal e As System.Windows.Forms.ColumnClickEventArgs) Handles ListView1.ColumnClick
         On Error Resume Next
         ListView1.ListViewItemSorter = New ListViewItemComparerByString(e.Column)
+    End Sub
+
+    Private Sub btn_Wrapper_Click(sender As Object, e As EventArgs) Handles btn_Wrapper.Click
+
+    End Sub
+
+    Private Sub Button5_ClickAsync(sender As Object, e As EventArgs) Handles btn_Download.Click
+
+    End Sub
+
+    Private Sub btn_Compile_Click(sender As Object, e As EventArgs) Handles btn_Compile.Click
+
     End Sub
 End Class
 

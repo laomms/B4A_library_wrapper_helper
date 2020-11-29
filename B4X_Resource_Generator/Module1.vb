@@ -9,6 +9,8 @@ Module Module1
     Public needSelect As Boolean = False
     Public targetPath As String
     Public downlink As String = ""
+    Public DependsOn As String
+    Public WrapperList As New List(Of String)
     Public Sub WriteXML2(Maven As String, outPath As String)
         Using writer As New XmlTextWriter(outPath, System.Text.Encoding.UTF8)
             writer.WriteStartDocument()
