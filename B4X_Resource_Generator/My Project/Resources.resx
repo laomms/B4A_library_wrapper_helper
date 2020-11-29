@@ -181,7 +181,7 @@ import anywheresoftware.b4a.objects.IntentWrapper;
 @ShortName("LibraryName")
 @ActivityObject
 
-public class B4AWrapperClass extends AbsObjectWrapper&lt;ActivityName&gt;  {
+public class B4AWrapperClass   {
 
     @Hide
     public static BA ba;
@@ -217,15 +217,10 @@ public class B4AWrapperClass extends AbsObjectWrapper&lt;ActivityName&gt;  {
 	}
 }</value>
   </data>
-  <data name="ViewWrapper" xml:space="preserve">
+  <data name="ViewWrapper1" xml:space="preserve">
     <value>package ViewNameWrapper;
 
-import android.view.Gravity;
-import android.view.ViewGroup;
-import android.widget.CompoundButton;
-import android.widget.Switch;
-import android.widget.CompoundButton.OnCheckedChangeListener;
-import com.suke.widget.ViewName;
+
 import anywheresoftware.b4a.AbsObjectWrapper;
 import anywheresoftware.b4a.BA;
 import anywheresoftware.b4a.BA.ActivityObject;
@@ -237,44 +232,50 @@ import anywheresoftware.b4a.BA.RaisesSynchronousEvents;
 import anywheresoftware.b4a.BA.ShortName;
 import anywheresoftware.b4a.BA.Version;
 import anywheresoftware.b4a.keywords.Common.DesignerCustomView;
-import anywheresoftware.b4a.keywords.constants.Colors;
 import anywheresoftware.b4a.objects.CustomViewWrapper;
 import anywheresoftware.b4a.objects.LabelWrapper;
 import anywheresoftware.b4a.objects.PanelWrapper;
 import anywheresoftware.b4a.objects.ViewWrapper;
 import anywheresoftware.b4a.objects.collections.Map;
 
-@ShortName("ViewName")
+@Version(1.00f)
+@ShortName("LibraryName")
 @ActivityObject
 @Events(values={"CheckedChange(Checked As Boolean)"})
 @DesignerProperties(values = {
         @Property(key="Checked", displayName="Checked", defaultValue="False", fieldType="Boolean")
 })
-@Version(1.00f)
 
 public class ViewNameWrapper extends ViewWrapper&lt;ViewName&gt; implements DesignerCustomView{
     private BA ba;
     private String eventName;
-    private ViewName ViewName;
+    private ViewName ViewActivity;
 
     @Override
     public void DesignerCreateView(PanelWrapper panelWrapper, LabelWrapper labelWrapper, Map map) {
-        ViewName = new ViewName(ba.context);        
-        ViewName.setOnCheckedChangeListener(new ViewName.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(ViewName view, boolean isChecked) {
-                ba.raiseEvent(this, eventName + "_checkedchange", isChecked);
-            }
-        });
-        panelWrapper.AddView(ViewName, 0, 0, panelWrapper.getWidth(), panelWrapper.getHeight());
-        panelWrapper.setColor(Colors.Transparent);
+        getObject().setChecked((Boolean)map.Get("Checked"));
+        CustomViewWrapper.replaceBaseWithView2(panelWrapper, getObject());
     }
 
     @Override
     public void _initialize(final BA ba, Object o, String s) {
+        ViewActivity = new ViewName(ba.context);
+        this.ba=ba;
+        eventName = s.toLowerCase(BA.cul);
+        setObject(ViewActivity);
+        innerInitialize(ba, eventName, true);
 
-        this.eventName = s.toLowerCase(BA.cul);
-        this.ba = ba;
+        //switchbutton.setChecked(true);
+        //switchbutton.isChecked();
+        
+        if (ba.subExists(eventName + "_checkedchange")) {
+            getObject().setOnCheckedChangeListener(new ViewName.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(ViewName view, boolean isChecked) {
+                   ba.raiseEventFromUI(switchbutton,eventName + "_checkedchange", isChecked);
+                }
+            });
+        }
     }
     public boolean getChecked() {
         return getObject().isChecked();
@@ -282,6 +283,74 @@ public class ViewNameWrapper extends ViewWrapper&lt;ViewName&gt; implements Desi
     public void setChecked(boolean Value) {
         getObject().setChecked(Value);
     }
+}</value>
+  </data>
+  <data name="ViewWrapper2" xml:space="preserve">
+    <value>package ViewNameWrapper;
+
+import anywheresoftware.b4a.AbsObjectWrapper;
+import anywheresoftware.b4a.BA;
+import anywheresoftware.b4a.BA.ActivityObject;
+import anywheresoftware.b4a.BA.DesignerProperties;
+import anywheresoftware.b4a.BA.Events;
+import anywheresoftware.b4a.BA.Hide;
+import anywheresoftware.b4a.BA.Property;
+import anywheresoftware.b4a.BA.RaisesSynchronousEvents;
+import anywheresoftware.b4a.BA.ShortName;
+import anywheresoftware.b4a.BA.Version;
+import anywheresoftware.b4a.BALayout;
+import anywheresoftware.b4a.keywords.Common.DesignerCustomView;
+import anywheresoftware.b4a.keywords.constants.Colors;
+import anywheresoftware.b4a.objects.CustomViewWrapper;
+import anywheresoftware.b4a.objects.LabelWrapper;
+import anywheresoftware.b4a.objects.PanelWrapper;
+import anywheresoftware.b4a.objects.ViewWrapper;
+import anywheresoftware.b4a.objects.collections.Map;
+
+
+@Version(1.00f)
+@ShortName("LibraryName")
+@ActivityObject
+
+public class ViewNameWrapper extends ViewWrapper&lt;ViewName&gt; implements DesignerCustomView{
+    private BA ba;
+    private String eventName;
+    private ViewName ViewActivity;
+
+    @Override
+    public void DesignerCreateView(PanelWrapper panelWrapper, LabelWrapper labelWrapper, Map map) {
+        ViewGroup vg = (ViewGroup) panelWrapper.getObject().getParent();
+        AddToParent(vg, panelWrapper.getLeft(), panelWrapper.getTop(), panelWrapper.getWidth(), panelWrapper.getHeight());
+        panelWrapper.RemoveView();
+    }
+
+    @Override
+    public void _initialize(final BA ba, Object o, String s) {
+        this.eventName = s.toLowerCase(BA.cul);
+        this.ba = ba;
+        ViewActivity = new ViewName(ba.context);
+        this.setObject(ViewActivity);
+        addListener();
+
+    }
+	
+	@Hide
+    public void addListener(){
+        cv.setCallback(new NiceSpinner.Callback() {
+            public void item_clicked() {
+              if (ba.subExists(eventName + "_item_clicked")) {
+                ba.raiseEvent2(ba, false, eventName + "_item_clicked", true, new Object[0]);
+              }
+            }
+
+        });
+    }
+
+    @Hide
+    public void AddToParent(ViewGroup Parent, @BA.Pixel int left, @BA.Pixel int top, @BA.Pixel int width, @BA.Pixel int height) {
+        Parent.addView(ViewActivity, new BALayout.LayoutParams(left, top, width, height));
+    }
+
 }</value>
   </data>
 </root>

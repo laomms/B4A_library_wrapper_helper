@@ -110,22 +110,44 @@ Namespace My.Resources
         '''<summary>
         '''  查找类似 package ViewNameWrapper;
         '''
-        '''import android.view.Gravity;
-        '''import android.view.ViewGroup;
-        '''import android.widget.CompoundButton;
-        '''import android.widget.Switch;
-        '''import android.widget.CompoundButton.OnCheckedChangeListener;
-        '''import com.suke.widget.ViewName;
+        '''
         '''import anywheresoftware.b4a.AbsObjectWrapper;
         '''import anywheresoftware.b4a.BA;
         '''import anywheresoftware.b4a.BA.ActivityObject;
         '''import anywheresoftware.b4a.BA.DesignerProperties;
         '''import anywheresoftware.b4a.BA.Events;
-        '''import anywheresoftware.b4a.BA.Hide [字符串的其余部分被截断]&quot;; 的本地化字符串。
+        '''import anywheresoftware.b4a.BA.Hide;
+        '''import anywheresoftware.b4a.BA.Property;
+        '''import anywheresoftware.b4a.BA.RaisesSynchronousEvents;
+        '''import anywheresoftware.b4a.BA.ShortName;
+        '''import anywheresoftware.b4a.BA.Version;
+        '''import anywheresoftware.b4a.keywords.Comm [字符串的其余部分被截断]&quot;; 的本地化字符串。
         '''</summary>
-        Friend ReadOnly Property ViewWrapper() As String
+        Friend ReadOnly Property ViewWrapper1() As String
             Get
-                Return ResourceManager.GetString("ViewWrapper", resourceCulture)
+                Return ResourceManager.GetString("ViewWrapper1", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  查找类似 package ViewNameWrapper;
+        '''
+        '''import anywheresoftware.b4a.AbsObjectWrapper;
+        '''import anywheresoftware.b4a.BA;
+        '''import anywheresoftware.b4a.BA.ActivityObject;
+        '''import anywheresoftware.b4a.BA.DesignerProperties;
+        '''import anywheresoftware.b4a.BA.Events;
+        '''import anywheresoftware.b4a.BA.Hide;
+        '''import anywheresoftware.b4a.BA.Property;
+        '''import anywheresoftware.b4a.BA.RaisesSynchronousEvents;
+        '''import anywheresoftware.b4a.BA.ShortName;
+        '''import anywheresoftware.b4a.BA.Version;
+        '''import anywheresoftware.b4a.BALayout;
+        '''impo [字符串的其余部分被截断]&quot;; 的本地化字符串。
+        '''</summary>
+        Friend ReadOnly Property ViewWrapper2() As String
+            Get
+                Return ResourceManager.GetString("ViewWrapper2", resourceCulture)
             End Get
         End Property
     End Module

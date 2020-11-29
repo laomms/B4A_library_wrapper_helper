@@ -213,7 +213,7 @@ Public Class Form1
                                         ComboBox1.Invoke(New MethodInvoker(Sub() ComboBox1.Items.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'").Replace("libs/", ""))))
                                     End If
                                 Next
-                                DependsOn = "@DependsOn(values={""" + String.Join(""", """, dependenciesList) + """}"
+                                DependsOn = "@DependsOn(values={""" + String.Join(""", """, dependenciesList) + """})"
                             Next
                             Exit For
                         ElseIf fileContent.Contains("com.android.application") Then
@@ -242,7 +242,7 @@ Public Class Form1
                                         ComboBox1.Invoke(New MethodInvoker(Sub() ComboBox1.Items.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'").Replace("libs/", ""))))
                                     End If
                                 Next
-                                DependsOn = "@DependsOn(values={""" + String.Join(""", """, dependenciesList) + """}"
+                                DependsOn = "@DependsOn(values={""" + String.Join(""", """, dependenciesList) + """})"
                             Next
                         End If
                     End If
@@ -374,6 +374,8 @@ Public Class Form1
             Else
                 If javafiles.Count = 1 Then
                     ComboBox2.Invoke(New MethodInvoker(Sub() ComboBox2.Text = javafiles(0)))
+                Else
+                    ComboBox2.Invoke(New MethodInvoker(Sub() ComboBox2.Text = ""))
                 End If
             End If
         End If
@@ -885,15 +887,22 @@ Public Class Form1
     End Sub
     Private Sub extractMethod(szContent As String)
         codeDictionary.Clear()
+        ComboBox3.Invoke(New MethodInvoker(Sub() ComboBox3.Items.Clear()))
+        ComboBox3.Invoke(New MethodInvoker(Sub() ComboBox3.Text = ""))
+
         Dim fileContent As String = File.ReadAllText(szContent)
         Dim matches As MatchCollection = Regex.Matches(fileContent, "((public|private|protected|static|final|native|synchronized|abstract|transient)+\s)+[\$_\w\<\>\w\s\[\]]*\s+[\$_\w]+\([^\)]*\)?\s*(?<method_body>\{(?>[^{}]+|\{(?<n>)|}(?<-n>))*(?(n)(?!))})", RegexOptions.Multiline Or RegexOptions.IgnoreCase)
         'Dim matches As MatchCollection = Regex.Matches(fileContent, "((public|private|protected|static|final|native|synchronized|abstract|transient)+\s)+[\$_\w\<\>\w\s\[\]]*\s+[\$_\w]+\([^\)]*\)?\s*", RegexOptions.Multiline Or RegexOptions.IgnoreCase) '\b(public|private|internal|protected|void)\s*s*\b(async)?\s*\b(static|virtual|abstract|void)?\s*\b(async)?\b(Task)?\s*[a-zA-Z]*(?<method>\s[A-Za-z_][A-Za-z_0-9]*\s*)\((([a-zA-Z\[\]\<\>]*\s*[A-Za-z_][A-Za-z_0-9]*\s*)[,]?\s*)+\)
         For Each match As Match In matches
             Dim methodName = match.Value.Trim.Split({vbCrLf, vbLf, vbCr}, StringSplitOptions.RemoveEmptyEntries)(0).Replace("{", "")
-            codeDictionary.Add(methodName.Trim, match.Value)
             Try
-                ComboBox3.Invoke(New MethodInvoker(Sub() ComboBox3.Items.Add(methodName.Trim)))
-                ComboBox3.Invoke(New MethodInvoker(Sub() ComboBox3.SelectedIndex = 0))
+                codeDictionary.Add(methodName.Trim, match.Value)
+                Try
+                    ComboBox3.Invoke(New MethodInvoker(Sub() ComboBox3.Items.Add(methodName.Trim)))
+                    ComboBox3.Invoke(New MethodInvoker(Sub() ComboBox3.SelectedIndex = 0))
+                Catch ex As Exception
+
+                End Try
             Catch ex As Exception
 
             End Try
@@ -908,24 +917,101 @@ Public Class Form1
         Catch ex As Exception
 
         End Try
-
     End Sub
 
     Private Sub ListView1_ColumnClick(ByVal sender As Object, ByVal e As System.Windows.Forms.ColumnClickEventArgs) Handles ListView1.ColumnClick
         On Error Resume Next
         ListView1.ListViewItemSorter = New ListViewItemComparerByString(e.Column)
     End Sub
+    Private Sub btn_listener_Click(sender As Object, e As EventArgs) Handles btn_listener.Click
+        If ComboBox2.Text = "" Then Return
+        ComboBox3.Items.Clear()
+        RichTextBox1.Text = ""
+        Dim codePath = ComboBox2.Text
+        Dim newthread As New Thread(Sub()
+                                        parsingListener(codePath)
+                                    End Sub)
+        newthread.Start()
+    End Sub
+    Private Sub parsingListener(szContent As String)
+        codeDictionary.Clear()
+        ComboBox3.Invoke(New MethodInvoker(Sub() ComboBox3.Items.Clear()))
+        ComboBox3.Invoke(New MethodInvoker(Sub() ComboBox3.Text = ""))
+        Dim fileContent As String = File.ReadAllText(szContent)
+        Dim matches As MatchCollection = Regex.Matches(fileContent, ".*(Listener).[\s\S]*?(?=}\);)", RegexOptions.Multiline Or RegexOptions.IgnoreCase)
+        For Each match As Match In matches
+            Dim methodName = match.Value.Trim.Split({vbCrLf, vbLf, vbCr}, StringSplitOptions.RemoveEmptyEntries)(0).Replace("{", "")
+            Try
+                codeDictionary.Add(methodName.Trim, match.Value)
+                Try
+                    ComboBox3.Invoke(New MethodInvoker(Sub() ComboBox3.Items.Add(methodName.Trim)))
+                    ComboBox3.Invoke(New MethodInvoker(Sub() ComboBox3.SelectedIndex = 0))
+                Catch ex As Exception
 
+                End Try
+            Catch ex As Exception
+
+            End Try
+
+        Next
+    End Sub
     Private Sub btn_Wrapper_Click(sender As Object, e As EventArgs) Handles btn_Wrapper.Click
-
+        If ComboBox2.Text = "" Then Return
+        Dim wrapperText = ""
+        If Directory.Exists(ProjectPath + "\libs") Then
+            Dim filePaths() As String = Directory.GetFiles(TextBox1.Text, "*.*", SearchOption.TopDirectoryOnly).Where(Function(f) New List(Of String) From {".jar", ".aar"}.IndexOf(Path.GetExtension(f)) >= 0).ToArray()
+            Dim DependFils = """" + String.Join(""",""", filePaths) + """"
+            DependsOn.Insert(DependsOn.LastIndexOf("}") - 1, DependFils)
+            Debug.Print(DependsOn)
+        End If
+        Dim fileContent As String = File.ReadAllText(ComboBox2.Text)
+        Dim importList = Regex.Matches(fileContent, "import .*?(?=;)", RegexOptions.Multiline Or RegexOptions.IgnoreCase).Cast(Of Match)().Select(Function(m) m.Value).ToList()
+        Dim className As String = New Regex("(((internal)|(public)|(private)|(protected)|(sealed)|(abstract)|(static))?[\s\r\n\t]+){0,2}class[\s\S]+?(?={)").Match(fileContent).Value.Trim '.*?\sclass\s[\S\s]*?(?={)
+        Debug.Print(className)
+        If className.Contains("extends View") Or className.Contains("extends Activity") = False AndAlso className.Contains("AppCompatActivity") = False Then
+            If fileContent.Contains("OnCheckedChangeListener") Then
+                wrapperText = My.Resources.ViewWrapper1
+            Else
+                wrapperText = My.Resources.ViewWrapper2
+            End If
+            Dim viewName = New Regex("(?<=class\s{1,}).*?(?=\s)").Match(className).Value.Trim
+            wrapperText = wrapperText.Replace("LibraryName", Path.GetFileName(ProjectPath))
+            wrapperText = wrapperText.Replace("ViewName", viewName)
+            wrapperText.Insert(wrapperText.IndexOf("public class"), DependsOn + vbNewLine)
+            wrapperText.Insert(wrapperText.IndexOf("@Version"), String.Join(vbNewLine, importList) + vbNewLine + vbNewLine)
+            If Not WrapperList Is Nothing Then
+                If WrapperList.Count > 0 Then
+                    wrapperText.Insert(wrapperText.LastIndexOf("}") - 1, vbNewLine + vbNewLine + String.Join(vbNewLine + vbNewLine, WrapperList) + vbNewLine + vbNewLine)
+                End If
+            End If
+        ElseIf className.Contains("extends Activity") Or className.Contains("extends AppCompatActivity") Then
+            wrapperText = My.Resources.AbsObjectWrapper
+            wrapperText = wrapperText.Replace("LibraryName", Path.GetFileName(ProjectPath))
+            wrapperText = wrapperText.Replace("ActivityName", Path.GetFileName(ComboBox2.Text))
+            wrapperText.Insert(wrapperText.IndexOf("public class"), DependsOn + vbNewLine)
+            wrapperText.Insert(wrapperText.IndexOf("@Version"), String.Join(vbNewLine, importList) + vbNewLine + vbNewLine)
+            If Not WrapperList Is Nothing Then
+                If WrapperList.Count > 0 Then
+                    wrapperText.Insert(wrapperText.LastIndexOf("}") - 1, vbNewLine + vbNewLine + String.Join(vbNewLine + vbNewLine, WrapperList) + vbNewLine + vbNewLine)
+                End If
+            End If
+        Else
+            wrapperText = My.Resources.FunctionWrapper
+            wrapperText = wrapperText.Replace("LibraryName", Path.GetFileName(ProjectPath))
+            wrapperText = wrapperText.Replace("ActivityName", Path.GetFileName(ComboBox2.Text))
+            wrapperText.Insert(wrapperText.IndexOf("public class"), DependsOn + vbNewLine)
+            wrapperText.Insert(wrapperText.IndexOf("@Version"), String.Join(vbNewLine, importList) + vbNewLine + vbNewLine)
+            If Not WrapperList Is Nothing Then
+                If WrapperList.Count > 0 Then
+                    wrapperText.Insert(wrapperText.LastIndexOf("}") - 1, vbNewLine + vbNewLine + String.Join(vbNewLine + vbNewLine, WrapperList) + vbNewLine + vbNewLine)
+                End If
+            End If
+        End If
+        Debug.Print(wrapperText)
+        File.WriteAllText(ProjectPath + "\" + Path.GetFileName(ProjectPath) + "Wrapper.java", wrapperText)
+        File.WriteAllText(Path.GetDirectoryName(ComboBox2.Text) + "\" + Path.GetFileName(ProjectPath) + "Wrapper.java", wrapperText)
     End Sub
 
-    Private Sub Button5_ClickAsync(sender As Object, e As EventArgs) Handles btn_Download.Click
 
-    End Sub
-
-    Private Sub btn_Compile_Click(sender As Object, e As EventArgs) Handles btn_Compile.Click
-
-    End Sub
 End Class
 

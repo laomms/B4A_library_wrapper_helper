@@ -40,7 +40,6 @@ Partial Class Form1
         Me.ComboBox2 = New System.Windows.Forms.ComboBox()
         Me.btn_Download = New System.Windows.Forms.Button()
         Me.btn_Wrapper = New System.Windows.Forms.Button()
-        Me.btn_Compile = New System.Windows.Forms.Button()
         Me.GroupBox2 = New System.Windows.Forms.GroupBox()
         Me.Label3 = New System.Windows.Forms.Label()
         Me.CheckBox_CLASSPATH = New System.Windows.Forms.CheckBox()
@@ -56,6 +55,7 @@ Partial Class Form1
         Me.ContextMenuStrip2 = New System.Windows.Forms.ContextMenuStrip(Me.components)
         Me.WrapperMethodToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.ComboBox3 = New System.Windows.Forms.ComboBox()
+        Me.btn_listener = New System.Windows.Forms.Button()
         Me.GroupBox1.SuspendLayout()
         Me.GroupBox2.SuspendLayout()
         Me.ContextMenuStrip1.SuspendLayout()
@@ -193,29 +193,18 @@ Partial Class Form1
         '
         'btn_Wrapper
         '
-        Me.btn_Wrapper.Enabled = False
-        Me.btn_Wrapper.Location = New System.Drawing.Point(427, 49)
+        Me.btn_Wrapper.Location = New System.Drawing.Point(207, 328)
         Me.btn_Wrapper.Name = "btn_Wrapper"
-        Me.btn_Wrapper.Size = New System.Drawing.Size(68, 28)
+        Me.btn_Wrapper.Size = New System.Drawing.Size(96, 39)
         Me.btn_Wrapper.TabIndex = 13
         Me.btn_Wrapper.Text = "Wrapper"
         Me.btn_Wrapper.UseVisualStyleBackColor = True
         '
-        'btn_Compile
-        '
-        Me.btn_Compile.Enabled = False
-        Me.btn_Compile.Location = New System.Drawing.Point(207, 329)
-        Me.btn_Compile.Name = "btn_Compile"
-        Me.btn_Compile.Size = New System.Drawing.Size(96, 40)
-        Me.btn_Compile.TabIndex = 14
-        Me.btn_Compile.Text = "Compile"
-        Me.btn_Compile.UseVisualStyleBackColor = True
-        '
         'GroupBox2
         '
+        Me.GroupBox2.Controls.Add(Me.btn_listener)
         Me.GroupBox2.Controls.Add(Me.Label3)
         Me.GroupBox2.Controls.Add(Me.btn_Pack)
-        Me.GroupBox2.Controls.Add(Me.btn_Wrapper)
         Me.GroupBox2.Controls.Add(Me.TextBox3)
         Me.GroupBox2.Controls.Add(Me.btn_Download)
         Me.GroupBox2.Controls.Add(Me.Label2)
@@ -339,23 +328,34 @@ Partial Class Form1
         '
         'ComboBox3
         '
+        Me.ComboBox3.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.Suggest
+        Me.ComboBox3.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.ListItems
         Me.ComboBox3.FormattingEnabled = True
         Me.ComboBox3.Location = New System.Drawing.Point(4, 16)
         Me.ComboBox3.Name = "ComboBox3"
         Me.ComboBox3.Size = New System.Drawing.Size(416, 21)
         Me.ComboBox3.TabIndex = 0
         '
+        'btn_listener
+        '
+        Me.btn_listener.Location = New System.Drawing.Point(427, 50)
+        Me.btn_listener.Name = "btn_listener"
+        Me.btn_listener.Size = New System.Drawing.Size(68, 28)
+        Me.btn_listener.TabIndex = 15
+        Me.btn_listener.Text = "listener"
+        Me.btn_listener.UseVisualStyleBackColor = True
+        '
         'Form1
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(954, 379)
+        Me.Controls.Add(Me.btn_Wrapper)
         Me.Controls.Add(Me.GroupBox3)
         Me.Controls.Add(Me.ListView1)
         Me.Controls.Add(Me.CheckBox_CLASSPATH)
         Me.Controls.Add(Me.GroupBox2)
         Me.Controls.Add(Me.CheckBox_MAVEN_HOME)
-        Me.Controls.Add(Me.btn_Compile)
         Me.Controls.Add(Me.GroupBox1)
         Me.Controls.Add(Me.CheckBox_JAVA_HOME)
         Me.Controls.Add(Me.CheckBox_ANDROID_SDK_HOME)
@@ -391,7 +391,6 @@ Partial Class Form1
     Friend WithEvents ComboBox2 As ComboBox
     Friend WithEvents btn_Download As Button
     Friend WithEvents btn_Wrapper As Button
-    Friend WithEvents btn_Compile As Button
     Friend WithEvents GroupBox2 As GroupBox
     Friend WithEvents Label3 As Label
     Friend WithEvents CheckBox_MAVEN_HOME As CheckBox
@@ -407,4 +406,5 @@ Partial Class Form1
     Friend WithEvents AddToRjavaToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents ContextMenuStrip2 As ContextMenuStrip
     Friend WithEvents WrapperMethodToolStripMenuItem As ToolStripMenuItem
+    Friend WithEvents btn_listener As Button
 End Class
