@@ -872,9 +872,9 @@ Public Class Form1
         Dim matches As MatchCollection = Regex.Matches(fileContent, "((public|private|protected|static|final|native|synchronized|abstract|transient)+\s)+[\$_\w\<\>\w\s\[\]]*\s+[\$_\w]+\([^\)]*\)?\s*(?<method_body>\{(?>[^{}]+|\{(?<n>)|}(?<-n>))*(?(n)(?!))})", RegexOptions.Multiline Or RegexOptions.IgnoreCase)
         'Dim matches As MatchCollection = Regex.Matches(fileContent, "((public|private|protected|static|final|native|synchronized|abstract|transient)+\s)+[\$_\w\<\>\w\s\[\]]*\s+[\$_\w]+\([^\)]*\)?\s*", RegexOptions.Multiline Or RegexOptions.IgnoreCase) '\b(public|private|internal|protected|void)\s*s*\b(async)?\s*\b(static|virtual|abstract|void)?\s*\b(async)?\b(Task)?\s*[a-zA-Z]*(?<method>\s[A-Za-z_][A-Za-z_0-9]*\s*)\((([a-zA-Z\[\]\<\>]*\s*[A-Za-z_][A-Za-z_0-9]*\s*)[,]?\s*)+\)
         For Each match As Match In matches
-            Dim methodName = match.Value.Trim.Split({vbCrLf, vbLf, vbCr}, StringSplitOptions.RemoveEmptyEntries)(0)
+            Dim methodName = match.Value.Trim.Split({vbCrLf, vbLf, vbCr}, StringSplitOptions.RemoveEmptyEntries)(0).Replace("{", "")
             codeDictionary.Add(methodName.Trim, match.Value)
-            ComboBox3.Invoke(New MethodInvoker(Sub() ComboBox3.Items.Add(methodName)))
+            ComboBox3.Invoke(New MethodInvoker(Sub() ComboBox3.Items.Add(methodName.Trim)))
             ComboBox3.Invoke(New MethodInvoker(Sub() ComboBox3.SelectedIndex = 0))
         Next
     End Sub
@@ -884,9 +884,6 @@ Public Class Form1
         RichTextBox1.Text = codeDictionary(ComboBox3.Text)
     End Sub
 
-    Private Sub TextBox3_TextChanged(sender As Object, e As EventArgs) Handles TextBox3.TextChanged
-
-    End Sub
 
 
 End Class
