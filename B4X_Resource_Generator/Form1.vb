@@ -165,156 +165,161 @@ Public Class Form1
 
         End Try
         ComboBox2.Text = ""
+        Try
+            If Directory.GetFiles(TextBox1.Text, "*.*", SearchOption.AllDirectories).Where(Function(f) New List(Of String) From {".java"}.IndexOf(Path.GetExtension(f)) >= 0).ToArray().Count = 0 Then Return
+            If Directory.GetFiles(TextBox1.Text, "*.*", SearchOption.AllDirectories).Where(Function(f) New List(Of String) From {".xml"}.IndexOf(Path.GetExtension(f)) >= 0).ToArray().Count = 0 Then Return
+            Dim directories As List(Of String) = (From x In Directory.EnumerateDirectories(TextBox1.Text, "*", SearchOption.AllDirectories) Select x.Substring(TextBox1.Text.Length)).ToList()
+            Dim srcPath As String = directories.Where(Function(x) x.Contains("src") And x.Contains("res")).FirstOrDefault()
+            Dim buildFiles() As String = System.IO.Directory.GetFiles(TextBox1.Text, "*build.gradle*", SearchOption.AllDirectories)
+            Dim buildFilePath As String = ""
+            Dim dependenciesList As New List(Of String)
+            If buildFiles.Count > 0 Then
+                For Each buildFile In buildFiles
+                    Dim fileContent As String = File.ReadAllText(buildFile)
+                    Dim lines = File.ReadAllLines(buildFile).ToList()
+                    Dim list As List(Of String) = lines.Where(Function(x) x.Contains("minSdkVersion")).Select(Function(x) x.Trim.Replace("minSdkVersion", "").Trim).ToList()
+                    If list.Count > 0 Then
+                        If fileContent.Contains("com.android.library") Then
+                            buildFilePath = buildFile
+                            ComboBox1.Items.Clear()
+                            ComboBox1.Text = ""
+                            Try
+                                If ComboBox2.Items.Count > 0 Then ComboBox2.Items.Clear()
+                            Catch ex As Exception
 
-        If Directory.GetFiles(TextBox1.Text, "*.*", SearchOption.AllDirectories).Where(Function(f) New List(Of String) From {".java"}.IndexOf(Path.GetExtension(f)) >= 0).ToArray().Count = 0 Then Return
-        If Directory.GetFiles(TextBox1.Text, "*.*", SearchOption.AllDirectories).Where(Function(f) New List(Of String) From {".xml"}.IndexOf(Path.GetExtension(f)) >= 0).ToArray().Count = 0 Then Return
-        Dim directories As List(Of String) = (From x In Directory.EnumerateDirectories(TextBox1.Text, "*", SearchOption.AllDirectories) Select x.Substring(TextBox1.Text.Length)).ToList()
-        Dim srcPath As String = directories.Where(Function(x) x.Contains("src") And x.Contains("res")).FirstOrDefault()
-        Dim buildFiles() As String = System.IO.Directory.GetFiles(TextBox1.Text, "*build.gradle*", SearchOption.AllDirectories)
-        Dim buildFilePath As String = ""
-        Dim dependenciesList As New List(Of String)
-        If buildFiles.Count > 0 Then
-            For Each buildFile In buildFiles
-                Dim fileContent As String = File.ReadAllText(buildFile)
-                Dim lines = File.ReadAllLines(buildFile).ToList()
-                Dim list As List(Of String) = lines.Where(Function(x) x.Contains("minSdkVersion")).Select(Function(x) x.Trim.Replace("minSdkVersion", "").Trim).ToList()
-                If list.Count > 0 Then
-                    If fileContent.Contains("com.android.library") Then
-                        buildFilePath = buildFile
-                        ComboBox1.Items.Clear()
-                        ComboBox1.Text = ""
-                        Try
-                            If ComboBox2.Items.Count > 0 Then ComboBox2.Items.Clear()
-                        Catch ex As Exception
-
-                        End Try
-                        ComboBox2.Text = ""
-                        dependenciesList.Clear()
-                        minSdkVersion = list(0)
-                        list = lines.Where(Function(x) x.Contains("targetSdkVersion")).Select(Function(x) x.Trim.Replace("targetSdkVersion", "").Trim).ToList()
-                        If list.Count > 0 Then targetSdkVersion = list(0)
-                        Dim matches As MatchCollection = Regex.Matches(fileContent, "dependencies.[\s\S]*?}", RegexOptions.Multiline Or RegexOptions.IgnoreCase)
-                        For Each match As Match In matches
-                            For Each line In match.Value.Split({vbCrLf, vbLf, vbCr}, StringSplitOptions.RemoveEmptyEntries)
-                                If line.Contains("implementation") And line.Contains("*.jar") = False And line.Contains("libs/") = False Then
-                                    dependenciesList.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'"))
-                                    ComboBox1.Invoke(New MethodInvoker(Sub() ComboBox1.Items.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'"))))
-                                ElseIf line.Contains("compile") And line.Contains("*.jar") = False And line.Contains("libs/") = False Then
-                                    dependenciesList.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'"))
-                                    ComboBox1.Invoke(New MethodInvoker(Sub() ComboBox1.Items.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'"))))
-                                ElseIf line.Contains("androidTestImplementation") And line.Contains("*.jar") = False And line.Contains("libs/") = False Then
-                                    dependenciesList.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'"))
-                                    ComboBox1.Invoke(New MethodInvoker(Sub() ComboBox1.Items.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'"))))
-                                ElseIf line.Contains("testImplementation") And line.Contains("*.jar") = False And line.Contains("libs/") = False Then
-                                    dependenciesList.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'"))
-                                    ComboBox1.Invoke(New MethodInvoker(Sub() ComboBox1.Items.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'"))))
-                                ElseIf line.Contains("implementation") And line.Contains("*.jar") = False And line.Contains("libs/") Then
-                                    dependenciesList.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'"))
-                                    ComboBox1.Invoke(New MethodInvoker(Sub() ComboBox1.Items.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'").Replace("libs/", ""))))
-                                End If
+                            End Try
+                            ComboBox2.Text = ""
+                            dependenciesList.Clear()
+                            minSdkVersion = list(0)
+                            list = lines.Where(Function(x) x.Contains("targetSdkVersion")).Select(Function(x) x.Trim.Replace("targetSdkVersion", "").Trim).ToList()
+                            If list.Count > 0 Then targetSdkVersion = list(0)
+                            Dim matches As MatchCollection = Regex.Matches(fileContent, "dependencies.[\s\S]*?}", RegexOptions.Multiline Or RegexOptions.IgnoreCase)
+                            For Each match As Match In matches
+                                For Each line In match.Value.Split({vbCrLf, vbLf, vbCr}, StringSplitOptions.RemoveEmptyEntries)
+                                    If line.Contains("implementation") And line.Contains("*.jar") = False And line.Contains("libs/") = False Then
+                                        dependenciesList.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'"))
+                                        ComboBox1.Invoke(New MethodInvoker(Sub() ComboBox1.Items.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'"))))
+                                    ElseIf line.Contains("compile") And line.Contains("*.jar") = False And line.Contains("libs/") = False Then
+                                        dependenciesList.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'"))
+                                        ComboBox1.Invoke(New MethodInvoker(Sub() ComboBox1.Items.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'"))))
+                                    ElseIf line.Contains("androidTestImplementation") And line.Contains("*.jar") = False And line.Contains("libs/") = False Then
+                                        dependenciesList.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'"))
+                                        ComboBox1.Invoke(New MethodInvoker(Sub() ComboBox1.Items.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'"))))
+                                    ElseIf line.Contains("testImplementation") And line.Contains("*.jar") = False And line.Contains("libs/") = False Then
+                                        dependenciesList.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'"))
+                                        ComboBox1.Invoke(New MethodInvoker(Sub() ComboBox1.Items.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'"))))
+                                    ElseIf line.Contains("implementation") And line.Contains("*.jar") = False And line.Contains("libs/") Then
+                                        dependenciesList.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'"))
+                                        ComboBox1.Invoke(New MethodInvoker(Sub() ComboBox1.Items.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'").Replace("libs/", ""))))
+                                    End If
+                                Next
                             Next
-                        Next
-                        Exit For
-                    ElseIf fileContent.Contains("com.android.application") Then
-                        buildFilePath = buildFile
-                        minSdkVersion = list(0)
-                        list = lines.Where(Function(x) x.Contains("targetSdkVersion")).Select(Function(x) x.Trim.Replace("targetSdkVersion", "").Trim).ToList()
-                        If list.Count > 0 Then targetSdkVersion = list(0)
-                        Dim matches As MatchCollection = Regex.Matches(fileContent, "dependencies.[\s\S]*?}", RegexOptions.Multiline Or RegexOptions.IgnoreCase)
-                        For Each match As Match In matches
-                            For Each line In match.Value.Split({vbCrLf, vbLf, vbCr}, StringSplitOptions.RemoveEmptyEntries)
-                                If line.Contains("implementation") And line.Contains("*.jar") = False And line.Contains("libs/") = False Then
-                                    dependenciesList.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'"))
-                                    ComboBox1.Invoke(New MethodInvoker(Sub() ComboBox1.Items.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'"))))
-                                ElseIf line.Contains("compile") And line.Contains("*.jar") = False And line.Contains("libs/") = False Then
-                                    dependenciesList.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'"))
-                                    ComboBox1.Invoke(New MethodInvoker(Sub() ComboBox1.Items.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'"))))
-                                ElseIf line.Contains("androidTestImplementation") And line.Contains("*.jar") = False And line.Contains("libs/") = False Then
-                                    dependenciesList.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'"))
-                                    ComboBox1.Invoke(New MethodInvoker(Sub() ComboBox1.Items.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'"))))
-                                ElseIf line.Contains("testImplementation") And line.Contains("*.jar") = False And line.Contains("libs/") = False Then
-                                    dependenciesList.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'"))
-                                    ComboBox1.Invoke(New MethodInvoker(Sub() ComboBox1.Items.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'"))))
-                                ElseIf line.Contains("implementation") And line.Contains("*.jar") = False And line.Contains("libs/") Then
-                                    dependenciesList.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'"))
-                                    ComboBox1.Invoke(New MethodInvoker(Sub() ComboBox1.Items.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'").Replace("libs/", ""))))
-                                End If
+                            Exit For
+                        ElseIf fileContent.Contains("com.android.application") Then
+                            buildFilePath = buildFile
+                            minSdkVersion = list(0)
+                            list = lines.Where(Function(x) x.Contains("targetSdkVersion")).Select(Function(x) x.Trim.Replace("targetSdkVersion", "").Trim).ToList()
+                            If list.Count > 0 Then targetSdkVersion = list(0)
+                            Dim matches As MatchCollection = Regex.Matches(fileContent, "dependencies.[\s\S]*?}", RegexOptions.Multiline Or RegexOptions.IgnoreCase)
+                            For Each match As Match In matches
+                                For Each line In match.Value.Split({vbCrLf, vbLf, vbCr}, StringSplitOptions.RemoveEmptyEntries)
+                                    If line.Contains("implementation") And line.Contains("*.jar") = False And line.Contains("libs/") = False Then
+                                        dependenciesList.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'"))
+                                        ComboBox1.Invoke(New MethodInvoker(Sub() ComboBox1.Items.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'"))))
+                                    ElseIf line.Contains("compile") And line.Contains("*.jar") = False And line.Contains("libs/") = False Then
+                                        dependenciesList.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'"))
+                                        ComboBox1.Invoke(New MethodInvoker(Sub() ComboBox1.Items.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'"))))
+                                    ElseIf line.Contains("androidTestImplementation") And line.Contains("*.jar") = False And line.Contains("libs/") = False Then
+                                        dependenciesList.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'"))
+                                        ComboBox1.Invoke(New MethodInvoker(Sub() ComboBox1.Items.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'"))))
+                                    ElseIf line.Contains("testImplementation") And line.Contains("*.jar") = False And line.Contains("libs/") = False Then
+                                        dependenciesList.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'"))
+                                        ComboBox1.Invoke(New MethodInvoker(Sub() ComboBox1.Items.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'"))))
+                                    ElseIf line.Contains("implementation") And line.Contains("*.jar") = False And line.Contains("libs/") Then
+                                        dependenciesList.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'"))
+                                        ComboBox1.Invoke(New MethodInvoker(Sub() ComboBox1.Items.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'").Replace("libs/", ""))))
+                                    End If
+                                Next
                             Next
-                        Next
+                        End If
                     End If
-                End If
-            Next
-        End If
-        If ComboBox1.Items.Count > 0 Then ComboBox1.Invoke(New MethodInvoker(Sub() ComboBox1.SelectedIndex = 0))
-        Dim matchFiles() As String
-        If buildFilePath <> "" Then
-            matchFiles = Directory.GetFiles(Path.GetDirectoryName(buildFilePath), "*AndroidManifest.xml*", SearchOption.AllDirectories)
-        Else
-            matchFiles = Directory.GetFiles(TextBox1.Text, "*AndroidManifest.xml*", SearchOption.AllDirectories)
-        End If
-        If matchFiles.Count > 0 Then
-            Dim ManifestPath As String = matchFiles.Where(Function(x) x.Contains("src")).FirstOrDefault()
-            If Not ManifestPath Is Nothing Then
-                Dim lines = File.ReadAllLines(ManifestPath).ToList()
-                Dim list As List(Of String) = lines.Where(Function(x) x.Contains("package")).Select(Function(x) New Regex("(?<=package=\"").[\s\S]*?(?=[\p{P}\p{S}-[._]])").Match(x).Value.Trim).ToList()
-                If list.Count > 0 Then
-                    packageName = list(0)
-                    If packageName.Contains(".") Then
-                        Dim projectName As String = packageName.Split(".")(packageName.Split(".").Count - 1)
-                        ProjectPath = TextBox2.Text + "\" + projectName + "lib"
-                    Else
-                        Dim projectName As String = packageName
-                        ProjectPath = TextBox2.Text + "\" + projectName + "lib"
+                Next
+            End If
+            If ComboBox1.Items.Count > 0 Then ComboBox1.Invoke(New MethodInvoker(Sub() ComboBox1.SelectedIndex = 0))
+            Dim matchFiles() As String
+            If buildFilePath <> "" Then
+                matchFiles = Directory.GetFiles(Path.GetDirectoryName(buildFilePath), "*AndroidManifest.xml*", SearchOption.AllDirectories)
+            Else
+                matchFiles = Directory.GetFiles(TextBox1.Text, "*AndroidManifest.xml*", SearchOption.AllDirectories)
+            End If
+            If matchFiles.Count > 0 Then
+                Dim ManifestPath As String = matchFiles.Where(Function(x) x.Contains("src")).FirstOrDefault()
+                If Not ManifestPath Is Nothing Then
+                    Dim lines = File.ReadAllLines(ManifestPath).ToList()
+                    Dim list As List(Of String) = lines.Where(Function(x) x.Contains("package")).Select(Function(x) New Regex("(?<=package=\"").[\s\S]*?(?=[\p{P}\p{S}-[._]])").Match(x).Value.Trim).ToList()
+                    If list.Count > 0 Then
+                        packageName = list(0)
+                        If packageName.Contains(".") Then
+                            Dim projectName As String = packageName.Split(".")(packageName.Split(".").Count - 1)
+                            ProjectPath = TextBox2.Text + "\" + projectName + "lib"
+                        Else
+                            Dim projectName As String = packageName
+                            ProjectPath = TextBox2.Text + "\" + projectName + "lib"
+                        End If
+                        If Not Directory.Exists(ProjectPath) Then
+                            Directory.CreateDirectory(ProjectPath)
+                            'Else
+                            '    For Each subDirectory In New DirectoryInfo(ProjectPath).GetDirectories
+                            '        subDirectory.Delete(True)
+                            '    Next subDirectory
+                            '    Directory.Delete(ProjectPath)
+                            '    Directory.CreateDirectory(ProjectPath)
+                        End If
                     End If
-                    If Not Directory.Exists(ProjectPath) Then
-                        Directory.CreateDirectory(ProjectPath)
-                        'Else
-                        '    For Each subDirectory In New DirectoryInfo(ProjectPath).GetDirectories
-                        '        subDirectory.Delete(True)
-                        '    Next subDirectory
-                        '    Directory.Delete(ProjectPath)
-                        '    Directory.CreateDirectory(ProjectPath)
+                    If ManifestPath.Contains("src") Then
+                        srcPath = ManifestPath.Substring(0, ManifestPath.IndexOf("src") + 3)
+                        FileIO.FileSystem.CopyDirectory(srcPath, ProjectPath + "\src", True)
+                        If Directory.Exists(srcPath.Replace("src", "libs")) Then
+                            FileIO.FileSystem.CopyDirectory(srcPath.Replace("src", "libs"), ProjectPath + "\libs", True)
+                        Else
+                            Directory.CreateDirectory(ProjectPath + "\libs")
+                        End If
+                        'Button7.Invoke(New MethodInvoker(Sub() Button7.Enabled = True))
                     End If
-                End If
-                If ManifestPath.Contains("src") Then
-                    srcPath = ManifestPath.Substring(0, ManifestPath.IndexOf("src") + 3)
-                    FileIO.FileSystem.CopyDirectory(srcPath, ProjectPath + "\src", True)
-                    If Directory.Exists(srcPath.Replace("src", "libs")) Then
-                        FileIO.FileSystem.CopyDirectory(srcPath.Replace("src", "libs"), ProjectPath + "\libs", True)
-                    Else
-                        Directory.CreateDirectory(ProjectPath + "\libs")
+                    Dim newthread As New Thread(Sub()
+                                                    extractResource(ManifestPath)
+                                                End Sub)
+                    newthread.Start()
+                    javaPath = Path.GetDirectoryName(ManifestPath) + "\java\" + packageName.Replace(".", "\")
+                    RPath = javaPath.Replace(javaPath.Substring(0, javaPath.IndexOf("src")), ProjectPath + "\")
+                    If BackgroundWorker2.IsBusy = False Then
+                        Dim arguments As New List(Of String)
+                        arguments.Add(ManifestPath)
+                        BackgroundWorker2.RunWorkerAsync(arguments)
                     End If
-                    'Button7.Invoke(New MethodInvoker(Sub() Button7.Enabled = True))
-                End If
-                Dim newthread As New Thread(Sub()
-                                                extractResource(ManifestPath)
-                                            End Sub)
-                newthread.Start()
-                javaPath = Path.GetDirectoryName(ManifestPath) + "\java\" + packageName.Replace(".", "\")
-                RPath = javaPath.Replace(javaPath.Substring(0, javaPath.IndexOf("src")), ProjectPath + "\")
-                If BackgroundWorker2.IsBusy = False Then
-                    Dim arguments As New List(Of String)
-                    arguments.Add(ManifestPath)
-                    BackgroundWorker2.RunWorkerAsync(arguments)
-                End If
 
+                End If
             End If
-        End If
-        Dim javafiles() As String
-        If buildFilePath <> "" Then
-            javafiles = Directory.GetFiles(Path.GetDirectoryName(buildFilePath), "*.*", SearchOption.AllDirectories).Where(Function(f) New List(Of String) From {".kt", ".java"}.IndexOf(Path.GetExtension(f)) >= 0).ToArray()
-        Else
-            javafiles = Directory.GetFiles(TextBox1.Text, "*.*", SearchOption.AllDirectories).Where(Function(f) New List(Of String) From {".kt", ".java"}.IndexOf(Path.GetExtension(f)) >= 0).ToArray()
-        End If
-        If javafiles.Length > 0 Then
-            If BackgroundWorker1.IsBusy = False Then
-                Dim arguments As New List(Of Object)
-                arguments.Add(javafiles)
-                BackgroundWorker1.RunWorkerAsync(arguments)
+            Dim javafiles() As String
+            If buildFilePath <> "" Then
+                javafiles = Directory.GetFiles(Path.GetDirectoryName(buildFilePath), "*.*", SearchOption.AllDirectories).Where(Function(f) New List(Of String) From {".kt", ".java"}.IndexOf(Path.GetExtension(f)) >= 0).ToArray()
+            Else
+                javafiles = Directory.GetFiles(TextBox1.Text, "*.*", SearchOption.AllDirectories).Where(Function(f) New List(Of String) From {".kt", ".java"}.IndexOf(Path.GetExtension(f)) >= 0).ToArray()
             End If
-        Else
-            MsgBox("No java source folder found", vbInformation + vbMsgBoxSetForeground, "Error") : Return
-        End If
+            If javafiles.Length > 0 Then
+                If BackgroundWorker1.IsBusy = False Then
+                    Dim arguments As New List(Of Object)
+                    arguments.Add(javafiles)
+                    BackgroundWorker1.RunWorkerAsync(arguments)
+                End If
+            Else
+                MsgBox("No java source folder found", vbInformation + vbMsgBoxSetForeground, "Error") : Return
+            End If
+        Catch ex As Exception
+
+        End Try
+
+
 
     End Sub
 
