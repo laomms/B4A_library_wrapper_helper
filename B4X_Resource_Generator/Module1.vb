@@ -3,6 +3,7 @@ Imports System.Xml
 
 Module Module1
     Public ItemsDictionary As New Dictionary(Of String, String)
+    Public codeDictionary As New Dictionary(Of String, String)
     Public SelectItem As String
     Public downloadPath As String
     Public needSelect As Boolean = False

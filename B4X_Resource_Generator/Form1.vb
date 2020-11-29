@@ -87,10 +87,10 @@ Public Class Form1
                 End If
             End Using
         Next
-        If SysEnvironment.CheckSysEnvironmentExist("JAVA_HOME") Then CheckBox1.Checked = True : btn_JAVA_HOME.Enabled = False
-        If SysEnvironment.CheckSysEnvironmentExist("ANDROID_SDK_HOME") Then CheckBox2.Checked = True : btn_ANDROID_SDK_HOME.Enabled = False
-        If SysEnvironment.CheckSysEnvironmentExist("MAVEN_HOME") Then CheckBox3.Checked = True : btn_MAVEN_HOME.Enabled = False
-        If SysEnvironment.CheckSysEnvironmentExist("CLASSPATH") Then CheckBox4.Checked = True : btn_CLASSPATH.Enabled = False
+        If SysEnvironment.CheckSysEnvironmentExist("JAVA_HOME") Then CheckBox_JAVA_HOME.Checked = True : CheckBox_JAVA_HOME.Enabled = False
+        If SysEnvironment.CheckSysEnvironmentExist("ANDROID_SDK_HOME") Then CheckBox_ANDROID_SDK_HOME.Checked = True : CheckBox_ANDROID_SDK_HOME.Enabled = False
+        If SysEnvironment.CheckSysEnvironmentExist("MAVEN_HOME") Then CheckBox_MAVEN_HOME.Checked = True : CheckBox_MAVEN_HOME.Enabled = False
+        If SysEnvironment.CheckSysEnvironmentExist("CLASSPATH") Then CheckBox_CLASSPATH.Checked = True : CheckBox_CLASSPATH.Enabled = False
 
         With ListView1
             .Items.Clear()
@@ -98,10 +98,9 @@ Public Class Form1
             .View = View.Details
             .FullRowSelect = True
             .Columns.Add("id", 0, HorizontalAlignment.Center)
-            .Columns.Add("view type", 100, HorizontalAlignment.Center)
+            .Columns.Add("view type", 80, HorizontalAlignment.Center)
             .Columns.Add("view name", 100, HorizontalAlignment.Center)
-            .Columns.Add("other", 150, HorizontalAlignment.Center)
-            '.Columns.Add("other", ListView1.Width - 100 - 100 - 100 - 5, HorizontalAlignment.Left)
+            .Columns.Add("other", ListView1.Width - 80 - 100 - 5, HorizontalAlignment.Center)
         End With
 
     End Sub
@@ -162,6 +161,9 @@ Public Class Form1
 
         End Try
         ComboBox2.Text = ""
+
+        If Directory.GetFiles(TextBox1.Text, "*.*", SearchOption.AllDirectories).Where(Function(f) New List(Of String) From {".java"}.IndexOf(Path.GetExtension(f)) >= 0).ToArray().Count = 0 Then Return
+        If Directory.GetFiles(TextBox1.Text, "*.*", SearchOption.AllDirectories).Where(Function(f) New List(Of String) From {".xml"}.IndexOf(Path.GetExtension(f)) >= 0).ToArray().Count = 0 Then Return
         Dim directories As List(Of String) = (From x In Directory.EnumerateDirectories(TextBox1.Text, "*", SearchOption.AllDirectories) Select x.Substring(TextBox1.Text.Length)).ToList()
         Dim srcPath As String = directories.Where(Function(x) x.Contains("src") And x.Contains("res")).FirstOrDefault()
         Dim buildFiles() As String = System.IO.Directory.GetFiles(TextBox1.Text, "*build.gradle*", SearchOption.AllDirectories)
@@ -768,75 +770,119 @@ Public Class Form1
         Me.Invoke(New MethodInvoker(Sub() ListView1.Items.AddRange(itemlist.Select(Function(row, index) New ListViewItem({index.ToString()}.Concat(row).ToArray())).ToArray())))
     End Sub
 
-    Private Sub Button6_Click(sender As Object, e As EventArgs) Handles Button6.Click
-
+    Private Sub CheckBox_JAVA_HOME_CheckedChanged(sender As Object, e As EventArgs) Handles CheckBox_JAVA_HOME.CheckedChanged
+        If CheckBox_JAVA_HOME.Checked = False Then
+            Dim folderDlg As FolderBrowserDialog = New FolderBrowserDialog()
+            folderDlg.ShowNewFolderButton = True
+            Dim result As DialogResult = folderDlg.ShowDialog()
+            If result = DialogResult.OK Then
+                Dim path = folderDlg.SelectedPath
+                If MessageBox.Show(path + vbNewLine + " for JAVA environment! Please confirm again!", "Confirm", MessageBoxButtons.YesNo, MessageBoxIcon.Asterisk) = DialogResult.Yes Then
+                    SysEnvironment.SetSysEnvironment("JAVA_HOME", path)
+                    SysEnvironment.SetPathAfter("%JAVA_HOME%\bin")
+                    SysEnvironment.SetPathAfter("%JAVA_HOME%\jre\bin")
+                    CheckBox_JAVA_HOME.Checked = True
+                    CheckBox_JAVA_HOME.Enabled = False
+                    MsgBox("The JAVA_HOME environment variables have been set, please restart the system!", vbInformation + vbMsgBoxSetForeground, "finished")
+                End If
+            End If
+        End If
     End Sub
-
-    Private Sub btn_ANDROID_SDK_HOME_Click(sender As Object, e As EventArgs) Handles btn_ANDROID_SDK_HOME.Click
-        Dim folderDlg As FolderBrowserDialog = New FolderBrowserDialog()
-        folderDlg.ShowNewFolderButton = True
-        Dim result As DialogResult = folderDlg.ShowDialog()
-        If result = DialogResult.OK Then
-            Dim path = folderDlg.SelectedPath
-            If MessageBox.Show(path + vbNewLine + " for ANDROID_SDK environment! Please confirm again!", "Confirm", MessageBoxButtons.YesNo, MessageBoxIcon.Asterisk) = DialogResult.Yes Then
-                SysEnvironment.SetSysEnvironment("ANDROID_SDK_HOME", path)
-                SysEnvironment.SetPathAfter("%ANDROID_SDK_HOME%\tools")
-                SysEnvironment.SetPathAfter("%ANDROID_SDK_HOME%\platform-tools")
-                CheckBox2.Checked = True
-                btn_ANDROID_SDK_HOME.Enabled = False
-                MsgBox("The ANDROID_SDK_HOME environment variables have been set, please restart the system!", vbInformation + vbMsgBoxSetForeground, "finished")
+    Private Sub CheckBox_ANDROID_SDK_HOME_CheckedChanged(sender As Object, e As EventArgs) Handles CheckBox_ANDROID_SDK_HOME.CheckedChanged
+        If CheckBox_ANDROID_SDK_HOME.Checked = False Then
+            Dim folderDlg As FolderBrowserDialog = New FolderBrowserDialog()
+            folderDlg.ShowNewFolderButton = True
+            Dim result As DialogResult = folderDlg.ShowDialog()
+            If result = DialogResult.OK Then
+                Dim path = folderDlg.SelectedPath
+                If MessageBox.Show(path + vbNewLine + " for ANDROID_SDK environment! Please confirm again!", "Confirm", MessageBoxButtons.YesNo, MessageBoxIcon.Asterisk) = DialogResult.Yes Then
+                    SysEnvironment.SetSysEnvironment("ANDROID_SDK_HOME", path)
+                    SysEnvironment.SetPathAfter("%ANDROID_SDK_HOME%\tools")
+                    SysEnvironment.SetPathAfter("%ANDROID_SDK_HOME%\platform-tools")
+                    CheckBox_ANDROID_SDK_HOME.Checked = True
+                    CheckBox_ANDROID_SDK_HOME.Enabled = False
+                    MsgBox("The ANDROID_SDK_HOME environment variables have been set, please restart the system!", vbInformation + vbMsgBoxSetForeground, "finished")
+                End If
+            End If
+        End If
+    End Sub
+    Private Sub CheckBox_CLASSPATH_CheckedChanged(sender As Object, e As EventArgs) Handles CheckBox_CLASSPATH.CheckedChanged
+        If CheckBox_CLASSPATH.Checked = False Then
+            Dim folderDlg As FolderBrowserDialog = New FolderBrowserDialog()
+            folderDlg.ShowNewFolderButton = True
+            Dim result As DialogResult = folderDlg.ShowDialog()
+            If result = DialogResult.OK Then
+                Dim path = folderDlg.SelectedPath
+                If MessageBox.Show(path + vbNewLine + " for CLASSPATH environment! Please confirm again!", "Confirm", MessageBoxButtons.YesNo, MessageBoxIcon.Asterisk) = DialogResult.Yes Then
+                    SysEnvironment.SetSysEnvironment("CLASSPATH", path)
+                    SysEnvironment.SetPathAfter(".;%JAVA_HOME%\lib\dt.jar;%JAVA_HOME%\lib\tools.jar;")
+                    CheckBox_MAVEN_HOME.Checked = True
+                    CheckBox_CLASSPATH.Enabled = False
+                    MsgBox("The MAVEN_HOME environment variables have been set, please restart the system!", vbInformation + vbMsgBoxSetForeground, "finished")
+                End If
+            End If
+        End If
+    End Sub
+    Private Sub CheckBox_MAVEN_HOME_CheckedChanged(sender As Object, e As EventArgs) Handles CheckBox_MAVEN_HOME.CheckedChanged
+        If CheckBox_MAVEN_HOME.Checked = False Then
+            Dim folderDlg As FolderBrowserDialog = New FolderBrowserDialog()
+            folderDlg.ShowNewFolderButton = True
+            Dim result As DialogResult = folderDlg.ShowDialog()
+            If result = DialogResult.OK Then
+                Dim path = folderDlg.SelectedPath
+                If MessageBox.Show(path + vbNewLine + " for MAVEN environment! Please confirm again!", "Confirm", MessageBoxButtons.YesNo, MessageBoxIcon.Asterisk) = DialogResult.Yes Then
+                    SysEnvironment.SetSysEnvironment("MAVEN_HOME", path)
+                    SysEnvironment.SetPathAfter("%MAVEN_HOME%\bin")
+                    SysEnvironment.SetPathAfter("%SystemRoot%\system32;%SystemRoot%;%SystemRoot%\System32\Wbem")
+                    CheckBox_MAVEN_HOME.Checked = True
+                    CheckBox_MAVEN_HOME.Enabled = False
+                    MsgBox("The MAVEN_HOME environment variables have been set, please restart the system!", vbInformation + vbMsgBoxSetForeground, "finished")
+                End If
             End If
         End If
     End Sub
 
-    Private Sub btn_JAVA_HOME_Click(sender As Object, e As EventArgs) Handles btn_JAVA_HOME.Click
-        Dim folderDlg As FolderBrowserDialog = New FolderBrowserDialog()
-        folderDlg.ShowNewFolderButton = True
-        Dim result As DialogResult = folderDlg.ShowDialog()
-        If result = DialogResult.OK Then
-            Dim path = folderDlg.SelectedPath
-            If MessageBox.Show(path + vbNewLine + " for JAVA environment! Please confirm again!", "Confirm", MessageBoxButtons.YesNo, MessageBoxIcon.Asterisk) = DialogResult.Yes Then
-                SysEnvironment.SetSysEnvironment("JAVA_HOME", path)
-                SysEnvironment.SetPathAfter("%JAVA_HOME%\bin")
-                SysEnvironment.SetPathAfter("%JAVA_HOME%\jre\bin")
-                CheckBox1.Checked = True
-                btn_JAVA_HOME.Enabled = False
-                MsgBox("The JAVA_HOME environment variables have been set, please restart the system!", vbInformation + vbMsgBoxSetForeground, "finished")
-            End If
-        End If
+    Private Sub ComboBox2_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboBox2.SelectedIndexChanged
+        If ComboBox2.Text = "" Then Return
+        Dim fileContent As String = File.ReadAllText(ComboBox2.Text)
+        Dim matches As MatchCollection = Regex.Matches(fileContent, "((?:(?:public|private|protected|static|final|abstract|synchronized|volatile)\s+)*)\s*(\w+)\s*(\w+)\(.*?\)\s*({(?:{[^{}]*}|.)*?})", RegexOptions.Multiline Or RegexOptions.IgnoreCase)
+        'Dim matches As MatchCollection = Regex.Matches(fileContent, "((public|private|protected|static|final|native|synchronized|abstract|transient)+\s)+[\$_\w\<\>\w\s\[\]]*\s+[\$_\w]+\([^\)]*\)?\s*", RegexOptions.Multiline Or RegexOptions.IgnoreCase) '\b(public|private|internal|protected|void)\s*s*\b(async)?\s*\b(static|virtual|abstract|void)?\s*\b(async)?\b(Task)?\s*[a-zA-Z]*(?<method>\s[A-Za-z_][A-Za-z_0-9]*\s*)\((([a-zA-Z\[\]\<\>]*\s*[A-Za-z_][A-Za-z_0-9]*\s*)[,]?\s*)+\)
+        For Each match As Match In matches
+
+        Next
     End Sub
 
-    Private Sub btn_MAVEN_HOME_Click(sender As Object, e As EventArgs) Handles btn_MAVEN_HOME.Click
-        Dim folderDlg As FolderBrowserDialog = New FolderBrowserDialog()
-        folderDlg.ShowNewFolderButton = True
-        Dim result As DialogResult = folderDlg.ShowDialog()
-        If result = DialogResult.OK Then
-            Dim path = folderDlg.SelectedPath
-            If MessageBox.Show(path + vbNewLine + " for MAVEN environment! Please confirm again!", "Confirm", MessageBoxButtons.YesNo, MessageBoxIcon.Asterisk) = DialogResult.Yes Then
-                SysEnvironment.SetSysEnvironment("MAVEN_HOME", path)
-                SysEnvironment.SetPathAfter("%MAVEN_HOME%\bin")
-                SysEnvironment.SetPathAfter("%SystemRoot%\system32;%SystemRoot%;%SystemRoot%\System32\Wbem")
-                CheckBox3.Checked = True
-                btn_MAVEN_HOME.Enabled = False
-                MsgBox("The MAVEN_HOME environment variables have been set, please restart the system!", vbInformation + vbMsgBoxSetForeground, "finished")
-            End If
-        End If
+    Private Sub ComboBox2_Click(sender As Object, e As EventArgs) Handles ComboBox2.Click
+        If ComboBox2.Text = "" Then Return
+        ComboBox3.Items.Clear()
+        RichTextBox1.Text = ""
+        Dim codePath = ComboBox2.Text
+        Dim newthread As New Thread(Sub()
+                                        extractMethod(codePath)
+                                    End Sub)
+        newthread.Start()
+
+    End Sub
+    Private Sub extractMethod(szContent As String)
+        codeDictionary.Clear()
+        Dim fileContent As String = File.ReadAllText(szContent)
+        Dim matches As MatchCollection = Regex.Matches(fileContent, "((public|private|protected|static|final|native|synchronized|abstract|transient)+\s)+[\$_\w\<\>\w\s\[\]]*\s+[\$_\w]+\([^\)]*\)?\s*(?<method_body>\{(?>[^{}]+|\{(?<n>)|}(?<-n>))*(?(n)(?!))})", RegexOptions.Multiline Or RegexOptions.IgnoreCase)
+        'Dim matches As MatchCollection = Regex.Matches(fileContent, "((public|private|protected|static|final|native|synchronized|abstract|transient)+\s)+[\$_\w\<\>\w\s\[\]]*\s+[\$_\w]+\([^\)]*\)?\s*", RegexOptions.Multiline Or RegexOptions.IgnoreCase) '\b(public|private|internal|protected|void)\s*s*\b(async)?\s*\b(static|virtual|abstract|void)?\s*\b(async)?\b(Task)?\s*[a-zA-Z]*(?<method>\s[A-Za-z_][A-Za-z_0-9]*\s*)\((([a-zA-Z\[\]\<\>]*\s*[A-Za-z_][A-Za-z_0-9]*\s*)[,]?\s*)+\)
+        For Each match As Match In matches
+            Dim methodName = match.Value.Trim.Split({vbCrLf, vbLf, vbCr}, StringSplitOptions.RemoveEmptyEntries)(0)
+            codeDictionary.Add(methodName.Trim, match.Value)
+            ComboBox3.Invoke(New MethodInvoker(Sub() ComboBox3.Items.Add(methodName)))
+            ComboBox3.Invoke(New MethodInvoker(Sub() ComboBox3.SelectedIndex = 0))
+        Next
     End Sub
 
-    Private Sub btn_CLASSPATH_Click(sender As Object, e As EventArgs) Handles btn_CLASSPATH.Click
-        Dim folderDlg As FolderBrowserDialog = New FolderBrowserDialog()
-        folderDlg.ShowNewFolderButton = True
-        Dim result As DialogResult = folderDlg.ShowDialog()
-        If result = DialogResult.OK Then
-            Dim path = folderDlg.SelectedPath
-            If MessageBox.Show(path + vbNewLine + " for CLASSPATH environment! Please confirm again!", "Confirm", MessageBoxButtons.YesNo, MessageBoxIcon.Asterisk) = DialogResult.Yes Then
-                SysEnvironment.SetSysEnvironment("CLASSPATH", path)
-                SysEnvironment.SetPathAfter(".;%JAVA_HOME%\lib\dt.jar;%JAVA_HOME%\lib\tools.jar;")
-                CheckBox3.Checked = True
-                btn_MAVEN_HOME.Enabled = False
-                MsgBox("The MAVEN_HOME environment variables have been set, please restart the system!", vbInformation + vbMsgBoxSetForeground, "finished")
-            End If
-        End If
+    Private Sub ComboBox3_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboBox3.SelectedIndexChanged
+        If ComboBox3.Text = "" Then Return
+        RichTextBox1.Text = codeDictionary(ComboBox3.Text)
+    End Sub
+
+    Private Sub TextBox3_TextChanged(sender As Object, e As EventArgs) Handles TextBox3.TextChanged
+
     End Sub
 End Class
 

@@ -42,22 +42,18 @@ Partial Class Form1
         Me.Button7 = New System.Windows.Forms.Button()
         Me.GroupBox2 = New System.Windows.Forms.GroupBox()
         Me.Label3 = New System.Windows.Forms.Label()
-        Me.GroupBox3 = New System.Windows.Forms.GroupBox()
-        Me.btn_CLASSPATH = New System.Windows.Forms.Button()
-        Me.CheckBox4 = New System.Windows.Forms.CheckBox()
-        Me.btn_MAVEN_HOME = New System.Windows.Forms.Button()
-        Me.btn_ANDROID_SDK_HOME = New System.Windows.Forms.Button()
-        Me.btn_JAVA_HOME = New System.Windows.Forms.Button()
-        Me.CheckBox3 = New System.Windows.Forms.CheckBox()
-        Me.CheckBox2 = New System.Windows.Forms.CheckBox()
-        Me.CheckBox1 = New System.Windows.Forms.CheckBox()
+        Me.CheckBox_CLASSPATH = New System.Windows.Forms.CheckBox()
+        Me.CheckBox_MAVEN_HOME = New System.Windows.Forms.CheckBox()
+        Me.CheckBox_ANDROID_SDK_HOME = New System.Windows.Forms.CheckBox()
+        Me.CheckBox_JAVA_HOME = New System.Windows.Forms.CheckBox()
         Me.FolderBrowserDialog1 = New System.Windows.Forms.FolderBrowserDialog()
-        Me.GroupBox4 = New System.Windows.Forms.GroupBox()
         Me.ListView1 = New System.Windows.Forms.ListView()
+        Me.GroupBox3 = New System.Windows.Forms.GroupBox()
+        Me.RichTextBox1 = New System.Windows.Forms.RichTextBox()
+        Me.ComboBox3 = New System.Windows.Forms.ComboBox()
         Me.GroupBox1.SuspendLayout()
         Me.GroupBox2.SuspendLayout()
         Me.GroupBox3.SuspendLayout()
-        Me.GroupBox4.SuspendLayout()
         Me.SuspendLayout()
         '
         'TextBox1
@@ -114,7 +110,7 @@ Partial Class Form1
         Me.GroupBox1.Controls.Add(Me.Button1)
         Me.GroupBox1.Controls.Add(Me.TextBox1)
         Me.GroupBox1.Controls.Add(Me.Button3)
-        Me.GroupBox1.Location = New System.Drawing.Point(4, 4)
+        Me.GroupBox1.Location = New System.Drawing.Point(2, 37)
         Me.GroupBox1.Name = "GroupBox1"
         Me.GroupBox1.Size = New System.Drawing.Size(506, 143)
         Me.GroupBox1.TabIndex = 7
@@ -201,7 +197,7 @@ Partial Class Form1
         'Button7
         '
         Me.Button7.Enabled = False
-        Me.Button7.Location = New System.Drawing.Point(209, 296)
+        Me.Button7.Location = New System.Drawing.Point(207, 329)
         Me.Button7.Name = "Button7"
         Me.Button7.Size = New System.Drawing.Size(96, 40)
         Me.Button7.TabIndex = 14
@@ -219,7 +215,7 @@ Partial Class Form1
         Me.GroupBox2.Controls.Add(Me.ComboBox2)
         Me.GroupBox2.Controls.Add(Me.Label1)
         Me.GroupBox2.Controls.Add(Me.ComboBox1)
-        Me.GroupBox2.Location = New System.Drawing.Point(6, 153)
+        Me.GroupBox2.Location = New System.Drawing.Point(4, 186)
         Me.GroupBox2.Name = "GroupBox2"
         Me.GroupBox2.Size = New System.Drawing.Size(503, 124)
         Me.GroupBox2.TabIndex = 15
@@ -234,146 +230,114 @@ Partial Class Form1
         Me.Label3.TabIndex = 14
         Me.Label3.Text = "Pack Aar:"
         '
-        'GroupBox3
+        'CheckBox_CLASSPATH
         '
-        Me.GroupBox3.Controls.Add(Me.btn_CLASSPATH)
-        Me.GroupBox3.Controls.Add(Me.CheckBox4)
-        Me.GroupBox3.Controls.Add(Me.btn_MAVEN_HOME)
-        Me.GroupBox3.Controls.Add(Me.btn_ANDROID_SDK_HOME)
-        Me.GroupBox3.Controls.Add(Me.btn_JAVA_HOME)
-        Me.GroupBox3.Controls.Add(Me.CheckBox3)
-        Me.GroupBox3.Controls.Add(Me.CheckBox2)
-        Me.GroupBox3.Controls.Add(Me.CheckBox1)
-        Me.GroupBox3.Location = New System.Drawing.Point(517, 4)
-        Me.GroupBox3.Name = "GroupBox3"
-        Me.GroupBox3.Size = New System.Drawing.Size(298, 143)
-        Me.GroupBox3.TabIndex = 16
-        Me.GroupBox3.TabStop = False
-        Me.GroupBox3.Text = "Environment variable"
+        Me.CheckBox_CLASSPATH.AutoSize = True
+        Me.CheckBox_CLASSPATH.Enabled = False
+        Me.CheckBox_CLASSPATH.Location = New System.Drawing.Point(286, 12)
+        Me.CheckBox_CLASSPATH.Name = "CheckBox_CLASSPATH"
+        Me.CheckBox_CLASSPATH.Size = New System.Drawing.Size(89, 17)
+        Me.CheckBox_CLASSPATH.TabIndex = 20
+        Me.CheckBox_CLASSPATH.Text = "CLASSPATH"
+        Me.CheckBox_CLASSPATH.UseVisualStyleBackColor = True
         '
-        'btn_CLASSPATH
+        'CheckBox_MAVEN_HOME
         '
-        Me.btn_CLASSPATH.Location = New System.Drawing.Point(191, 111)
-        Me.btn_CLASSPATH.Name = "btn_CLASSPATH"
-        Me.btn_CLASSPATH.Size = New System.Drawing.Size(96, 25)
-        Me.btn_CLASSPATH.TabIndex = 21
-        Me.btn_CLASSPATH.Text = "Setup"
-        Me.btn_CLASSPATH.UseVisualStyleBackColor = True
+        Me.CheckBox_MAVEN_HOME.AutoSize = True
+        Me.CheckBox_MAVEN_HOME.Enabled = False
+        Me.CheckBox_MAVEN_HOME.Location = New System.Drawing.Point(405, 12)
+        Me.CheckBox_MAVEN_HOME.Name = "CheckBox_MAVEN_HOME"
+        Me.CheckBox_MAVEN_HOME.Size = New System.Drawing.Size(102, 17)
+        Me.CheckBox_MAVEN_HOME.TabIndex = 2
+        Me.CheckBox_MAVEN_HOME.Text = "MAVEN_HOME"
+        Me.CheckBox_MAVEN_HOME.UseVisualStyleBackColor = True
         '
-        'CheckBox4
+        'CheckBox_ANDROID_SDK_HOME
         '
-        Me.CheckBox4.AutoSize = True
-        Me.CheckBox4.Enabled = False
-        Me.CheckBox4.Location = New System.Drawing.Point(12, 116)
-        Me.CheckBox4.Name = "CheckBox4"
-        Me.CheckBox4.Size = New System.Drawing.Size(89, 17)
-        Me.CheckBox4.TabIndex = 20
-        Me.CheckBox4.Text = "CLASSPATH"
-        Me.CheckBox4.UseVisualStyleBackColor = True
+        Me.CheckBox_ANDROID_SDK_HOME.AutoSize = True
+        Me.CheckBox_ANDROID_SDK_HOME.Enabled = False
+        Me.CheckBox_ANDROID_SDK_HOME.Location = New System.Drawing.Point(120, 12)
+        Me.CheckBox_ANDROID_SDK_HOME.Name = "CheckBox_ANDROID_SDK_HOME"
+        Me.CheckBox_ANDROID_SDK_HOME.Size = New System.Drawing.Size(142, 17)
+        Me.CheckBox_ANDROID_SDK_HOME.TabIndex = 1
+        Me.CheckBox_ANDROID_SDK_HOME.Text = "ANDROID_SDK_HOME"
+        Me.CheckBox_ANDROID_SDK_HOME.UseVisualStyleBackColor = True
         '
-        'btn_MAVEN_HOME
+        'CheckBox_JAVA_HOME
         '
-        Me.btn_MAVEN_HOME.Location = New System.Drawing.Point(191, 80)
-        Me.btn_MAVEN_HOME.Name = "btn_MAVEN_HOME"
-        Me.btn_MAVEN_HOME.Size = New System.Drawing.Size(96, 25)
-        Me.btn_MAVEN_HOME.TabIndex = 19
-        Me.btn_MAVEN_HOME.Text = "Setup"
-        Me.btn_MAVEN_HOME.UseVisualStyleBackColor = True
-        '
-        'btn_ANDROID_SDK_HOME
-        '
-        Me.btn_ANDROID_SDK_HOME.Location = New System.Drawing.Point(191, 48)
-        Me.btn_ANDROID_SDK_HOME.Name = "btn_ANDROID_SDK_HOME"
-        Me.btn_ANDROID_SDK_HOME.Size = New System.Drawing.Size(96, 25)
-        Me.btn_ANDROID_SDK_HOME.TabIndex = 18
-        Me.btn_ANDROID_SDK_HOME.Text = "Setup"
-        Me.btn_ANDROID_SDK_HOME.UseVisualStyleBackColor = True
-        '
-        'btn_JAVA_HOME
-        '
-        Me.btn_JAVA_HOME.Location = New System.Drawing.Point(191, 16)
-        Me.btn_JAVA_HOME.Name = "btn_JAVA_HOME"
-        Me.btn_JAVA_HOME.Size = New System.Drawing.Size(96, 25)
-        Me.btn_JAVA_HOME.TabIndex = 17
-        Me.btn_JAVA_HOME.Text = "Setup"
-        Me.btn_JAVA_HOME.UseVisualStyleBackColor = True
-        '
-        'CheckBox3
-        '
-        Me.CheckBox3.AutoSize = True
-        Me.CheckBox3.Enabled = False
-        Me.CheckBox3.Location = New System.Drawing.Point(12, 85)
-        Me.CheckBox3.Name = "CheckBox3"
-        Me.CheckBox3.Size = New System.Drawing.Size(102, 17)
-        Me.CheckBox3.TabIndex = 2
-        Me.CheckBox3.Text = "MAVEN_HOME"
-        Me.CheckBox3.UseVisualStyleBackColor = True
-        '
-        'CheckBox2
-        '
-        Me.CheckBox2.AutoSize = True
-        Me.CheckBox2.Enabled = False
-        Me.CheckBox2.Location = New System.Drawing.Point(12, 53)
-        Me.CheckBox2.Name = "CheckBox2"
-        Me.CheckBox2.Size = New System.Drawing.Size(142, 17)
-        Me.CheckBox2.TabIndex = 1
-        Me.CheckBox2.Text = "ANDROID_SDK_HOME"
-        Me.CheckBox2.UseVisualStyleBackColor = True
-        '
-        'CheckBox1
-        '
-        Me.CheckBox1.AutoSize = True
-        Me.CheckBox1.Enabled = False
-        Me.CheckBox1.Location = New System.Drawing.Point(12, 22)
-        Me.CheckBox1.Name = "CheckBox1"
-        Me.CheckBox1.Size = New System.Drawing.Size(90, 17)
-        Me.CheckBox1.TabIndex = 0
-        Me.CheckBox1.Text = "JAVA_HOME"
-        Me.CheckBox1.UseVisualStyleBackColor = True
-        '
-        'GroupBox4
-        '
-        Me.GroupBox4.Controls.Add(Me.ListView1)
-        Me.GroupBox4.Location = New System.Drawing.Point(517, 153)
-        Me.GroupBox4.Name = "GroupBox4"
-        Me.GroupBox4.Size = New System.Drawing.Size(298, 190)
-        Me.GroupBox4.TabIndex = 17
-        Me.GroupBox4.TabStop = False
-        Me.GroupBox4.Text = "Resource Info"
+        Me.CheckBox_JAVA_HOME.AutoSize = True
+        Me.CheckBox_JAVA_HOME.Enabled = False
+        Me.CheckBox_JAVA_HOME.Location = New System.Drawing.Point(13, 12)
+        Me.CheckBox_JAVA_HOME.Name = "CheckBox_JAVA_HOME"
+        Me.CheckBox_JAVA_HOME.Size = New System.Drawing.Size(90, 17)
+        Me.CheckBox_JAVA_HOME.TabIndex = 0
+        Me.CheckBox_JAVA_HOME.Text = "JAVA_HOME"
+        Me.CheckBox_JAVA_HOME.UseVisualStyleBackColor = True
         '
         'ListView1
         '
         Me.ListView1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
         Me.ListView1.HideSelection = False
-        Me.ListView1.Location = New System.Drawing.Point(7, 18)
+        Me.ListView1.Location = New System.Drawing.Point(514, 12)
         Me.ListView1.Name = "ListView1"
-        Me.ListView1.Size = New System.Drawing.Size(284, 165)
+        Me.ListView1.Size = New System.Drawing.Size(308, 168)
         Me.ListView1.TabIndex = 0
         Me.ListView1.UseCompatibleStateImageBehavior = False
+        '
+        'GroupBox3
+        '
+        Me.GroupBox3.Controls.Add(Me.RichTextBox1)
+        Me.GroupBox3.Controls.Add(Me.ComboBox3)
+        Me.GroupBox3.Location = New System.Drawing.Point(516, 186)
+        Me.GroupBox3.Name = "GroupBox3"
+        Me.GroupBox3.Size = New System.Drawing.Size(305, 182)
+        Me.GroupBox3.TabIndex = 21
+        Me.GroupBox3.TabStop = False
+        Me.GroupBox3.Text = "Event List"
+        '
+        'RichTextBox1
+        '
+        Me.RichTextBox1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+        Me.RichTextBox1.Location = New System.Drawing.Point(4, 42)
+        Me.RichTextBox1.Name = "RichTextBox1"
+        Me.RichTextBox1.Size = New System.Drawing.Size(295, 139)
+        Me.RichTextBox1.TabIndex = 1
+        Me.RichTextBox1.Text = ""
+        '
+        'ComboBox3
+        '
+        Me.ComboBox3.FormattingEnabled = True
+        Me.ComboBox3.Location = New System.Drawing.Point(4, 16)
+        Me.ComboBox3.Name = "ComboBox3"
+        Me.ComboBox3.Size = New System.Drawing.Size(295, 21)
+        Me.ComboBox3.TabIndex = 0
         '
         'Form1
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(827, 348)
-        Me.Controls.Add(Me.GroupBox4)
+        Me.ClientSize = New System.Drawing.Size(827, 379)
         Me.Controls.Add(Me.GroupBox3)
+        Me.Controls.Add(Me.ListView1)
+        Me.Controls.Add(Me.CheckBox_CLASSPATH)
         Me.Controls.Add(Me.GroupBox2)
+        Me.Controls.Add(Me.CheckBox_MAVEN_HOME)
         Me.Controls.Add(Me.Button7)
         Me.Controls.Add(Me.GroupBox1)
+        Me.Controls.Add(Me.CheckBox_JAVA_HOME)
+        Me.Controls.Add(Me.CheckBox_ANDROID_SDK_HOME)
         Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow
         Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
         Me.Name = "Form1"
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
-        Me.Text = "B4X_Resource_Generator V1.3"
+        Me.Text = "B4X_RHelper V1.3"
         Me.GroupBox1.ResumeLayout(False)
         Me.GroupBox1.PerformLayout()
         Me.GroupBox2.ResumeLayout(False)
         Me.GroupBox2.PerformLayout()
         Me.GroupBox3.ResumeLayout(False)
-        Me.GroupBox3.PerformLayout()
-        Me.GroupBox4.ResumeLayout(False)
         Me.ResumeLayout(False)
+        Me.PerformLayout()
 
     End Sub
     Friend WithEvents TextBox1 As TextBox
@@ -395,16 +359,13 @@ Partial Class Form1
     Friend WithEvents Button7 As Button
     Friend WithEvents GroupBox2 As GroupBox
     Friend WithEvents Label3 As Label
-    Friend WithEvents GroupBox3 As GroupBox
-    Friend WithEvents CheckBox3 As CheckBox
-    Friend WithEvents CheckBox2 As CheckBox
-    Friend WithEvents CheckBox1 As CheckBox
-    Friend WithEvents btn_MAVEN_HOME As Button
-    Friend WithEvents btn_ANDROID_SDK_HOME As Button
-    Friend WithEvents btn_JAVA_HOME As Button
+    Friend WithEvents CheckBox_MAVEN_HOME As CheckBox
+    Friend WithEvents CheckBox_ANDROID_SDK_HOME As CheckBox
+    Friend WithEvents CheckBox_JAVA_HOME As CheckBox
     Friend WithEvents FolderBrowserDialog1 As FolderBrowserDialog
-    Friend WithEvents GroupBox4 As GroupBox
-    Friend WithEvents btn_CLASSPATH As Button
-    Friend WithEvents CheckBox4 As CheckBox
+    Friend WithEvents CheckBox_CLASSPATH As CheckBox
     Friend WithEvents ListView1 As ListView
+    Friend WithEvents GroupBox3 As GroupBox
+    Friend WithEvents RichTextBox1 As RichTextBox
+    Friend WithEvents ComboBox3 As ComboBox
 End Class
