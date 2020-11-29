@@ -842,16 +842,6 @@ Public Class Form1
         End If
     End Sub
 
-    Private Sub ComboBox2_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboBox2.SelectedIndexChanged
-        If ComboBox2.Text = "" Then Return
-        Dim fileContent As String = File.ReadAllText(ComboBox2.Text)
-        Dim matches As MatchCollection = Regex.Matches(fileContent, "((?:(?:public|private|protected|static|final|abstract|synchronized|volatile)\s+)*)\s*(\w+)\s*(\w+)\(.*?\)\s*({(?:{[^{}]*}|.)*?})", RegexOptions.Multiline Or RegexOptions.IgnoreCase)
-        'Dim matches As MatchCollection = Regex.Matches(fileContent, "((public|private|protected|static|final|native|synchronized|abstract|transient)+\s)+[\$_\w\<\>\w\s\[\]]*\s+[\$_\w]+\([^\)]*\)?\s*", RegexOptions.Multiline Or RegexOptions.IgnoreCase) '\b(public|private|internal|protected|void)\s*s*\b(async)?\s*\b(static|virtual|abstract|void)?\s*\b(async)?\b(Task)?\s*[a-zA-Z]*(?<method>\s[A-Za-z_][A-Za-z_0-9]*\s*)\((([a-zA-Z\[\]\<\>]*\s*[A-Za-z_][A-Za-z_0-9]*\s*)[,]?\s*)+\)
-        For Each match As Match In matches
-
-        Next
-    End Sub
-
     Private Sub ComboBox2_Click(sender As Object, e As EventArgs) Handles ComboBox2.Click
         If ComboBox2.Text = "" Then Return
         ComboBox3.Items.Clear()
