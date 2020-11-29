@@ -344,7 +344,7 @@ Public Class Form1
         Next
         Dim activityList As New List(Of String)
         Dim mainActivity As String = ""
-        Dim matches As MatchCollection = Regex.Matches(fileContent, "<activity.[\s\S]*?</activity>", RegexOptions.Multiline Or RegexOptions.IgnoreCase)
+        Dim matches As MatchCollection = Regex.Matches(fileContent, "<activity[\s\S]*?activity>", RegexOptions.Multiline Or RegexOptions.IgnoreCase)
         For Each match As Match In matches
             If match.Value.Contains("intent-filter") Then
                 mainActivity = New Regex("(?<=android:name=\"").*?(?=[\p{P}\p{S}-[._]])").Match(match.Value).Value.Trim.TrimStart(".")
@@ -357,15 +357,15 @@ Public Class Form1
         javaPath = Path.GetDirectoryName(ManifestPath) + "\java\" + packageName.Replace(".", "\")
         Dim javafiles = Directory.GetFiles(javaPath, "*.*", SearchOption.AllDirectories).Where(Function(f) New List(Of String) From {".java"}.IndexOf(Path.GetExtension(f)) >= 0).ToArray()
         If javafiles.Count > 0 Then
+            Dim bs As New BindingSource()
+            bs.DataSource = javafiles
+            ComboBox2.Invoke(New MethodInvoker(Sub() ComboBox2.DataSource = bs))
             If mainActivity <> "" Then
+                mainActivity = mainActivity.Replace(".", "\")
                 ComboBox2.Invoke(New MethodInvoker(Sub() ComboBox2.Text = javaPath + "\" + mainActivity + ".java"))
             Else
                 If javafiles.Count = 1 Then
                     ComboBox2.Invoke(New MethodInvoker(Sub() ComboBox2.Text = javafiles(0)))
-                Else
-                    Dim bs As New BindingSource()
-                    bs.DataSource = javafiles
-                    ComboBox2.Invoke(New MethodInvoker(Sub() ComboBox2.DataSource = bs))
                 End If
             End If
         End If
@@ -874,14 +874,24 @@ Public Class Form1
         For Each match As Match In matches
             Dim methodName = match.Value.Trim.Split({vbCrLf, vbLf, vbCr}, StringSplitOptions.RemoveEmptyEntries)(0).Replace("{", "")
             codeDictionary.Add(methodName.Trim, match.Value)
-            ComboBox3.Invoke(New MethodInvoker(Sub() ComboBox3.Items.Add(methodName.Trim)))
-            ComboBox3.Invoke(New MethodInvoker(Sub() ComboBox3.SelectedIndex = 0))
+            Try
+                ComboBox3.Invoke(New MethodInvoker(Sub() ComboBox3.Items.Add(methodName.Trim)))
+                ComboBox3.Invoke(New MethodInvoker(Sub() ComboBox3.SelectedIndex = 0))
+            Catch ex As Exception
+
+            End Try
+
         Next
     End Sub
 
     Private Sub ComboBox3_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboBox3.SelectedIndexChanged
         If ComboBox3.Text = "" Then Return
-        RichTextBox1.Text = codeDictionary(ComboBox3.Text)
+        Try
+            RichTextBox1.Text = codeDictionary(ComboBox3.Text)
+        Catch ex As Exception
+
+        End Try
+
     End Sub
 
 
