@@ -98,9 +98,9 @@ Public Class Form1
             .View = View.Details
             .FullRowSelect = True
             .Columns.Add("id", 0, HorizontalAlignment.Center)
-            .Columns.Add("view type", 80, HorizontalAlignment.Center)
-            .Columns.Add("view name", 100, HorizontalAlignment.Center)
-            .Columns.Add("other", ListView1.Width - 80 - 100 - 5, HorizontalAlignment.Center)
+            .Columns.Add("view type", 120, HorizontalAlignment.Center)
+            .Columns.Add("view name", 150, HorizontalAlignment.Center)
+            .Columns.Add("other", ListView1.Width - 120 - 150 - 5, HorizontalAlignment.Center)
         End With
 
     End Sub
@@ -155,6 +155,10 @@ Public Class Form1
         End If
         ComboBox1.Items.Clear()
         ComboBox1.Text = ""
+        ComboBox3.Items.Clear()
+        RichTextBox1.Text = ""
+        ListView1.Items.Clear()
+
         Try
             If ComboBox2.Items.Count > 0 Then ComboBox2.Items.Clear()
         Catch ex As Exception
@@ -841,7 +845,16 @@ Public Class Form1
             End If
         End If
     End Sub
-
+    Private Sub ComboBox2_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboBox2.SelectedIndexChanged
+        If ComboBox2.Text = "" Then Return
+        ComboBox3.Items.Clear()
+        RichTextBox1.Text = ""
+        Dim codePath = ComboBox2.Text
+        Dim newthread As New Thread(Sub()
+                                        extractMethod(codePath)
+                                    End Sub)
+        newthread.Start()
+    End Sub
     Private Sub ComboBox2_Click(sender As Object, e As EventArgs) Handles ComboBox2.Click
         If ComboBox2.Text = "" Then Return
         ComboBox3.Items.Clear()
@@ -874,5 +887,7 @@ Public Class Form1
     Private Sub TextBox3_TextChanged(sender As Object, e As EventArgs) Handles TextBox3.TextChanged
 
     End Sub
+
+
 End Class
 

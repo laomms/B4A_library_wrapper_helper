@@ -278,9 +278,9 @@ Partial Class Form1
         '
         Me.ListView1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
         Me.ListView1.HideSelection = False
-        Me.ListView1.Location = New System.Drawing.Point(514, 12)
+        Me.ListView1.Location = New System.Drawing.Point(520, 12)
         Me.ListView1.Name = "ListView1"
-        Me.ListView1.Size = New System.Drawing.Size(308, 168)
+        Me.ListView1.Size = New System.Drawing.Size(416, 168)
         Me.ListView1.TabIndex = 0
         Me.ListView1.UseCompatibleStateImageBehavior = False
         '
@@ -290,7 +290,7 @@ Partial Class Form1
         Me.GroupBox3.Controls.Add(Me.ComboBox3)
         Me.GroupBox3.Location = New System.Drawing.Point(516, 186)
         Me.GroupBox3.Name = "GroupBox3"
-        Me.GroupBox3.Size = New System.Drawing.Size(305, 182)
+        Me.GroupBox3.Size = New System.Drawing.Size(426, 182)
         Me.GroupBox3.TabIndex = 21
         Me.GroupBox3.TabStop = False
         Me.GroupBox3.Text = "Event List"
@@ -300,7 +300,7 @@ Partial Class Form1
         Me.RichTextBox1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
         Me.RichTextBox1.Location = New System.Drawing.Point(4, 42)
         Me.RichTextBox1.Name = "RichTextBox1"
-        Me.RichTextBox1.Size = New System.Drawing.Size(295, 139)
+        Me.RichTextBox1.Size = New System.Drawing.Size(416, 139)
         Me.RichTextBox1.TabIndex = 1
         Me.RichTextBox1.Text = ""
         '
@@ -309,14 +309,14 @@ Partial Class Form1
         Me.ComboBox3.FormattingEnabled = True
         Me.ComboBox3.Location = New System.Drawing.Point(4, 16)
         Me.ComboBox3.Name = "ComboBox3"
-        Me.ComboBox3.Size = New System.Drawing.Size(295, 21)
+        Me.ComboBox3.Size = New System.Drawing.Size(416, 21)
         Me.ComboBox3.TabIndex = 0
         '
         'Form1
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(827, 379)
+        Me.ClientSize = New System.Drawing.Size(954, 379)
         Me.Controls.Add(Me.GroupBox3)
         Me.Controls.Add(Me.ListView1)
         Me.Controls.Add(Me.CheckBox_CLASSPATH)
