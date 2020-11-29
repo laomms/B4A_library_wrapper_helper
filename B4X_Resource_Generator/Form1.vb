@@ -755,6 +755,15 @@ Public Class Form1
                                 itemlist.Add(New List(Of String) From {viewtype, viewname, filename})
                             End If
                         Next
+                    ElseIf xmlfile.Contains("res\values\") And xmlfile.Contains("strings.xml") Then
+                        Dim fileContent As String = File.ReadAllText(xmlfile)
+                        Dim matches As MatchCollection = Regex.Matches(fileContent, "<string.[\s\S]*?</string>", RegexOptions.Multiline Or RegexOptions.IgnoreCase)
+                        For Each match As Match In matches
+                            viewtype = "strings"
+                            viewname = New Regex("(?<=name=\"").*?(?=[\p{P}\p{S}-[/_]])").Match(match.Value).Value.Trim
+                            filename = New Regex("(?<=>).*?(?=<)").Match(match.Value).Value.Trim
+                            itemlist.Add(New List(Of String) From {viewtype, viewname, filename})
+                        Next
                     ElseIf xmlfile.Contains("strings.xml") = False Then
                         Dim fileContent As String = File.ReadAllText(xmlfile)
                         Dim matches As MatchCollection = Regex.Matches(fileContent, "<([^<]*)\/>", RegexOptions.Multiline Or RegexOptions.IgnoreCase)
@@ -899,7 +908,9 @@ Public Class Form1
 
     End Sub
 
-
-
+    Private Sub ListView1_ColumnClick(ByVal sender As Object, ByVal e As System.Windows.Forms.ColumnClickEventArgs) Handles ListView1.ColumnClick
+        On Error Resume Next
+        ListView1.ListViewItemSorter = New ListViewItemComparerByString(e.Column)
+    End Sub
 End Class
 

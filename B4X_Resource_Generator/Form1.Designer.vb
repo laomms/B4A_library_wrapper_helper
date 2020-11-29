@@ -22,6 +22,7 @@ Partial Class Form1
     '不要使用代码编辑器修改它。
     <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
+        Me.components = New System.ComponentModel.Container()
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(Form1))
         Me.TextBox1 = New System.Windows.Forms.TextBox()
         Me.Button1 = New System.Windows.Forms.Button()
@@ -51,9 +52,15 @@ Partial Class Form1
         Me.GroupBox3 = New System.Windows.Forms.GroupBox()
         Me.RichTextBox1 = New System.Windows.Forms.RichTextBox()
         Me.ComboBox3 = New System.Windows.Forms.ComboBox()
+        Me.ContextMenuStrip1 = New System.Windows.Forms.ContextMenuStrip(Me.components)
+        Me.ContextMenuStrip2 = New System.Windows.Forms.ContextMenuStrip(Me.components)
+        Me.AddToRjavaToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
+        Me.WrapperMethodToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.GroupBox1.SuspendLayout()
         Me.GroupBox2.SuspendLayout()
         Me.GroupBox3.SuspendLayout()
+        Me.ContextMenuStrip1.SuspendLayout()
+        Me.ContextMenuStrip2.SuspendLayout()
         Me.SuspendLayout()
         '
         'TextBox1
@@ -277,6 +284,7 @@ Partial Class Form1
         'ListView1
         '
         Me.ListView1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+        Me.ListView1.ContextMenuStrip = Me.ContextMenuStrip1
         Me.ListView1.HideSelection = False
         Me.ListView1.Location = New System.Drawing.Point(520, 12)
         Me.ListView1.Name = "ListView1"
@@ -298,6 +306,7 @@ Partial Class Form1
         'RichTextBox1
         '
         Me.RichTextBox1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+        Me.RichTextBox1.ContextMenuStrip = Me.ContextMenuStrip2
         Me.RichTextBox1.Location = New System.Drawing.Point(4, 42)
         Me.RichTextBox1.Name = "RichTextBox1"
         Me.RichTextBox1.Size = New System.Drawing.Size(416, 139)
@@ -311,6 +320,30 @@ Partial Class Form1
         Me.ComboBox3.Name = "ComboBox3"
         Me.ComboBox3.Size = New System.Drawing.Size(416, 21)
         Me.ComboBox3.TabIndex = 0
+        '
+        'ContextMenuStrip1
+        '
+        Me.ContextMenuStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.AddToRjavaToolStripMenuItem})
+        Me.ContextMenuStrip1.Name = "ContextMenuStrip1"
+        Me.ContextMenuStrip1.Size = New System.Drawing.Size(145, 26)
+        '
+        'ContextMenuStrip2
+        '
+        Me.ContextMenuStrip2.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.WrapperMethodToolStripMenuItem})
+        Me.ContextMenuStrip2.Name = "ContextMenuStrip2"
+        Me.ContextMenuStrip2.Size = New System.Drawing.Size(162, 26)
+        '
+        'AddToRjavaToolStripMenuItem
+        '
+        Me.AddToRjavaToolStripMenuItem.Name = "AddToRjavaToolStripMenuItem"
+        Me.AddToRjavaToolStripMenuItem.Size = New System.Drawing.Size(144, 22)
+        Me.AddToRjavaToolStripMenuItem.Text = "Add to R.java"
+        '
+        'WrapperMethodToolStripMenuItem
+        '
+        Me.WrapperMethodToolStripMenuItem.Name = "WrapperMethodToolStripMenuItem"
+        Me.WrapperMethodToolStripMenuItem.Size = New System.Drawing.Size(161, 22)
+        Me.WrapperMethodToolStripMenuItem.Text = "WrapperMethod"
         '
         'Form1
         '
@@ -336,6 +369,8 @@ Partial Class Form1
         Me.GroupBox2.ResumeLayout(False)
         Me.GroupBox2.PerformLayout()
         Me.GroupBox3.ResumeLayout(False)
+        Me.ContextMenuStrip1.ResumeLayout(False)
+        Me.ContextMenuStrip2.ResumeLayout(False)
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
@@ -368,4 +403,8 @@ Partial Class Form1
     Friend WithEvents GroupBox3 As GroupBox
     Friend WithEvents RichTextBox1 As RichTextBox
     Friend WithEvents ComboBox3 As ComboBox
+    Friend WithEvents ContextMenuStrip1 As ContextMenuStrip
+    Friend WithEvents AddToRjavaToolStripMenuItem As ToolStripMenuItem
+    Friend WithEvents ContextMenuStrip2 As ContextMenuStrip
+    Friend WithEvents WrapperMethodToolStripMenuItem As ToolStripMenuItem
 End Class

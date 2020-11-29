@@ -115,6 +115,7 @@
       <DependentUpon>Form1.vb</DependentUpon>
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="ListViewItemComparerByString.vb" />
     <Compile Include="Module1.vb" />
     <Compile Include="SelectForm.Designer.vb">
       <DependentUpon>SelectForm.vb</DependentUpon>
