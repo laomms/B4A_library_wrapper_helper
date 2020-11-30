@@ -294,12 +294,12 @@ Partial Class Form1
         '
         Me.ContextMenuStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.AddToRjavaToolStripMenuItem})
         Me.ContextMenuStrip1.Name = "ContextMenuStrip1"
-        Me.ContextMenuStrip1.Size = New System.Drawing.Size(181, 48)
+        Me.ContextMenuStrip1.Size = New System.Drawing.Size(145, 26)
         '
         'AddToRjavaToolStripMenuItem
         '
         Me.AddToRjavaToolStripMenuItem.Name = "AddToRjavaToolStripMenuItem"
-        Me.AddToRjavaToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
+        Me.AddToRjavaToolStripMenuItem.Size = New System.Drawing.Size(144, 22)
         Me.AddToRjavaToolStripMenuItem.Text = "Add to R.java"
         '
         'GroupBox3

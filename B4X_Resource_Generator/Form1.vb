@@ -17,7 +17,8 @@ Public Class Form1
     Private srcPath As String
     Private javaPath As String
     Private mycookiecontainer As CookieContainer = New CookieContainer()
-
+    Private ResourceName As String
+    Private ResourceType As String
     Private Sub TextBox1_DragEnter(sender As Object, e As DragEventArgs) Handles TextBox1.DragEnter
         If e.Data.GetDataPresent(DataFormats.FileDrop) Then
             e.Effect = DragDropEffects.Copy
@@ -469,9 +470,9 @@ Public Class Form1
                         If className <> "" Then outputFile.WriteLine("	}")
                         className = item.Split(".")(0)
                         outputFile.WriteLine("	public static final class " + item.Split(".")(0) + " {")
-                        outputFile.WriteLine("		public static int " + item.Split(".")(1) + " = BA.applicationContext.getResources().getIdentifier(""" + item.Split(".")(1) + """, ""styleable"", BA.packageName);")
+                        outputFile.WriteLine("		public static int " + item.Split(".")(1) + " = BA.applicationContext.getResources().getIdentifier(""" + item.Split(".")(1) + """, """ + item.Split(".")(0) + """, BA.packageName);")
                     Else
-                        outputFile.WriteLine("		public static int " + item.Split(".")(1) + " = BA.applicationContext.getResources().getIdentifier(""" + item.Split(".")(1) + """, ""styleable"", BA.packageName);")
+                        outputFile.WriteLine("		public static int " + item.Split(".")(1) + " = BA.applicationContext.getResources().getIdentifier(""" + item.Split(".")(1) + """, """ + item.Split(".")(0) + """, BA.packageName);")
                     End If
                 Next
                 outputFile.WriteLine("	}")
@@ -1048,6 +1049,53 @@ Public Class Form1
     End Sub
 
     Private Sub AddToRjavaToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles AddToRjavaToolStripMenuItem.Click
+        If File.Exists(RPath + "\R.java") = False Then
+            Dim filePath As String = RPath + "\R.java"
+            Dim utf8WithoutBom As Encoding = Encoding.GetEncoding("ISO-8859-1")
+            Using outputFile As New StreamWriter(filePath, False, utf8WithoutBom)
+                outputFile.WriteLine("package " + packageName + ";")
+                outputFile.WriteLine("import anywheresoftware.b4a.BA;")
+                outputFile.WriteLine(vbNewLine + "public class R {")
+                outputFile.WriteLine("	public static final class " + ResourceType + " {")
+                outputFile.WriteLine("		public static int " + ResourceName + " = BA.applicationContext.getResources().getIdentifier(""" + ResourceName + """, """ + ResourceType + """, BA.packageName);")
+                outputFile.WriteLine("	}")
+                outputFile.WriteLine("}")
+            End Using
+        Else
+            Dim fileContent As String = ""
+            Using reader As New StreamReader(RPath + "\R.java")
+                fileContent = reader.ReadToEnd()
+            End Using
+
+            If Regex.Match(fileContent, "public\s{1,}static\s{1,}final\s{1,}class\s{1,}" + ResourceType + ".[\s\S]*?(?=})").Success Then
+                Dim classContent = New Regex("public\s{1,}static\s{1,}final\s{1,}class\s{1,}" + ResourceType + ".[\s\S]*?(?=})").Match(fileContent).Value.Trim
+                If Regex.Match(classContent, "public\s{1,}static\s{1,}int\s{1,}" + ResourceName + ".[\s\S]*?(?=\;)").Success Then
+                    Dim variable = New Regex("public\s{1,}static\s{1,}int\s{1,}" + ResourceName + ".[\s\S]*?(?=\;)").Match(classContent).Value.Trim
+                    fileContent = fileContent.Replace(variable, "public static int " + ResourceName + " = BA.applicationContext.getResources().getIdentifier(""" + ResourceName + """, """ + ResourceType + """, BA.packageName);")
+                Else
+                    Dim index = fileContent.IndexOf(classContent)
+                    fileContent.Insert(index + classContent.LastIndexOfAny("}") - 1, vbNewLine + "		public static int " + ResourceName + " = BA.applicationContext.getResources().getIdentifier(""" + ResourceName + """, ""ResourceType"", BA.packageName);" + vbNewLine)
+                End If
+            Else
+                Dim newstring = "	public static final class " + ResourceType + " {" +
+                               "		public static int " + ResourceName + " = BA.applicationContext.getResources().getIdentifier(""" + ResourceName + """, """ + ResourceType + """, BA.packageName);" +
+                               "	}"
+                fileContent.Insert(fileContent.Trim.LastIndexOf("}") - 1, vbNewLine + newstring + vbNewLine)
+            End If
+
+            Using writer As New StreamWriter(RPath + "\R.java", False, Encoding.GetEncoding("ISO-8859-1"))
+                writer.Write(fileContent)
+            End Using
+
+        End If
+        MsgBox("Add finished!", vbInformation + vbMsgBoxSetForeground, "finished")
+    End Sub
+
+
+    Private Sub ListView1_Click(sender As Object, e As EventArgs) Handles ListView1.Click
+        On Error Resume Next
+        ResourceName = ListView1.SelectedItems(0).SubItems(2).Text
+        ResourceType = ListView1.SelectedItems(0).SubItems(1).Text
 
     End Sub
 End Class
