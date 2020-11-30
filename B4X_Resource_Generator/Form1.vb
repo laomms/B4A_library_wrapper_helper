@@ -6,13 +6,13 @@ Imports System.Text.RegularExpressions
 Imports System.Threading
 Imports System.Web
 Imports System.Xml
+Imports Microsoft.Win32
 
 Public Class Form1
     Private WrapperList As List(Of List(Of String))
     Private packageName As String = String.Empty
     Private minSdkVersion As String
     Private targetSdkVersion As String
-    Private ProjectPath As String
     Private RPath As String
     Private srcPath As String
     Private javaPath As String
@@ -64,7 +64,7 @@ Public Class Form1
                 If File.Exists(TextBox3.Text + "\R.txt") = False Or File.Exists(TextBox3.Text + "\AndroidManifest.xml") = False Then Return
                 If Directory.Exists(TextBox3.Text + "\jars") = False Or Directory.Exists(TextBox3.Text + "\res") = False Then Return
                 Dim libname = IO.Path.GetFileName(TextBox3.Text) + ".aar"
-                PackAAR(My.Computer.FileSystem.SpecialDirectories.Temp + "\jar.exe", Application.StartupPath + "\" + libname, TextBox3.Text)
+                PackAAR(My.Computer.FileSystem.SpecialDirectories.Temp + "\B4X\jar.exe", Application.StartupPath + "\" + libname, TextBox3.Text)
             End If
         Next
     End Sub
@@ -74,20 +74,22 @@ Public Class Form1
         TextBox1.AllowDrop = True
         TextBox2.AllowDrop = True
         TextBox3.AllowDrop = True
+        If Not Directory.Exists(My.Computer.FileSystem.SpecialDirectories.Temp + "\B4X") Then Directory.CreateDirectory(My.Computer.FileSystem.SpecialDirectories.Temp + "\B4X")
         For Each assembly In System.Reflection.Assembly.GetExecutingAssembly.GetManifestResourceNames()
-            If Not assembly.EndsWith(".exe") And Not assembly.EndsWith(".dll") Then
+            If Not assembly.EndsWith(".exe") And Not assembly.EndsWith(".dll") And Not assembly.EndsWith(".class") Then
                 Continue For
             End If
             Using resource = System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceStream(assembly)
                 Dim resourcefile = assembly.Replace(System.Reflection.Assembly.GetExecutingAssembly.GetName.Name + ".", "")
-                If File.Exists(My.Computer.FileSystem.SpecialDirectories.Temp + "\" + resourcefile) = False Then
-                    Using file = New FileStream(My.Computer.FileSystem.SpecialDirectories.Temp + "\" + resourcefile, FileMode.Create, FileAccess.Write)
+                If File.Exists(My.Computer.FileSystem.SpecialDirectories.Temp + "\B4X\" + resourcefile) = False Then
+                    Using file = New FileStream(My.Computer.FileSystem.SpecialDirectories.Temp + "\B4X\" + resourcefile, FileMode.Create, FileAccess.Write)
                         resource.CopyTo(file)
                     End Using
-                    File.SetAttributes(My.Computer.FileSystem.SpecialDirectories.Temp + "\" + resourcefile, vbArchive + vbHidden + vbSystem)
+                    File.SetAttributes(My.Computer.FileSystem.SpecialDirectories.Temp + "\B4X\" + resourcefile, vbArchive + vbHidden + vbSystem)
                 End If
             End Using
         Next
+
         If SysEnvironment.CheckSysEnvironmentExist("JAVA_HOME") Then CheckBox_JAVA_HOME.Checked = True : CheckBox_JAVA_HOME.Enabled = False
         If SysEnvironment.CheckSysEnvironmentExist("ANDROID_SDK_HOME") Then CheckBox_ANDROID_SDK_HOME.Checked = True : CheckBox_ANDROID_SDK_HOME.Enabled = False
         If SysEnvironment.CheckSysEnvironmentExist("MAVEN_HOME") Then CheckBox_MAVEN_HOME.Checked = True : CheckBox_MAVEN_HOME.Enabled = False
@@ -104,6 +106,21 @@ Public Class Form1
             .Columns.Add("other", ListView1.Width - 120 - 150 - 5, HorizontalAlignment.Center)
         End With
 
+        Dim OpenCUKey As RegistryKey = RegistryKey.OpenBaseKey(RegistryHive.CurrentUser, IIf(Environment.Is64BitOperatingSystem, RegistryView.Registry64, RegistryView.Registry32))
+        Using subRegKey = OpenCUKey.OpenSubKey("Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers", True)
+            If Not subRegKey Is Nothing Then
+                If Not subRegKey.GetValue("AndroidJar") Is Nothing Then
+                    txt_androidjar.Text = subRegKey.GetValue("AndroidJar")
+                    androidjarPath = txt_androidjar.Text
+                End If
+
+                If Not subRegKey.GetValue("B4aPath") Is Nothing Then
+                    txt_b4a.Text = subRegKey.GetValue("B4aPath")
+                    B4AShared = Path.GetDirectoryName(txt_b4a.Text) + "\libraries\B4AShared.jar"
+                    Core = Path.GetDirectoryName(txt_b4a.Text) + "\libraries\Core.jar"
+                End If
+            End If
+        End Using
     End Sub
 
     Private Sub btn_Open_Click(sender As Object, e As EventArgs) Handles btn_Open.Click
@@ -533,7 +550,7 @@ Public Class Form1
             If File.Exists(TextBox3.Text + "\R.txt") = False Or File.Exists(TextBox3.Text + "\AndroidManifest.xml") = False Then Return
             If Directory.Exists(TextBox3.Text + "\jars") = False Or Directory.Exists(TextBox3.Text + "\res") = False Then Return
             Dim libname = Path.GetFileName(TextBox3.Text) + ".aar"
-            PackAAR(My.Computer.FileSystem.SpecialDirectories.Temp + "\jar.exe", Application.StartupPath + "\" + libname, TextBox3.Text)
+            PackAAR(My.Computer.FileSystem.SpecialDirectories.Temp + "\B4X\jar.exe", Application.StartupPath + "\" + libname, TextBox3.Text)
         Else
             TextBox3.Text = String.Empty
             Using dlg As New OpenFileDialog With {.AddExtension = True,
@@ -547,7 +564,7 @@ Public Class Form1
                     If File.Exists(TextBox3.Text + "\R.txt") = False Or File.Exists(TextBox3.Text + "\AndroidManifest.xml") = False Then Return
                     If Directory.Exists(TextBox3.Text + "\jars") = False Or Directory.Exists(TextBox3.Text + "\res") = False Then Return
                     Dim libname = Path.GetFileName(TextBox3.Text) + ".aar"
-                    PackAAR(My.Computer.FileSystem.SpecialDirectories.Temp + "\jar.exe", Application.StartupPath + "\" + libname, TextBox3.Text)
+                    PackAAR(My.Computer.FileSystem.SpecialDirectories.Temp + "\B4X\jar.exe", Application.StartupPath + "\" + libname, TextBox3.Text)
                 End If
             End Using
         End If
@@ -563,7 +580,6 @@ Public Class Form1
         STAThread.Join()
         Return ReturnValue
     End Function
-
     Private Sub TextBox3_Click(sender As Object, e As EventArgs) Handles TextBox3.Click
         Dim clipstring As String = GetText()
         If New Regex("^(?:[c-zC-Z]\:|\\)(\\[a-zA-Z_\-\s0-9\.]+)+").Match(clipstring).Success Then
@@ -573,8 +589,7 @@ Public Class Form1
         End If
 
     End Sub
-
-    Private Async Function btn_Download_Click(sender As Object, e As EventArgs) As Task Handles btn_Download.Click
+    Private Async Function Btn_Download_Click(sender As Object, e As EventArgs) As Task Handles btn_Download.Click
         ItemsDictionary.Clear()
         ItemsDictionary = Await DownloadLib.SearchIemt(ComboBox1.Text)
         If ItemsDictionary.Count > 0 Then
@@ -821,7 +836,6 @@ Public Class Form1
         End If
         Me.Invoke(New MethodInvoker(Sub() ListView1.Items.AddRange(itemlist.Select(Function(row, index) New ListViewItem({index.ToString()}.Concat(row).ToArray())).ToArray())))
     End Sub
-
     Private Sub CheckBox_JAVA_HOME_CheckedChanged(sender As Object, e As EventArgs) Handles CheckBox_JAVA_HOME.CheckedChanged
         If CheckBox_JAVA_HOME.Checked = False Then
             Dim folderDlg As FolderBrowserDialog = New FolderBrowserDialog()
@@ -912,7 +926,6 @@ Public Class Form1
                                         extractMethod(codePath)
                                     End Sub)
         newthread.Start()
-
     End Sub
     Private Sub extractMethod(szContent As String)
         codeDictionary.Clear()
@@ -935,7 +948,6 @@ Public Class Form1
             Catch ex As Exception
 
             End Try
-
         Next
     End Sub
 
@@ -981,7 +993,6 @@ Public Class Form1
             Catch ex As Exception
 
             End Try
-
         Next
     End Sub
     Private Sub btn_Wrapper_Click(sender As Object, e As EventArgs) Handles btn_Wrapper.Click
@@ -1100,5 +1111,65 @@ Public Class Form1
         ResourceType = ListView1.SelectedItems(0).SubItems(1).Text
 
     End Sub
+
+    Private Sub btn_androidjar_Click(sender As Object, e As EventArgs) Handles btn_androidjar.Click
+        Dim openFileDialog As New System.Windows.Forms.OpenFileDialog()
+        openFileDialog.Filter = "jar file|*.jar"
+        openFileDialog.RestoreDirectory = True
+        openFileDialog.FilterIndex = 1        '
+        Dim result As DialogResult = openFileDialog.ShowDialog()
+        If result = System.Windows.Forms.DialogResult.OK Then
+            txt_androidjar.Text = openFileDialog.FileName
+        End If
+        If txt_androidjar.Text = "" Or txt_androidjar.Text.Contains("\") = False Then Return
+        txt_androidjar.ForeColor = Color.Black
+        txt_androidjar.TextAlign = HorizontalAlignment.Left
+        Dim OpenCUKey As RegistryKey = RegistryKey.OpenBaseKey(RegistryHive.CurrentUser, IIf(Environment.Is64BitOperatingSystem, RegistryView.Registry64, RegistryView.Registry32))
+        Using subRegKey = OpenCUKey.OpenSubKey("Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers", True)
+            If subRegKey Is Nothing Then
+                Using subKey = OpenCUKey.CreateSubKey("Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers", RegistryKeyPermissionCheck.Default)
+                    subKey.SetValue("AndroidJar", txt_androidjar.Text, RegistryValueKind.String)
+                End Using
+            Else
+                subRegKey.SetValue("AndroidJar", txt_androidjar.Text, RegistryValueKind.String)
+            End If
+            androidjarPath = txt_androidjar.Text
+        End Using
+    End Sub
+
+    Private Sub btn_B4A_Click(sender As Object, e As EventArgs) Handles btn_B4A.Click
+        Dim openFileDialog As New System.Windows.Forms.OpenFileDialog()
+        openFileDialog.Filter = "Executable file|*.exe"
+        openFileDialog.RestoreDirectory = True
+        openFileDialog.FilterIndex = 1        '
+        Dim result As DialogResult = openFileDialog.ShowDialog()
+        If result = System.Windows.Forms.DialogResult.OK Then
+            txt_b4a.Text = openFileDialog.FileName
+        End If
+        If txt_b4a.Text = "" Or txt_b4a.Text.Contains("\") = False Then Return
+        txt_b4a.ForeColor = Color.Black
+        txt_b4a.TextAlign = HorizontalAlignment.Left
+        Dim OpenCUKey As RegistryKey = RegistryKey.OpenBaseKey(RegistryHive.CurrentUser, IIf(Environment.Is64BitOperatingSystem, RegistryView.Registry64, RegistryView.Registry32))
+        Using subRegKey = OpenCUKey.OpenSubKey("Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers", True)
+            If subRegKey Is Nothing Then
+                Using subKey = OpenCUKey.CreateSubKey("Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers", RegistryKeyPermissionCheck.Default)
+                    subKey.SetValue("B4aPath", txt_b4a.Text, RegistryValueKind.String)
+                End Using
+            Else
+                subRegKey.SetValue("B4aPath", txt_b4a.Text, RegistryValueKind.String)
+            End If
+            B4AShared = Path.GetDirectoryName(txt_b4a.Text) + "\libraries\B4AShared.jar"
+            Core = Path.GetDirectoryName(txt_b4a.Text) + "\libraries\Core.jar"
+        End Using
+    End Sub
+
+    Private Sub btn_Compile_Click(sender As Object, e As EventArgs) Handles btn_Compile.Click
+        If txt_b4a.Text = "" Or txt_b4a.Text.Contains("\") = False Or txt_androidjar.Text = "" Or txt_androidjar.Text.Contains("\") = False Then Return
+        If CheckBox_JAVA_HOME.Checked = False Then Return
+        If ProjectPath Is Nothing Or ProjectPath = "" Then Return
+        CompileForm.ShowDialog()
+    End Sub
+
+
 End Class
 

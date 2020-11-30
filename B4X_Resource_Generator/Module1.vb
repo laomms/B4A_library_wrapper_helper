@@ -12,6 +12,10 @@ Module Module1
     Public DependsOn As String
     Public WrapperList As New List(Of String)
     Public CodeString As String = ""
+    Public ProjectPath As String
+    Public B4AShared = ""
+    Public Core = ""
+    Public androidjarPath = ""
     Public Sub WriteXML2(Maven As String, outPath As String)
         Using writer As New XmlTextWriter(outPath, System.Text.Encoding.UTF8)
             writer.WriteStartDocument()

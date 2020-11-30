@@ -56,11 +56,21 @@ Partial Class Form1
         Me.ContextMenuStrip2 = New System.Windows.Forms.ContextMenuStrip(Me.components)
         Me.WrapperMethodToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.ComboBox3 = New System.Windows.Forms.ComboBox()
+        Me.btn_Compile = New System.Windows.Forms.Button()
+        Me.btn_androidjar = New System.Windows.Forms.Button()
+        Me.Label4 = New System.Windows.Forms.Label()
+        Me.btn_B4A = New System.Windows.Forms.Button()
+        Me.Label5 = New System.Windows.Forms.Label()
+        Me.GroupBox4 = New System.Windows.Forms.GroupBox()
+        Me.txt_b4a = New System.Windows.Forms.TextBox()
+        Me.txt_androidjar = New System.Windows.Forms.TextBox()
+        Me.OpenFileDialog1 = New System.Windows.Forms.OpenFileDialog()
         Me.GroupBox1.SuspendLayout()
         Me.GroupBox2.SuspendLayout()
         Me.ContextMenuStrip1.SuspendLayout()
         Me.GroupBox3.SuspendLayout()
         Me.ContextMenuStrip2.SuspendLayout()
+        Me.GroupBox4.SuspendLayout()
         Me.SuspendLayout()
         '
         'TextBox1
@@ -193,7 +203,7 @@ Partial Class Form1
         '
         'btn_Wrapper
         '
-        Me.btn_Wrapper.Location = New System.Drawing.Point(207, 328)
+        Me.btn_Wrapper.Location = New System.Drawing.Point(207, 325)
         Me.btn_Wrapper.Name = "btn_Wrapper"
         Me.btn_Wrapper.Size = New System.Drawing.Size(96, 39)
         Me.btn_Wrapper.TabIndex = 13
@@ -229,7 +239,7 @@ Partial Class Form1
         'Label3
         '
         Me.Label3.AutoSize = True
-        Me.Label3.Location = New System.Drawing.Point(6, 95)
+        Me.Label3.Location = New System.Drawing.Point(10, 94)
         Me.Label3.Name = "Label3"
         Me.Label3.Size = New System.Drawing.Size(54, 13)
         Me.Label3.TabIndex = 14
@@ -308,7 +318,7 @@ Partial Class Form1
         Me.GroupBox3.Controls.Add(Me.ComboBox3)
         Me.GroupBox3.Location = New System.Drawing.Point(516, 186)
         Me.GroupBox3.Name = "GroupBox3"
-        Me.GroupBox3.Size = New System.Drawing.Size(426, 182)
+        Me.GroupBox3.Size = New System.Drawing.Size(426, 342)
         Me.GroupBox3.TabIndex = 21
         Me.GroupBox3.TabStop = False
         Me.GroupBox3.Text = "Event List"
@@ -319,7 +329,7 @@ Partial Class Form1
         Me.RichTextBox1.ContextMenuStrip = Me.ContextMenuStrip2
         Me.RichTextBox1.Location = New System.Drawing.Point(4, 42)
         Me.RichTextBox1.Name = "RichTextBox1"
-        Me.RichTextBox1.Size = New System.Drawing.Size(416, 139)
+        Me.RichTextBox1.Size = New System.Drawing.Size(416, 294)
         Me.RichTextBox1.TabIndex = 1
         Me.RichTextBox1.Text = ""
         '
@@ -345,11 +355,94 @@ Partial Class Form1
         Me.ComboBox3.Size = New System.Drawing.Size(416, 21)
         Me.ComboBox3.TabIndex = 0
         '
+        'btn_Compile
+        '
+        Me.btn_Compile.Location = New System.Drawing.Point(200, 95)
+        Me.btn_Compile.Name = "btn_Compile"
+        Me.btn_Compile.Size = New System.Drawing.Size(96, 39)
+        Me.btn_Compile.TabIndex = 22
+        Me.btn_Compile.Text = "Compile"
+        Me.btn_Compile.UseVisualStyleBackColor = True
+        '
+        'btn_androidjar
+        '
+        Me.btn_androidjar.Location = New System.Drawing.Point(424, 14)
+        Me.btn_androidjar.Name = "btn_androidjar"
+        Me.btn_androidjar.Size = New System.Drawing.Size(68, 28)
+        Me.btn_androidjar.TabIndex = 25
+        Me.btn_androidjar.Text = "Select"
+        Me.btn_androidjar.UseVisualStyleBackColor = True
+        '
+        'Label4
+        '
+        Me.Label4.AutoSize = True
+        Me.Label4.Location = New System.Drawing.Point(13, 22)
+        Me.Label4.Name = "Label4"
+        Me.Label4.Size = New System.Drawing.Size(59, 13)
+        Me.Label4.TabIndex = 24
+        Me.Label4.Text = "android.jar:"
+        '
+        'btn_B4A
+        '
+        Me.btn_B4A.Location = New System.Drawing.Point(424, 52)
+        Me.btn_B4A.Name = "btn_B4A"
+        Me.btn_B4A.Size = New System.Drawing.Size(68, 28)
+        Me.btn_B4A.TabIndex = 28
+        Me.btn_B4A.Text = "Select"
+        Me.btn_B4A.UseVisualStyleBackColor = True
+        '
+        'Label5
+        '
+        Me.Label5.AutoSize = True
+        Me.Label5.Location = New System.Drawing.Point(17, 61)
+        Me.Label5.Name = "Label5"
+        Me.Label5.Size = New System.Drawing.Size(50, 13)
+        Me.Label5.TabIndex = 27
+        Me.Label5.Text = "B4A.exe:"
+        '
+        'GroupBox4
+        '
+        Me.GroupBox4.Controls.Add(Me.txt_b4a)
+        Me.GroupBox4.Controls.Add(Me.txt_androidjar)
+        Me.GroupBox4.Controls.Add(Me.btn_B4A)
+        Me.GroupBox4.Controls.Add(Me.Label5)
+        Me.GroupBox4.Controls.Add(Me.btn_androidjar)
+        Me.GroupBox4.Controls.Add(Me.Label4)
+        Me.GroupBox4.Controls.Add(Me.btn_Compile)
+        Me.GroupBox4.Location = New System.Drawing.Point(7, 374)
+        Me.GroupBox4.Name = "GroupBox4"
+        Me.GroupBox4.Size = New System.Drawing.Size(501, 154)
+        Me.GroupBox4.TabIndex = 29
+        Me.GroupBox4.TabStop = False
+        '
+        'txt_b4a
+        '
+        Me.txt_b4a.ForeColor = System.Drawing.SystemColors.GrayText
+        Me.txt_b4a.Location = New System.Drawing.Point(80, 56)
+        Me.txt_b4a.Name = "txt_b4a"
+        Me.txt_b4a.Size = New System.Drawing.Size(326, 20)
+        Me.txt_b4a.TabIndex = 30
+        Me.txt_b4a.Text = "Please select B4A executable file location"
+        '
+        'txt_androidjar
+        '
+        Me.txt_androidjar.ForeColor = System.Drawing.SystemColors.GrayText
+        Me.txt_androidjar.Location = New System.Drawing.Point(80, 19)
+        Me.txt_androidjar.Name = "txt_androidjar"
+        Me.txt_androidjar.Size = New System.Drawing.Size(326, 20)
+        Me.txt_androidjar.TabIndex = 29
+        Me.txt_androidjar.Text = "Please select android platforms"
+        '
+        'OpenFileDialog1
+        '
+        Me.OpenFileDialog1.FileName = "OpenFileDialog1"
+        '
         'Form1
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(954, 379)
+        Me.ClientSize = New System.Drawing.Size(954, 533)
+        Me.Controls.Add(Me.GroupBox4)
         Me.Controls.Add(Me.btn_Wrapper)
         Me.Controls.Add(Me.GroupBox3)
         Me.Controls.Add(Me.ListView1)
@@ -363,7 +456,7 @@ Partial Class Form1
         Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
         Me.Name = "Form1"
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
-        Me.Text = "B4X_WrapperHelper V1.3"
+        Me.Text = "B4X_WrapperHelper V1.4"
         Me.GroupBox1.ResumeLayout(False)
         Me.GroupBox1.PerformLayout()
         Me.GroupBox2.ResumeLayout(False)
@@ -371,6 +464,8 @@ Partial Class Form1
         Me.ContextMenuStrip1.ResumeLayout(False)
         Me.GroupBox3.ResumeLayout(False)
         Me.ContextMenuStrip2.ResumeLayout(False)
+        Me.GroupBox4.ResumeLayout(False)
+        Me.GroupBox4.PerformLayout()
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
@@ -407,4 +502,13 @@ Partial Class Form1
     Friend WithEvents ContextMenuStrip2 As ContextMenuStrip
     Friend WithEvents WrapperMethodToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents btn_listener As Button
+    Friend WithEvents btn_Compile As Button
+    Friend WithEvents btn_androidjar As Button
+    Friend WithEvents Label4 As Label
+    Friend WithEvents btn_B4A As Button
+    Friend WithEvents Label5 As Label
+    Friend WithEvents GroupBox4 As GroupBox
+    Friend WithEvents txt_b4a As TextBox
+    Friend WithEvents txt_androidjar As TextBox
+    Friend WithEvents OpenFileDialog1 As OpenFileDialog
 End Class

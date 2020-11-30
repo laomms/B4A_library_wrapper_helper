@@ -106,6 +106,12 @@
     <Compile Include="CodeEditor.vb">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="CompileForm.Designer.vb">
+      <DependentUpon>CompileForm.vb</DependentUpon>
+    </Compile>
+    <Compile Include="CompileForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="DecoderAPK.vb" />
     <Compile Include="DownloadForm.Designer.vb">
       <DependentUpon>DownloadForm.vb</DependentUpon>
@@ -154,6 +160,9 @@
     <EmbeddedResource Include="CodeEditor.resx">
       <DependentUpon>CodeEditor.vb</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="CompileForm.resx">
+      <DependentUpon>CompileForm.vb</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="DownloadForm.resx">
       <DependentUpon>DownloadForm.vb</DependentUpon>
     </EmbeddedResource>
@@ -171,6 +180,8 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="BADoclet%24Property.class" />
+    <EmbeddedResource Include="BADoclet.class" />
     <None Include="My Project\app.manifest" />
     <None Include="My Project\Application.myapp">
       <Generator>MyApplicationCodeGenerator</Generator>
