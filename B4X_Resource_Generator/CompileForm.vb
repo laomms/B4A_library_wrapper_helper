@@ -14,7 +14,8 @@ Public Class CompileForm
         If Directory.Exists(ProjectPath + "\libs") Then
             Dim cpList = Directory.GetFiles(ProjectPath + "\libs", "*.*", SearchOption.TopDirectoryOnly).Where(Function(f) New List(Of String) From {".jar", ".aar"}.IndexOf(Path.GetExtension(f)) >= 0).ToArray()
             If cpList.Count > 0 Then
-                cp = """" + androidjarPath + """;""" + B4AShared + """;""" + Core + """;" + String.Join(";", cpList).Replace(ProjectPath + "\", "").Replace("\", "/")
+                'cp = """" + androidjarPath + """;""" + B4AShared + """;""" + Core + """;" + String.Join(";", cpList).Replace(ProjectPath + "\", "").Replace("\", "/")
+                cp = """" + androidjarPath + """;""" + B4AShared + """;""" + Core + """;" + "lib/.*;lib;"
             Else
                 cp = """" + androidjarPath + """;""" + B4AShared + """;""" + Core + """;"
             End If
