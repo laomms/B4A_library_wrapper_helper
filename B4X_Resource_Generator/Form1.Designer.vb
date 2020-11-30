@@ -41,6 +41,7 @@ Partial Class Form1
         Me.btn_Download = New System.Windows.Forms.Button()
         Me.btn_Wrapper = New System.Windows.Forms.Button()
         Me.GroupBox2 = New System.Windows.Forms.GroupBox()
+        Me.btn_listener = New System.Windows.Forms.Button()
         Me.Label3 = New System.Windows.Forms.Label()
         Me.CheckBox_CLASSPATH = New System.Windows.Forms.CheckBox()
         Me.CheckBox_MAVEN_HOME = New System.Windows.Forms.CheckBox()
@@ -55,7 +56,6 @@ Partial Class Form1
         Me.ContextMenuStrip2 = New System.Windows.Forms.ContextMenuStrip(Me.components)
         Me.WrapperMethodToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.ComboBox3 = New System.Windows.Forms.ComboBox()
-        Me.btn_listener = New System.Windows.Forms.Button()
         Me.GroupBox1.SuspendLayout()
         Me.GroupBox2.SuspendLayout()
         Me.ContextMenuStrip1.SuspendLayout()
@@ -217,6 +217,15 @@ Partial Class Form1
         Me.GroupBox2.TabIndex = 15
         Me.GroupBox2.TabStop = False
         '
+        'btn_listener
+        '
+        Me.btn_listener.Location = New System.Drawing.Point(427, 50)
+        Me.btn_listener.Name = "btn_listener"
+        Me.btn_listener.Size = New System.Drawing.Size(68, 28)
+        Me.btn_listener.TabIndex = 15
+        Me.btn_listener.Text = "listener"
+        Me.btn_listener.UseVisualStyleBackColor = True
+        '
         'Label3
         '
         Me.Label3.AutoSize = True
@@ -285,12 +294,12 @@ Partial Class Form1
         '
         Me.ContextMenuStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.AddToRjavaToolStripMenuItem})
         Me.ContextMenuStrip1.Name = "ContextMenuStrip1"
-        Me.ContextMenuStrip1.Size = New System.Drawing.Size(145, 26)
+        Me.ContextMenuStrip1.Size = New System.Drawing.Size(181, 48)
         '
         'AddToRjavaToolStripMenuItem
         '
         Me.AddToRjavaToolStripMenuItem.Name = "AddToRjavaToolStripMenuItem"
-        Me.AddToRjavaToolStripMenuItem.Size = New System.Drawing.Size(144, 22)
+        Me.AddToRjavaToolStripMenuItem.Size = New System.Drawing.Size(180, 22)
         Me.AddToRjavaToolStripMenuItem.Text = "Add to R.java"
         '
         'GroupBox3
@@ -336,15 +345,6 @@ Partial Class Form1
         Me.ComboBox3.Size = New System.Drawing.Size(416, 21)
         Me.ComboBox3.TabIndex = 0
         '
-        'btn_listener
-        '
-        Me.btn_listener.Location = New System.Drawing.Point(427, 50)
-        Me.btn_listener.Name = "btn_listener"
-        Me.btn_listener.Size = New System.Drawing.Size(68, 28)
-        Me.btn_listener.TabIndex = 15
-        Me.btn_listener.Text = "listener"
-        Me.btn_listener.UseVisualStyleBackColor = True
-        '
         'Form1
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -363,7 +363,7 @@ Partial Class Form1
         Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
         Me.Name = "Form1"
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
-        Me.Text = "B4X_WrapperHelper V1.4"
+        Me.Text = "B4X_WrapperHelper V1.3"
         Me.GroupBox1.ResumeLayout(False)
         Me.GroupBox1.PerformLayout()
         Me.GroupBox2.ResumeLayout(False)

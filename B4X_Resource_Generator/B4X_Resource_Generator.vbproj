@@ -100,6 +100,12 @@
     <Import Include="System.Threading.Tasks" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CodeEditor.Designer.vb">
+      <DependentUpon>CodeEditor.vb</DependentUpon>
+    </Compile>
+    <Compile Include="CodeEditor.vb">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="DecoderAPK.vb" />
     <Compile Include="DownloadForm.Designer.vb">
       <DependentUpon>DownloadForm.vb</DependentUpon>
@@ -145,6 +151,9 @@
     <Compile Include="SysEnvironment.vb" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="CodeEditor.resx">
+      <DependentUpon>CodeEditor.vb</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="DownloadForm.resx">
       <DependentUpon>DownloadForm.vb</DependentUpon>
     </EmbeddedResource>

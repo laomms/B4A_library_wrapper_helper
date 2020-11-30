@@ -728,6 +728,27 @@ Public Class Form1
         If Directory.Exists(Path.GetDirectoryName(szPath) + "\res") = True Then
             Dim xmlfiles = Directory.GetFiles(Path.GetDirectoryName(szPath) + "\res", "*.*", SearchOption.AllDirectories).Where(Function(f) New List(Of String) From {".xml"}.IndexOf(Path.GetExtension(f)) >= 0).ToArray()
             If xmlfiles.Count > 0 Then
+                Try
+                    Dim layoutfiles = Directory.GetFiles(Path.GetDirectoryName(szPath) + "\res\layout\", "*.xml", SearchOption.TopDirectoryOnly).Where(Function(f) New List(Of String) From {".xml"}.IndexOf(Path.GetExtension(f)) >= 0).ToArray()
+                    If layoutfiles.Count > 0 Then
+                        For Each item In layoutfiles
+                            itemlist.Add(New List(Of String) From {"layout", Path.GetFileName(item).Replace(".xml", ""), Path.GetFileName(item)})
+                        Next
+                    End If
+                Catch ex As Exception
+
+                End Try
+                Try
+                    Dim drawablefiles = Directory.GetFiles(Path.GetDirectoryName(szPath) + "\res\drawable\", "*.png", SearchOption.TopDirectoryOnly).Where(Function(f) New List(Of String) From {".png"}.IndexOf(Path.GetExtension(f)) >= 0).ToArray()
+                    If drawablefiles.Count > 0 Then
+                        For Each item In drawablefiles
+                            itemlist.Add(New List(Of String) From {"drawable", Path.GetFileName(item).Replace(".png", ""), Path.GetFileName(item)})
+                        Next
+                    End If
+                Catch ex As Exception
+
+                End Try
+
                 For Each xmlfile In xmlfiles
                     If xmlfile.Contains("styles.xml") Then
                         Dim fileContent As String = File.ReadAllText(xmlfile)
@@ -754,9 +775,10 @@ Public Class Form1
                         Dim fileContent As String = File.ReadAllText(xmlfile)
                         For Each line In fileContent.Split({vbCrLf, vbLf, vbCr}, StringSplitOptions.RemoveEmptyEntries)
                             If line.Contains("@") Then
+                                Dim item = New Regex("(?<=@).*?(?=[\p{P}\p{S}-[/_]])").Match(line).Value.Trim
                                 filename = Path.GetFileName(xmlfile)
-                                viewtype = New Regex("(?<=:).*?(?=[\p{P}\p{S}])").Match(line).Value.Trim
-                                viewname = New Regex("(?<=@).*?(?=[\p{P}\p{S}-[/_]])").Match(line).Value.Trim
+                                viewtype = item.Split("/")(0)
+                                viewname = item.Split("/")(1)
                                 itemlist.Add(New List(Of String) From {viewtype, viewname, filename})
                             End If
                         Next
@@ -774,22 +796,28 @@ Public Class Form1
                         Dim matches As MatchCollection = Regex.Matches(fileContent, "<([^<]*)\/>", RegexOptions.Multiline Or RegexOptions.IgnoreCase)
                         For Each match As Match In matches
                             If match.Value.Contains("android:id") Then
-                                filename = Path.GetFileName(xmlfile)
-                                For Each line In match.Value.Split({vbCrLf, vbLf, vbCr}, StringSplitOptions.RemoveEmptyEntries)
-                                    If line.Contains("<") Then
-                                        viewtype = line.Replace("<", "").Trim
-                                    ElseIf line.Contains("android:id") Then
-                                        viewname = New Regex("(?<=id\/).*?(?=[\p{P}\p{S}-[._]])").Match(line).Value.Trim
-                                    End If
+                                For Each mathitem As Match In Regex.Matches(fileContent, "(?<=@\+).*?(?=[\p{P}\p{S}-[/._]])", RegexOptions.Multiline Or RegexOptions.IgnoreCase)
+                                    Dim mathchLines = match.Value.Trim.Split({vbCrLf, vbLf, vbCr}, StringSplitOptions.RemoveEmptyEntries)
+                                    itemlist.Add(New List(Of String) From {mathitem.Value.Split("/")(0), mathitem.Value.Split("/")(1), mathchLines(0).Replace("<", "").Trim})
                                 Next
-                                itemlist.Add(New List(Of String) From {viewtype, viewname, filename})
+                            Else
+                                If match.Value.Contains("@") Then
+                                    Dim matchItems As MatchCollection = Regex.Matches(match.Value, "(?<=@).*?(?=[\p{P}\p{S}-[/._]])", RegexOptions.Multiline Or RegexOptions.IgnoreCase)
+                                    For Each mathitem As Match In matchItems
+                                        Dim mathchLines = match.Value.Trim.Split({vbCrLf, vbLf, vbCr}, StringSplitOptions.RemoveEmptyEntries)
+                                        Try
+                                            itemlist.Add(New List(Of String) From {mathitem.Value.Split("/")(0), mathitem.Value.Split("/")(1), mathchLines(0).Replace("<", "").Trim})
+                                        Catch ex As Exception
+                                        End Try
+                                    Next
+                                End If
                             End If
                         Next
                     End If
                 Next
+
             End If
         End If
-
         Me.Invoke(New MethodInvoker(Sub() ListView1.Items.AddRange(itemlist.Select(Function(row, index) New ListViewItem({index.ToString()}.Concat(row).ToArray())).ToArray())))
     End Sub
 
@@ -1012,6 +1040,15 @@ Public Class Form1
         File.WriteAllText(Path.GetDirectoryName(ComboBox2.Text) + "\" + Path.GetFileName(ProjectPath) + "Wrapper.java", wrapperText)
     End Sub
 
+    Private Sub WrapperMethodToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles WrapperMethodToolStripMenuItem.Click
+        If RichTextBox1.Text = "" Then Return
+        CodeString = RichTextBox1.Text
+        CodeEditor.ShowDialog()
 
+    End Sub
+
+    Private Sub AddToRjavaToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles AddToRjavaToolStripMenuItem.Click
+
+    End Sub
 End Class
 
