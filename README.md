@@ -7,4 +7,6 @@
 ##### extract resource items
 ##### parsing java code
 
+![image](https://github.com/laomms/B4A_library_wrapper_helper/blob/master/pic.png)   
+
 
