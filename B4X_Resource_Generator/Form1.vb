@@ -1074,7 +1074,9 @@ Public Class Form1
                     fileContent = fileContent.Replace(variable, "public static int " + ResourceName + " = BA.applicationContext.getResources().getIdentifier(""" + ResourceName + """, """ + ResourceType + """, BA.packageName);")
                 Else
                     Dim index = fileContent.IndexOf(classContent)
-                    fileContent.Insert(index + classContent.LastIndexOfAny("}") - 1, vbNewLine + "		public static int " + ResourceName + " = BA.applicationContext.getResources().getIdentifier(""" + ResourceName + """, ""ResourceType"", BA.packageName);" + vbNewLine)
+                    Dim index2 = classContent.LastIndexOf(";")
+                    Dim newString = fileContent.Insert(index + classContent.LastIndexOf(";"), vbNewLine + "		public static int " + ResourceName + " = BA.applicationContext.getResources().getIdentifier(""" + ResourceName + """, """ + ResourceType + """, BA.packageName);" + vbNewLine)
+                    fileContent = newString
                 End If
             Else
                 Dim newstring = "	public static final class " + ResourceType + " {" +
