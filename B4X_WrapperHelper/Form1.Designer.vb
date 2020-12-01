@@ -149,7 +149,7 @@ Partial Class Form1
         Me.TextBox3.Name = "TextBox3"
         Me.TextBox3.Size = New System.Drawing.Size(326, 20)
         Me.TextBox3.TabIndex = 6
-        Me.TextBox3.Text = "Drag and drop or open or paste aar source folder"
+        Me.TextBox3.Text = "Drag and drop or open or paste aar source folder path"
         Me.TextBox3.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
         '
         'BackgroundWorker1

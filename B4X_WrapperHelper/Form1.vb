@@ -593,16 +593,7 @@ Public Class Form1
         End If
 
     End Sub
-    Public Shared Function GetText() As String
-        Dim ReturnValue As String = String.Empty
-        Dim STAThread As Thread = New Thread(Sub()
-                                                 ReturnValue = System.Windows.Forms.Clipboard.GetText()
-                                             End Sub)
-        STAThread.SetApartmentState(ApartmentState.STA)
-        STAThread.Start()
-        STAThread.Join()
-        Return ReturnValue
-    End Function
+
     Private Sub TextBox3_Click(sender As Object, e As EventArgs) Handles TextBox3.Click
         Dim clipstring As String = GetText()
         If New Regex("^(?:[c-zC-Z]\:|\\)(\\[a-zA-Z_\-\s0-9\.]+)+").Match(clipstring).Success Then
@@ -614,7 +605,7 @@ Public Class Form1
     End Sub
     Private Async Function Btn_Download_Click(sender As Object, e As EventArgs) As Task Handles btn_Download.Click
         ItemsDictionary.Clear()
-        ItemsDictionary = Await DownloadLib.SearchIemt(ComboBox1.Text)
+        ItemsDictionary = Await DownloadLib.SearchItem(ComboBox1.Text)
         If ItemsDictionary.Count > 0 Then
             SelectForm.ShowDialog()
             If SelectItem <> "" Then
@@ -640,7 +631,6 @@ Public Class Form1
                                     needSelect = False
                                     DownloadForm.ShowDialog()
                                 End If
-
                             Next
                         End If
                     End If
@@ -677,7 +667,7 @@ Public Class Form1
                 Return
             End If
         End If
-        ItemsDictionary = Await DownloadLib.SearchIemt(ComboBox1.Text)
+        ItemsDictionary = Await DownloadLib.SearchItem(ComboBox1.Text)
         If ItemsDictionary.Count > 0 Then
             SelectForm.ShowDialog()
             If SelectItem <> "" Then
@@ -1071,7 +1061,7 @@ Public Class Form1
             End If
         End If
         Debug.Print(wrapperText)
-        File.WriteAllText(ProjectPath + "\" + Path.GetFileName(ProjectPath) + "Wrapper.java", wrapperText)
+        File.WriteAllText(Path.GetDirectoryName(ComboBox2.Text) + "\" + Path.GetFileName(ProjectPath) + "Wrapper.java", wrapperText)
 
     End Sub
 
@@ -1187,12 +1177,11 @@ Public Class Form1
     End Sub
 
     Private Sub btn_Compile_Click(sender As Object, e As EventArgs) Handles btn_Compile.Click
-        If txt_b4a.Text = "" Or txt_b4a.Text.Contains("\") = False Or txt_androidjar.Text = "" Or txt_androidjar.Text.Contains("\") = False Then Return
-        If CheckBox_JAVA_HOME.Checked = False Then Return
-        If ProjectPath Is Nothing Or ProjectPath = "" Then Return
         CompileForm.ShowDialog()
     End Sub
 
+    Private Sub TextBox3_TextChanged(sender As Object, e As EventArgs) Handles TextBox3.TextChanged
 
+    End Sub
 End Class
 

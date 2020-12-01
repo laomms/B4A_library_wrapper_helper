@@ -6,7 +6,7 @@ Public Class DownloadLib
     Public Shared mycookiecontainer As CookieContainer = New CookieContainer()
     Private Shared UrlReferer = "https://mvnrepository.com/"
     Private Shared redirecturl As String = ""
-    Public Shared Async Function SearchIemt(name As String) As Task(Of Dictionary(Of String, String))
+    Public Shared Async Function SearchItem(name As String) As Task(Of Dictionary(Of String, String))
         Dim ItemDictionary As New Dictionary(Of String, String)
         Dim Headerdics As New Dictionary(Of String, Object) From
         {
@@ -22,15 +22,15 @@ Public Class DownloadLib
         If Await Res <> "" Then
             Dim doc As New HtmlAgilityPack.HtmlDocument
             doc.LoadHtml(Res.Result)
-            For Each Node As HtmlAgilityPack.HtmlNode In doc.DocumentNode.SelectNodes("//div//h2[@class='im-title']")
-                Try
+            Try
+                For Each Node As HtmlAgilityPack.HtmlNode In doc.DocumentNode.SelectNodes("//div//h2[@class='im-title']")
                     Dim title = Node.SelectNodes(".//a").Select(Function(x) x.InnerText.Trim())(0)
                     Dim link = Node.SelectNodes(".//a").Select(Function(x) x.GetAttributeValue("href", ""))(0)
                     ItemDictionary.Add(title.Trim, link.Trim)
-                Catch ex As Exception
+                Next
+            Catch ex As Exception
 
-                End Try
-            Next
+            End Try
         End If
         Return ItemDictionary
     End Function
@@ -49,15 +49,15 @@ Public Class DownloadLib
         If Await Res <> "" Then
             Dim doc As New HtmlAgilityPack.HtmlDocument
             doc.LoadHtml(Res.Result)
-            For Each Node As HtmlAgilityPack.HtmlNode In doc.DocumentNode.SelectNodes("//div//table[@class='grid versions']//tbody//tr")
-                Try
+            Try
+                For Each Node As HtmlAgilityPack.HtmlNode In doc.DocumentNode.SelectNodes("//div//table[@class='grid versions']//tbody//tr")
                     Dim title = Node.SelectNodes(".//td//a").Select(Function(x) x.InnerText.Trim())(0)
                     Dim link = Node.SelectNodes(".//td//a").Select(Function(x) x.GetAttributeValue("href", ""))(0)
                     ItemDictionary.Add(title, link)
-                Catch ex As Exception
+                Next
+            Catch ex As Exception
 
-                End Try
-            Next
+            End Try
         End If
         UrlReferer = url
         Return ItemDictionary
@@ -106,13 +106,13 @@ Public Class DownloadLib
         If Await Res <> "" Then
             Dim doc As New HtmlAgilityPack.HtmlDocument
             doc.LoadHtml(Res.Result)
-            For Each Node As HtmlAgilityPack.HtmlNode In doc.DocumentNode.SelectNodes("//textarea[@id='maven-a']")
-                Try
+            Try
+                For Each Node As HtmlAgilityPack.HtmlNode In doc.DocumentNode.SelectNodes("//textarea[@id='maven-a']")
                     Return HttpUtility.HtmlDecode(Node.InnerText)
-                Catch ex As Exception
+                Next
+            Catch ex As Exception
 
-                End Try
-            Next
+            End Try
         End If
         Return ""
     End Function
@@ -130,13 +130,13 @@ Public Class DownloadLib
         If Await Res <> "" Then
             Dim doc As New HtmlAgilityPack.HtmlDocument
             doc.LoadHtml(Res.Result)
-            For Each Node As HtmlAgilityPack.HtmlNode In doc.DocumentNode.SelectNodes("//textarea[@id='maven-a']")
-                Try
+            Try
+                For Each Node As HtmlAgilityPack.HtmlNode In doc.DocumentNode.SelectNodes("//textarea[@id='maven-a']")
                     Return HttpUtility.HtmlDecode(Node.InnerText)
-                Catch ex As Exception
+                Next
+            Catch ex As Exception
 
-                End Try
-            Next
+            End Try
         End If
         Return ""
     End Function

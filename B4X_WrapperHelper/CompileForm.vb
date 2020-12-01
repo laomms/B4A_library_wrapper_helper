@@ -1,27 +1,69 @@
 ﻿Imports System.IO
 Imports System.Text
 Imports System.Text.RegularExpressions
+Imports System.Xml
 
 Public Class CompileForm
-    Private Sub CompileForm_Load(sender As Object, e As EventArgs) Handles MyBase.Load
-        RichTextBox1.Text = ""
-        Dim javaList = Directory.GetFiles(ProjectPath, "*.*", SearchOption.AllDirectories).Where(Function(f) New List(Of String) From {".kt", ".java"}.IndexOf(Path.GetExtension(f)) >= 0).ToArray()
-        If javaList.Count > 0 Then
-            For Each javaFile In javaList
-                Dim fileContent As String = File.ReadAllText(javaFile)
-                Using writer As New StreamWriter(javaFile, False, Encoding.GetEncoding("Windows-1252"))
-                    writer.Write(fileContent)
-                End Using
-            Next
+    Private Sub TextBox1_DragEnter(sender As Object, e As DragEventArgs) Handles TextBox1.DragEnter
+        If e.Data.GetDataPresent(DataFormats.FileDrop) Then
+            e.Effect = DragDropEffects.Copy
         End If
+    End Sub
+    Private Sub TextBox1_DragDrop(sender As Object, e As DragEventArgs) Handles TextBox1.DragDrop
+        Dim files() As String = e.Data.GetData(DataFormats.FileDrop)
+        For Each path In files
+            TextBox1.Text = String.Empty
+            TextBox1.ForeColor = Color.Black
+            TextBox1.TextAlign = HorizontalAlignment.Left
+            TextBox1.Text = path
+            ProjectPath = path
+        Next
+    End Sub
+    Private Sub CompileForm_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+        Me.MaximizeBox = False
+        Me.AllowDrop = True
+        TextBox1.AllowDrop = True
+        RichTextBox1.Text = ""
+        If ProjectPath <> "" Then
+            TextBox1.Text = ProjectPath
+            Dim javaList = Directory.GetFiles(ProjectPath, "*.*", SearchOption.AllDirectories).Where(Function(f) New List(Of String) From {".kt", ".java"}.IndexOf(Path.GetExtension(f)) >= 0).ToArray()
+            If javaList.Count > 0 Then
+                For Each javaFile In javaList
+                    Dim fileContent As String = File.ReadAllText(javaFile)
+                    Using writer As New StreamWriter(javaFile, False, Encoding.GetEncoding("Windows-1252"))
+                        writer.Write(fileContent)
+                    End Using
+                Next
+            End If
+        End If
+
+
     End Sub
 
     Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
         RichTextBox1.Text = ""
         Dim java As String = ""
         Dim cp As String = ""
+        If ProjectPath = "" Or ProjectPath.Contains("\") = False Then Return
+        If B4AShared = "" Or Core = "" Or androidjarPath = "" Then Return
         If Directory.Exists(ProjectPath + "\bin\classes") = False Then
             Directory.CreateDirectory(ProjectPath + "\bin\classes")
+        Else
+            Dim dir = New DirectoryInfo(ProjectPath + "\bin\classes")
+            For Each subdir As DirectoryInfo In dir.GetDirectories()
+                Try
+                    subdir.Delete(True)
+                Catch ex As Exception
+
+                End Try
+            Next
+            For Each file As FileInfo In dir.GetFiles()
+                Try
+                    file.Delete()
+                Catch ex As Exception
+
+                End Try
+            Next
         End If
         If Directory.Exists(ProjectPath + "\libs") Then
             Dim cpList = Directory.GetFiles(ProjectPath + "\libs", "*.*", SearchOption.TopDirectoryOnly).Where(Function(f) New List(Of String) From {".aar"}.IndexOf(Path.GetExtension(f)) >= 0).ToArray()
@@ -59,6 +101,8 @@ Public Class CompileForm
             End Using
         End Using
 
+
+
         Dim javadoc = SysEnvironment.GetSysEnvironmentByName("JAVA_HOME") + "\bin\javadoc"
         Using p1 As New Process
             p1.StartInfo.CreateNoWindow = True
@@ -81,6 +125,7 @@ Public Class CompileForm
 
     Private Sub CheckBox1_CheckedChanged(sender As Object, e As EventArgs) Handles CheckBox1.CheckedChanged
         RichTextBox1.Text = ""
+        If ProjectPath = "" Or ProjectPath.Contains("\") = False Then Return
         If CheckBox1.Checked = True Then
             If BackgroundWorker1.IsBusy = False Then
                 BackgroundWorker1.RunWorkerAsync()
@@ -110,13 +155,92 @@ Public Class CompileForm
     End Sub
 
     Private Sub CheckBox2_CheckedChanged(sender As Object, e As EventArgs) Handles CheckBox2.CheckedChanged
+        If ProjectPath = "" Or ProjectPath.Contains("\") = False Then Return
         If CheckBox1.Checked = True Then
             If RichTextBox1.Text = "" Then Return
-            Dim errorInfo = New Regex("(?<=error:).[\s\S]*?(?=error)").Match(RichTextBox1.Text).Value.Trim
-            If errorInfo.Contains("does not exist") Then
-                Dim packageName = New Regex("(?<=error: package).[\s\S]*?(?=does not exist)").Match(RichTextBox1.Text).Value.Trim
+            If BackgroundWorker2.IsBusy = False Then
+                Dim arguments As New List(Of Object)
+                arguments.Add(RichTextBox1.Text)
+                BackgroundWorker2.RunWorkerAsync(arguments)
+            End If
+        End If
+    End Sub
+
+    Private Async Sub BackgroundWorker2_DoWork(sender As Object, e As System.ComponentModel.DoWorkEventArgs) Handles BackgroundWorker2.DoWork
+        Dim arguments As List(Of Object) = TryCast(e.Argument, List(Of Object))
+        Dim filepath As String = ""
+        Dim files As String = New Regex("javac.[\s\S]*?(?=error)").Match(arguments(0)).Value.Trim
+        If files <> "" Then
+            filepath = ProjectPath + "\" + New Regex("src\\.[\s\S]*?(?=\:)").Match(files).Value.Trim
+        End If
+        Dim errorInfo = New Regex("(?<=error:).[\s\S]*?(?=error)").Match(arguments(0)).Value.Trim
+        If errorInfo.Contains("does not exist") Then
+            Dim packageName = New Regex("(?<=error: package).[\s\S]*?(?=does not exist)").Match(arguments(0)).Value.Trim
+            If packageName = "" Then Return
+            ItemsDictionary = New Dictionary(Of String, String)
+            ItemsDictionary.Clear()
+            ItemsDictionary = Await DownloadLib.SearchItem(packageName)
+            If ItemsDictionary.Count > 0 Then
+                SelectForm.ShowDialog()
+                If SelectItem <> "" Then
+                    Dim url = ItemsDictionary(SelectItem.Split("-")(0).Trim)
+                    ItemsDictionary.Clear()
+                    ItemsDictionary = Await DownloadLib.GetVersion(url)
+                    If ItemsDictionary.Count > 0 Then
+                        SelectForm.ShowDialog()
+                        If SelectItem <> "" Then
+                            url = url + "/" + SelectItem.Split("-")(0).Trim
+                            ItemsDictionary.Clear()
+                            ItemsDictionary = Await DownloadLib.GetPomFile(url)
+                            If ItemsDictionary.Count > 0 Then
+                                For Each keyPair In ItemsDictionary
+                                    If keyPair.Key.Contains("pom") Then
+                                        Dim document As New XmlDocument()
+                                        document.Load(keyPair.Value)
+                                        If File.Exists(packageName + "\pom.xml") Then File.Delete(packageName + "\pom.xml")
+                                        File.WriteAllText(packageName + "\pom.xml", document.InnerXml)
+                                    ElseIf keyPair.Key.Contains("aar") Or keyPair.Key.Contains("jar") Then
+                                        downlink = keyPair.Value
+                                        targetPath = ProjectPath + "\libs\" + Path.GetFileName(keyPair.Value)
+                                        needSelect = False
+                                        DownloadForm.ShowDialog()
+                                    End If
+                                Next
+                            End If
+                        End If
+                    End If
+                End If
+            End If
+            If packageName = "com.android.vending.billing" Then
 
             End If
+        ElseIf errorInfo.Contains("cannot be accessed from outside package") Then
+
+        End If
+    End Sub
+
+    Private Sub Button2_Click(sender As Object, e As EventArgs) Handles Button2.Click
+        Dim folderDlg As FolderBrowserDialog = New FolderBrowserDialog()
+        folderDlg.ShowNewFolderButton = True
+        Dim result As DialogResult = folderDlg.ShowDialog()
+        If result = DialogResult.OK Then
+            TextBox1.ForeColor = Color.Black
+            TextBox1.TextAlign = HorizontalAlignment.Left
+            TextBox1.Text = folderDlg.SelectedPath
+            ProjectPath = folderDlg.SelectedPath
+        End If
+    End Sub
+
+    Private Sub TextBox1_TextChanged(sender As Object, e As EventArgs) Handles TextBox1.TextChanged
+
+    End Sub
+
+    Private Sub TextBox1_Click(sender As Object, e As EventArgs) Handles TextBox1.Click
+        Dim clipstring As String = GetText()
+        If New Regex("^(?:[c-zC-Z]\:|\\)(\\[a-zA-Z_\-\s0-9\.]+)+").Match(clipstring).Success Then
+            TextBox1.ForeColor = Color.Black
+            TextBox1.TextAlign = HorizontalAlignment.Left
+            TextBox1.Text = clipstring
         End If
     End Sub
 End Class

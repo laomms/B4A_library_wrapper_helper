@@ -1,18 +1,19 @@
 ﻿Imports System.IO
+Imports System.Threading
 Imports System.Xml
 
 Module Module1
     Public ItemsDictionary As New Dictionary(Of String, String)
     Public codeDictionary As New Dictionary(Of String, String)
-    Public SelectItem As String
-    Public downloadPath As String
+    Public SelectItem As String = ""
+    Public downloadPath As String = ""
     Public needSelect As Boolean = False
-    Public targetPath As String
+    Public targetPath As String = ""
     Public downlink As String = ""
-    Public DependsOn As String
+    Public DependsOn As String = ""
     Public WrapperList As New List(Of String)
     Public CodeString As String = ""
-    Public ProjectPath As String
+    Public ProjectPath As String = ""
     Public B4AShared = ""
     Public Core = ""
     Public androidjarPath = ""
@@ -1191,4 +1192,14 @@ Module Module1
             writer.WriteEndDocument()
         End Using
     End Sub
+    Public Function GetText() As String
+        Dim ReturnValue As String = String.Empty
+        Dim STAThread As Thread = New Thread(Sub()
+                                                 ReturnValue = System.Windows.Forms.Clipboard.GetText()
+                                             End Sub)
+        STAThread.SetApartmentState(ApartmentState.STA)
+        STAThread.Start()
+        STAThread.Join()
+        Return ReturnValue
+    End Function
 End Module
