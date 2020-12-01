@@ -10,15 +10,16 @@ Imports Microsoft.Win32
 
 Public Class Form1
     Private WrapperList As List(Of List(Of String))
-    Private packageName As String = String.Empty
-    Private minSdkVersion As String
-    Private targetSdkVersion As String
-    Private RPath As String
-    Private srcPath As String
-    Private javaPath As String
+    Private packageName As String = ""
+    Private minSdkVersion As String = ""
+    Private targetSdkVersion As String = ""
+    Private RPath As String = ""
+    Private srcPath As String = ""
     Private mycookiecontainer As CookieContainer = New CookieContainer()
-    Private ResourceName As String
-    Private ResourceType As String
+    Private ResourceName As String = ""
+    Private ResourceType As String = ""
+    Private MainActivityPath As String = ""
+    Private BuildConfigDic As New Dictionary(Of String, Tuple(Of String, Object))
     Private Sub TextBox1_DragEnter(sender As Object, e As DragEventArgs) Handles TextBox1.DragEnter
         If e.Data.GetDataPresent(DataFormats.FileDrop) Then
             e.Effect = DragDropEffects.Copy
@@ -266,6 +267,34 @@ Public Class Form1
                             Next
                         End If
                     End If
+                    Dim defaultConfigList = Regex.Matches(fileContent, "(?<=defaultConfig).[\s\S]*?(?=\})", RegexOptions.Multiline Or RegexOptions.IgnoreCase).Cast(Of Match)().Select(Function(m) m.Value).ToList()
+                    If defaultConfigList.Count > 0 Then
+                        For Each defaultConfig In defaultConfigList
+                            Dim allLine = defaultConfig.Split({vbCrLf, vbLf, vbCr}, StringSplitOptions.RemoveEmptyEntries)
+                            For Each line In allLine
+                                If line.Contains("applicationId") Then
+                                    Dim items = Regex.Split(line.Trim, "\s+")
+                                    If BuildConfigDic.ContainsKey("APPLICATION_ID") = False Then BuildConfigDic.Add("APPLICATION_ID", New Tuple(Of String, Object)("String", items(1)))
+                                ElseIf line.Contains("versionCode") Then
+                                    Dim items = Regex.Split(line.Trim, "\s+")
+                                    If BuildConfigDic.ContainsKey("VERSION_CODE") = False Then BuildConfigDic.Add("VERSION_CODE", New Tuple(Of String, Object)("int", items(1)))
+                                ElseIf line.Contains("versionName") Then
+                                    Dim items = Regex.Split(line.Trim, "\s+")
+                                    If BuildConfigDic.ContainsKey("VERSION_NAME") = False Then BuildConfigDic.Add("VERSION_NAME", New Tuple(Of String, Object)("String", items(1)))
+                                End If
+                            Next
+                        Next
+                    End If
+                    Dim buildConfigFieldList = Regex.Matches(fileContent, "buildConfigField.*?(?=\n)").Cast(Of Match)().Select(Function(m) m.Value).ToList()
+                    If buildConfigFieldList.Count > 0 Then
+                        For Each buildConfigField In buildConfigFieldList
+                            Debug.Print(buildConfigField.Replace("buildConfigField", "").Replace("(", "").Replace(")", "").Replace("""", ""))
+                            Dim items = buildConfigField.Replace("buildConfigField", "").Replace("(", "").Replace(")", "").Replace("""", "").Split(",")
+                            If items.Count >= 3 Then
+                                If BuildConfigDic.ContainsKey(items(1).Trim) = False Then BuildConfigDic.Add(items(1).Trim, New Tuple(Of String, Object)(items(0).Trim, items(2).Trim))
+                            End If
+                        Next
+                    End If
                 Next
             End If
             If ComboBox1.Items.Count > 0 Then ComboBox1.Invoke(New MethodInvoker(Sub() ComboBox1.SelectedIndex = 0))
@@ -336,8 +365,8 @@ Public Class Form1
                                                     extractResource(ManifestPath)
                                                 End Sub)
                     newthread.Start()
-                    javaPath = Path.GetDirectoryName(ManifestPath) + "\java\" + packageName.Replace(".", "\")
-                    RPath = javaPath.Replace(javaPath.Substring(0, javaPath.IndexOf("src")), ProjectPath + "\")
+                    MainActivityPath = Path.GetDirectoryName(ManifestPath) + "\java\" + packageName.Replace(".", "\")
+                    RPath = MainActivityPath.Replace(MainActivityPath.Substring(0, MainActivityPath.IndexOf("src")), ProjectPath + "\")
                     If BackgroundWorker2.IsBusy = False Then
                         Dim arguments As New List(Of String)
                         arguments.Add(ManifestPath)
@@ -365,10 +394,25 @@ Public Class Form1
 
         End Try
 
-
+        If BuildConfigDic.Count > 0 Then
+            CreateBuildConfig(MainActivityPath + "\BuildConfig.java")
+        End If
 
     End Sub
-
+    Private Sub CreateBuildConfig(savepath As String)
+        Dim utf8WithoutBom As Encoding = Encoding.GetEncoding("ISO-8859-1")
+        Using outputFile As New StreamWriter(savepath, False, utf8WithoutBom)
+            outputFile.WriteLine("package " + packageName + ";")
+            outputFile.WriteLine(vbNewLine + "public final class BuildConfig {")
+            If BuildConfigDic.Count > 0 Then
+                Dim className As String = ""
+                For Each item In BuildConfigDic
+                    outputFile.WriteLine("	public static final " + item.Value.Item1 + " " + item.Key + "=" + item.Value.Item2 + ";")
+                Next
+            End If
+            outputFile.WriteLine("}")
+        End Using
+    End Sub
     Private Sub BackgroundWorker2_DoWork(sender As Object, e As System.ComponentModel.DoWorkEventArgs) Handles BackgroundWorker2.DoWork
         Dim arguments As List(Of String) = TryCast(e.Argument, List(Of String))
         Dim ManifestPath As String = arguments(0)
@@ -405,15 +449,15 @@ Public Class Form1
                 activityList.Add("        " + match.Value.ToString.Replace(""".", """" + packageName + "."))
             End If
         Next
-        javaPath = Path.GetDirectoryName(ManifestPath) + "\java\" + packageName.Replace(".", "\")
-        Dim javafiles = Directory.GetFiles(javaPath, "*.*", SearchOption.AllDirectories).Where(Function(f) New List(Of String) From {".java"}.IndexOf(Path.GetExtension(f)) >= 0).ToArray()
+        MainActivityPath = Path.GetDirectoryName(ManifestPath) + "\java\" + packageName.Replace(".", "\")
+        Dim javafiles = Directory.GetFiles(MainActivityPath, "*.*", SearchOption.AllDirectories).Where(Function(f) New List(Of String) From {".java"}.IndexOf(Path.GetExtension(f)) >= 0).ToArray()
         If javafiles.Count > 0 Then
             Dim bs As New BindingSource()
             bs.DataSource = javafiles
             ComboBox2.Invoke(New MethodInvoker(Sub() ComboBox2.DataSource = bs))
             If mainActivity <> "" Then
                 mainActivity = mainActivity.Replace(".", "\")
-                ComboBox2.Invoke(New MethodInvoker(Sub() ComboBox2.Text = javaPath + "\" + mainActivity + ".java"))
+                ComboBox2.Invoke(New MethodInvoker(Sub() ComboBox2.Text = MainActivityPath + "\" + mainActivity + ".java"))
             Else
                 If javafiles.Count = 1 Then
                     ComboBox2.Invoke(New MethodInvoker(Sub() ComboBox2.Text = javafiles(0)))
@@ -1063,7 +1107,7 @@ Public Class Form1
             End If
         End If
         Debug.Print(wrapperText)
-        File.WriteAllText(Path.GetDirectoryName(ComboBox2.Text) + "\" + Path.GetFileName(ProjectPath) + "Wrapper.java", wrapperText)
+        File.WriteAllText(MainActivityPath + "\" + Path.GetFileName(ProjectPath) + "Wrapper.java", wrapperText)
 
     End Sub
 

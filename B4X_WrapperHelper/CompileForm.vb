@@ -36,6 +36,7 @@ Public Class CompileForm
         TextBox1.AllowDrop = True
         RichTextBox1.Text = ""
         If ProjectPath <> "" Then
+            TextBox1.TextAlign = HorizontalAlignment.Left
             TextBox1.Text = ProjectPath
             Dim javaList = Directory.GetFiles(ProjectPath, "*.*", SearchOption.AllDirectories).Where(Function(f) New List(Of String) From {".kt", ".java"}.IndexOf(Path.GetExtension(f)) >= 0).ToArray()
             If javaList.Count > 0 Then
@@ -246,6 +247,8 @@ Public Class CompileForm
             If packageName = "com.android.vending.billing" Then
 
             End If
+        ElseIf errorInfo.Contains("cannot find symbol") Then
+
         ElseIf errorInfo.Contains("cannot be accessed from outside package") Then
 
         End If
