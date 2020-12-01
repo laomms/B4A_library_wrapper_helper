@@ -110,11 +110,13 @@ Public Class Form1
         Using subRegKey = OpenCUKey.OpenSubKey("Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers", True)
             If Not subRegKey Is Nothing Then
                 If Not subRegKey.GetValue("AndroidJar") Is Nothing Then
+                    txt_androidjar.TextAlign = HorizontalAlignment.Left
                     txt_androidjar.Text = subRegKey.GetValue("AndroidJar")
                     androidjarPath = txt_androidjar.Text
                 End If
 
                 If Not subRegKey.GetValue("B4aPath") Is Nothing Then
+                    txt_b4a.TextAlign = HorizontalAlignment.Left
                     txt_b4a.Text = subRegKey.GetValue("B4aPath")
                     B4AShared = Path.GetDirectoryName(txt_b4a.Text) + "\libraries\B4AShared.jar"
                     Core = Path.GetDirectoryName(txt_b4a.Text) + "\libraries\Core.jar"

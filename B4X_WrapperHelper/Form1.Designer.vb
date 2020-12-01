@@ -423,6 +423,7 @@ Partial Class Form1
         Me.txt_b4a.Size = New System.Drawing.Size(326, 20)
         Me.txt_b4a.TabIndex = 30
         Me.txt_b4a.Text = "Please select B4A executable file location"
+        Me.txt_b4a.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
         '
         'txt_androidjar
         '
@@ -432,6 +433,7 @@ Partial Class Form1
         Me.txt_androidjar.Size = New System.Drawing.Size(326, 20)
         Me.txt_androidjar.TabIndex = 29
         Me.txt_androidjar.Text = "Please select android platforms"
+        Me.txt_androidjar.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
         '
         'OpenFileDialog1
         '

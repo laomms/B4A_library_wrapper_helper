@@ -2,6 +2,7 @@
 Imports System.Text
 Imports System.Text.RegularExpressions
 Imports System.Xml
+Imports Microsoft.Win32
 
 Public Class CompileForm
     Private Sub TextBox1_DragEnter(sender As Object, e As DragEventArgs) Handles TextBox1.DragEnter
@@ -17,6 +18,16 @@ Public Class CompileForm
             TextBox1.TextAlign = HorizontalAlignment.Left
             TextBox1.Text = path
             ProjectPath = path
+            Dim OpenCUKey As RegistryKey = RegistryKey.OpenBaseKey(RegistryHive.CurrentUser, IIf(Environment.Is64BitOperatingSystem, RegistryView.Registry64, RegistryView.Registry32))
+            Using subRegKey = OpenCUKey.OpenSubKey("Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers", True)
+                If subRegKey Is Nothing Then
+                    Using subKey = OpenCUKey.CreateSubKey("Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers", RegistryKeyPermissionCheck.Default)
+                        subKey.SetValue("ProjectPath", path, RegistryValueKind.String)
+                    End Using
+                Else
+                    subRegKey.SetValue("ProjectPath", path, RegistryValueKind.String)
+                End If
+            End Using
         Next
     End Sub
     Private Sub CompileForm_Load(sender As Object, e As EventArgs) Handles MyBase.Load
@@ -35,8 +46,18 @@ Public Class CompileForm
                     End Using
                 Next
             End If
+        Else
+            Dim OpenCUKey As RegistryKey = RegistryKey.OpenBaseKey(RegistryHive.CurrentUser, IIf(Environment.Is64BitOperatingSystem, RegistryView.Registry64, RegistryView.Registry32))
+            Using subRegKey = OpenCUKey.OpenSubKey("Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers", True)
+                If Not subRegKey Is Nothing Then
+                    If Not subRegKey.GetValue("ProjectPath") Is Nothing Then
+                        TextBox1.TextAlign = HorizontalAlignment.Left
+                        TextBox1.Text = subRegKey.GetValue("ProjectPath")
+                        ProjectPath = TextBox1.Text
+                    End If
+                End If
+            End Using
         End If
-
 
     End Sub
 
@@ -239,6 +260,16 @@ Public Class CompileForm
             TextBox1.TextAlign = HorizontalAlignment.Left
             TextBox1.Text = folderDlg.SelectedPath
             ProjectPath = folderDlg.SelectedPath
+            Dim OpenCUKey As RegistryKey = RegistryKey.OpenBaseKey(RegistryHive.CurrentUser, IIf(Environment.Is64BitOperatingSystem, RegistryView.Registry64, RegistryView.Registry32))
+            Using subRegKey = OpenCUKey.OpenSubKey("Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers", True)
+                If subRegKey Is Nothing Then
+                    Using subKey = OpenCUKey.CreateSubKey("Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers", RegistryKeyPermissionCheck.Default)
+                        subKey.SetValue("ProjectPath", folderDlg.SelectedPath, RegistryValueKind.String)
+                    End Using
+                Else
+                    subRegKey.SetValue("ProjectPath", folderDlg.SelectedPath, RegistryValueKind.String)
+                End If
+            End Using
         End If
     End Sub
 
@@ -252,6 +283,16 @@ Public Class CompileForm
             TextBox1.ForeColor = Color.Black
             TextBox1.TextAlign = HorizontalAlignment.Left
             TextBox1.Text = clipstring
+            Dim OpenCUKey As RegistryKey = RegistryKey.OpenBaseKey(RegistryHive.CurrentUser, IIf(Environment.Is64BitOperatingSystem, RegistryView.Registry64, RegistryView.Registry32))
+            Using subRegKey = OpenCUKey.OpenSubKey("Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers", True)
+                If subRegKey Is Nothing Then
+                    Using subKey = OpenCUKey.CreateSubKey("Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers", RegistryKeyPermissionCheck.Default)
+                        subKey.SetValue("ProjectPath", clipstring, RegistryValueKind.String)
+                    End Using
+                Else
+                    subRegKey.SetValue("ProjectPath", clipstring, RegistryValueKind.String)
+                End If
+            End Using
         End If
     End Sub
 End Class
