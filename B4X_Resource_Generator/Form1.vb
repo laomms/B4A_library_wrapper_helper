@@ -1049,7 +1049,7 @@ Public Class Form1
         End If
         Debug.Print(wrapperText)
         File.WriteAllText(ProjectPath + "\" + Path.GetFileName(ProjectPath) + "Wrapper.java", wrapperText)
-        File.WriteAllText(Path.GetDirectoryName(ComboBox2.Text) + "\" + Path.GetFileName(ProjectPath) + "Wrapper.java", wrapperText)
+
     End Sub
 
     Private Sub WrapperMethodToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles WrapperMethodToolStripMenuItem.Click

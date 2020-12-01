@@ -2,19 +2,21 @@
 
 Public Class CompileForm
     Private Sub CompileForm_Load(sender As Object, e As EventArgs) Handles MyBase.Load
-
+        RichTextBox1.Text = ""
     End Sub
 
     Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
+        RichTextBox1.Text = ""
         Dim java As String = ""
         Dim cp As String = ""
         If Directory.Exists(ProjectPath + "\bin\classes") = False Then
             Directory.CreateDirectory(ProjectPath + "\bin\classes")
         End If
         If Directory.Exists(ProjectPath + "\libs") Then
-            Dim cpList = Directory.GetFiles(ProjectPath + "\libs", "*.*", SearchOption.TopDirectoryOnly).Where(Function(f) New List(Of String) From {".jar", ".aar"}.IndexOf(Path.GetExtension(f)) >= 0).ToArray()
+            Dim cpList = Directory.GetFiles(ProjectPath + "\libs", "*.*", SearchOption.TopDirectoryOnly).Where(Function(f) New List(Of String) From {".aar"}.IndexOf(Path.GetExtension(f)) >= 0).ToArray()
             If cpList.Count > 0 Then
-                cp = """" + androidjarPath + """;""" + B4AShared + """;""" + Core + """;" + String.Join(";", cpList).Replace(ProjectPath + "\", "").Replace("\", "/")
+                cp = """" + androidjarPath + """;""" + B4AShared + """;""" + Core + """;" + "libs/*;" + String.Join(";", cpList).Replace(ProjectPath + "\", "").Replace("\", "/")
+                'cp = """" + androidjarPath + """;""" + B4AShared + """;""" + Core + """;" + "libs/*;libs;"
             Else
                 cp = """" + androidjarPath + """;""" + B4AShared + """;""" + Core + """;"
             End If
