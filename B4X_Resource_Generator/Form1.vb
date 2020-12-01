@@ -305,9 +305,32 @@ Public Class Form1
                         Else
                             Directory.CreateDirectory(ProjectPath + "\libs")
                         End If
-                        'Button7.Invoke(New MethodInvoker(Sub() Button7.Enabled = True))
+                        Dim androidTestFolder = Directory.GetDirectories(ProjectPath + "\src", "androidTest", SearchOption.AllDirectories)
+                        If androidTestFolder.Count > 0 Then
+                            Debug.Print(androidTestFolder(0))
+                            If Directory.Exists(androidTestFolder(0)) Then
+                                Try
+                                    Directory.Delete(androidTestFolder(0), True)
+                                Catch ex As Exception
+
+                                End Try
+
+                            End If
+                        End If
+                        Dim testFolder = Directory.GetDirectories(ProjectPath + "\src", "test", SearchOption.AllDirectories)
+                        If testFolder.Count > 0 Then
+                            Debug.Print(testFolder(0))
+                            If Directory.Exists(testFolder(0)) Then
+                                Try
+                                    Directory.Delete(testFolder(0), True)
+                                Catch ex As Exception
+
+                                End Try
+
+                            End If
+                        End If
                     End If
-                    Dim newthread As New Thread(Sub()
+                        Dim newthread As New Thread(Sub()
                                                     extractResource(ManifestPath)
                                                 End Sub)
                     newthread.Start()

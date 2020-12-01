@@ -26,6 +26,8 @@ Partial Class CompileForm
         Me.RichTextBox1 = New System.Windows.Forms.RichTextBox()
         Me.Button1 = New System.Windows.Forms.Button()
         Me.CheckBox1 = New System.Windows.Forms.CheckBox()
+        Me.CheckBox2 = New System.Windows.Forms.CheckBox()
+        Me.BackgroundWorker1 = New System.ComponentModel.BackgroundWorker()
         Me.SuspendLayout()
         '
         'RichTextBox1
@@ -39,7 +41,7 @@ Partial Class CompileForm
         '
         'Button1
         '
-        Me.Button1.Location = New System.Drawing.Point(236, 456)
+        Me.Button1.Location = New System.Drawing.Point(236, 467)
         Me.Button1.Name = "Button1"
         Me.Button1.Size = New System.Drawing.Size(107, 37)
         Me.Button1.TabIndex = 1
@@ -49,18 +51,32 @@ Partial Class CompileForm
         'CheckBox1
         '
         Me.CheckBox1.AutoSize = True
-        Me.CheckBox1.Location = New System.Drawing.Point(506, 467)
+        Me.CheckBox1.Location = New System.Drawing.Point(5, 478)
         Me.CheckBox1.Name = "CheckBox1"
-        Me.CheckBox1.Size = New System.Drawing.Size(61, 17)
+        Me.CheckBox1.Size = New System.Drawing.Size(117, 17)
         Me.CheckBox1.TabIndex = 2
-        Me.CheckBox1.Text = "AutoFix"
+        Me.CheckBox1.Text = "Android X migration"
         Me.CheckBox1.UseVisualStyleBackColor = True
+        '
+        'CheckBox2
+        '
+        Me.CheckBox2.AutoSize = True
+        Me.CheckBox2.Location = New System.Drawing.Point(514, 478)
+        Me.CheckBox2.Name = "CheckBox2"
+        Me.CheckBox2.Size = New System.Drawing.Size(61, 17)
+        Me.CheckBox2.TabIndex = 3
+        Me.CheckBox2.Text = "AutoFix"
+        Me.CheckBox2.UseVisualStyleBackColor = True
+        '
+        'BackgroundWorker1
+        '
         '
         'CompileForm
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(579, 498)
+        Me.ClientSize = New System.Drawing.Size(579, 521)
+        Me.Controls.Add(Me.CheckBox2)
         Me.Controls.Add(Me.CheckBox1)
         Me.Controls.Add(Me.Button1)
         Me.Controls.Add(Me.RichTextBox1)
@@ -77,4 +93,6 @@ Partial Class CompileForm
     Friend WithEvents RichTextBox1 As RichTextBox
     Friend WithEvents Button1 As Button
     Friend WithEvents CheckBox1 As CheckBox
+    Friend WithEvents CheckBox2 As CheckBox
+    Friend WithEvents BackgroundWorker1 As System.ComponentModel.BackgroundWorker
 End Class
