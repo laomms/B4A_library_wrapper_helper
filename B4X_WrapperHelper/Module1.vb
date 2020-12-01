@@ -1202,4 +1202,13 @@ Module Module1
         STAThread.Join()
         Return ReturnValue
     End Function
+    Public Function HasSubfoldersDavidDax(ByVal path As String) As Boolean
+        Dim directory As New DirectoryInfo(path)
+        Dim subdirs() As DirectoryInfo = directory.GetDirectories()
+        Return (subdirs.Length <> 0)
+    End Function
+    Public Function HasSubfoldersAlternate(ByVal path As String) As Boolean
+        Dim subfolders As IEnumerable(Of String) = Directory.EnumerateDirectories(path)
+        Return subfolders IsNot Nothing AndAlso subfolders.Any()
+    End Function
 End Module

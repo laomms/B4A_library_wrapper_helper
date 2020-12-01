@@ -123,37 +123,40 @@ Public Class CompileForm
             End Using
         End Using
 
-        Dim startInfo = New ProcessStartInfo(My.Computer.FileSystem.SpecialDirectories.Temp + "\B4X\jar.exe")
-        Dim args As String = String.Format(" cvf {0} .", Path.GetDirectoryName(ProjectPath) + "\" + Path.GetFileName(ProjectPath) + ".jar")
-        startInfo.Arguments = args
-        startInfo.UseShellExecute = False
-        startInfo.RedirectStandardOutput = True
-        startInfo.WorkingDirectory = ProjectPath + "\bin"
-        startInfo.CreateNoWindow = True
-        startInfo.WindowStyle = ProcessWindowStyle.Hidden
-        Using process As System.Diagnostics.Process = System.Diagnostics.Process.Start(startInfo)
-            Dim sr = process.StandardOutput
-            Debug.Print(sr.ReadToEnd)
-        End Using
-
-        Dim javadoc = SysEnvironment.GetSysEnvironmentByName("JAVA_HOME") + "\bin\javadoc"
-        Using p1 As New Process
-            p1.StartInfo.CreateNoWindow = True
-            p1.StartInfo.Verb = "runas"
-            p1.StartInfo.FileName = "cmd.exe"
-            p1.StartInfo.WorkingDirectory = ProjectPath
-            p1.StartInfo.Arguments = String.Format(" /c {0} -doclet BADoclet -docletpath {1} -classpath {2} -ProjectPath {3} -b4atarget {4} -b4aignore b4a.java.library.first {5}  2>>&1", javadoc, My.Computer.FileSystem.SpecialDirectories.Temp + "\B4X", cp, "src", Path.GetDirectoryName(ProjectPath) + "\" + Path.GetFileName(ProjectPath) + ".xml", java)
-            p1.StartInfo.WindowStyle = ProcessWindowStyle.Hidden
-            p1.StartInfo.UseShellExecute = False
-            p1.StartInfo.RedirectStandardOutput = True
-            p1.Start()
-            Dim output As String
-            Using streamreader As System.IO.StreamReader = p1.StandardOutput
-                output = streamreader.ReadToEnd()
-                Debug.Print(output)
-                RichTextBox1.AppendText(vbNewLine + output)
+        If HasSubfoldersAlternate(ProjectPath + "\bin\classes") Then
+            Dim startInfo = New ProcessStartInfo(My.Computer.FileSystem.SpecialDirectories.Temp + "\B4X\jar.exe")
+            Dim args As String = String.Format(" cvf {0} .", Path.GetDirectoryName(ProjectPath) + "\" + Path.GetFileName(ProjectPath) + ".jar")
+            startInfo.Arguments = args
+            startInfo.UseShellExecute = False
+            startInfo.RedirectStandardOutput = True
+            startInfo.WorkingDirectory = ProjectPath + "\bin\classes"
+            startInfo.CreateNoWindow = True
+            startInfo.WindowStyle = ProcessWindowStyle.Hidden
+            Using process As System.Diagnostics.Process = System.Diagnostics.Process.Start(startInfo)
+                Dim sr = process.StandardOutput
+                Debug.Print(sr.ReadToEnd)
             End Using
-        End Using
+
+            Dim javadoc = SysEnvironment.GetSysEnvironmentByName("JAVA_HOME") + "\bin\javadoc"
+            Using p1 As New Process
+                p1.StartInfo.CreateNoWindow = True
+                p1.StartInfo.Verb = "runas"
+                p1.StartInfo.FileName = "cmd.exe"
+                p1.StartInfo.WorkingDirectory = ProjectPath
+                p1.StartInfo.Arguments = String.Format(" /c {0} -doclet BADoclet -docletpath {1} -classpath {2} -ProjectPath {3} -b4atarget {4} -b4aignore b4a.java.library.first {5}  2>>&1", javadoc, My.Computer.FileSystem.SpecialDirectories.Temp + "\B4X", cp, "src", Path.GetDirectoryName(ProjectPath) + "\" + Path.GetFileName(ProjectPath) + ".xml", java)
+                p1.StartInfo.WindowStyle = ProcessWindowStyle.Hidden
+                p1.StartInfo.UseShellExecute = False
+                p1.StartInfo.RedirectStandardOutput = True
+                p1.Start()
+                Dim output As String
+                Using streamreader As System.IO.StreamReader = p1.StandardOutput
+                    output = streamreader.ReadToEnd()
+                    Debug.Print(output)
+                    RichTextBox1.AppendText(vbNewLine + output)
+                End Using
+            End Using
+        End If
+
     End Sub
 
     Private Sub CheckBox1_CheckedChanged(sender As Object, e As EventArgs) Handles CheckBox1.CheckedChanged
