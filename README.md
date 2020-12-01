@@ -6,6 +6,7 @@
 ##### support download dependencies items  
 ##### extract resource items
 ##### parsing java code
+##### compile java code
 
 ![image](https://github.com/laomms/B4A_library_wrapper_helper/blob/master/pic.png)   
 
