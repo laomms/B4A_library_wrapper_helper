@@ -101,7 +101,18 @@ Public Class CompileForm
             End Using
         End Using
 
-
+        Dim startInfo = New ProcessStartInfo(My.Computer.FileSystem.SpecialDirectories.Temp + "\B4X\jar.exe")
+        Dim args As String = String.Format(" cvf {0} .", Path.GetDirectoryName(ProjectPath) + "\" + Path.GetFileName(ProjectPath) + ".jar")
+        startInfo.Arguments = args
+        startInfo.UseShellExecute = False
+        startInfo.RedirectStandardOutput = True
+        startInfo.WorkingDirectory = ProjectPath + "\bin"
+        startInfo.CreateNoWindow = True
+        startInfo.WindowStyle = ProcessWindowStyle.Hidden
+        Using process As System.Diagnostics.Process = System.Diagnostics.Process.Start(startInfo)
+            Dim sr = process.StandardOutput
+            Debug.Print(sr.ReadToEnd)
+        End Using
 
         Dim javadoc = SysEnvironment.GetSysEnvironmentByName("JAVA_HOME") + "\bin\javadoc"
         Using p1 As New Process
