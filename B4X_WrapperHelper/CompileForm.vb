@@ -185,6 +185,18 @@ Public Class CompileForm
             Next
             RichTextBox1.Invoke(New MethodInvoker(Sub() RichTextBox1.Text = "MigrationAndroidX finished"))
         End If
+        Dim xmlfiles = Directory.GetFiles(ProjectPath, SearchOption.AllDirectories).Where(Function(f) New List(Of String) From {".xml"}.IndexOf(Path.GetExtension(f)) >= 0).ToArray()
+        If xmlfiles.Count > 0 Then
+            For Each xmlfile In xmlfiles
+                Dim fileContent As String = File.ReadAllText(xmlfile)
+                If fileContent.Contains("android.support.constraint.ConstraintLayout") Then
+                    fileContent = fileContent.Replace("android.support.constraint.ConstraintLayout", "androidx.constraintlayout.widget.ConstraintLayout")
+                    Using writer As New StreamWriter(xmlfile, False, Encoding.GetEncoding("ISO-8859-1"))
+                        writer.Write(fileContent)
+                    End Using
+                End If
+            Next
+        End If
     End Sub
 
     Private Sub CheckBox2_CheckedChanged(sender As Object, e As EventArgs) Handles CheckBox2.CheckedChanged
