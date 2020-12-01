@@ -143,7 +143,7 @@ Public Class CompileForm
                 p1.StartInfo.Verb = "runas"
                 p1.StartInfo.FileName = "cmd.exe"
                 p1.StartInfo.WorkingDirectory = ProjectPath
-                p1.StartInfo.Arguments = String.Format(" /c {0} -doclet BADoclet -docletpath {1} -classpath {2} -ProjectPath {3} -b4atarget {4} -b4aignore org,com.android,com.example,com.hoho {5}  2>>&1", javadoc, My.Computer.FileSystem.SpecialDirectories.Temp + "\B4X", cp, "src", Path.GetDirectoryName(ProjectPath) + "\" + Path.GetFileName(ProjectPath) + ".xml", javafiles)
+                p1.StartInfo.Arguments = String.Format(" /c {0} -doclet BADoclet -docletpath {1}  -bootclasspath {2} -classpath {3} -ProjectPath {4} -b4atarget {5} -b4aignore org,com.android,com.example,com.hoho {6}  2>>&1", javadoc, My.Computer.FileSystem.SpecialDirectories.Temp + "\B4X", androidjarPath, cp, "src", Path.GetDirectoryName(ProjectPath) + "\" + Path.GetFileName(ProjectPath) + ".xml", javafiles)
                 p1.StartInfo.WindowStyle = ProcessWindowStyle.Hidden
                 p1.StartInfo.UseShellExecute = False
                 p1.StartInfo.RedirectStandardOutput = True
