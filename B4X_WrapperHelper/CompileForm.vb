@@ -90,7 +90,7 @@ Public Class CompileForm
             Next
         End If
         If Directory.Exists(ProjectPath + "\libs") Then
-            Dim cpList = Directory.GetFiles(ProjectPath + "\libs", "*.*", SearchOption.TopDirectoryOnly).Where(Function(f) New List(Of String) From {".aar"}.IndexOf(Path.GetExtension(f)) >= 0).ToArray()
+            Dim cpList = Directory.GetFiles(ProjectPath + "\libs", "*.*", SearchOption.TopDirectoryOnly).Where(Function(f) New List(Of String) From {".jar", ".aar"}.IndexOf(Path.GetExtension(f)) >= 0).ToArray()
             If cpList.Count > 0 Then
                 'cp = """" + androidjarPath + """;""" + B4AShared + """;""" + Core + """;" +  String.Join(";", cpList).Replace(ProjectPath + "\", "").Replace("\", "/")
                 cp = """" + androidjarPath + """;""" + B4AShared + """;""" + Core + """;" + "libs/*;libs;"
@@ -129,13 +129,56 @@ Public Class CompileForm
             End Using
         End If
 
+        Dim Kotlinfile As String = ""
+        Dim cpKotlin As String = ""
+        Dim cpKotlinList = Directory.GetFiles(ProjectPath + "\libs", "*.*", SearchOption.TopDirectoryOnly).Where(Function(f) New List(Of String) From {".jar", ".aar"}.IndexOf(Path.GetExtension(f)) >= 0).ToArray()
+        If cpKotlinList.Count > 0 Then
+            cpKotlin = """" + androidjarPath + """;" + String.Join(";", cpKotlinList)
+        Else
+            cpKotlin = """" + androidjarPath + """;" + """;"
+        End If
+        Dim KotlinList = Directory.GetFiles(ProjectPath, "*.*", SearchOption.AllDirectories).Where(Function(f) New List(Of String) From {".kt"}.IndexOf(Path.GetExtension(f)) >= 0).ToArray()
+        If KotlinList.Count > 0 Then
+            For Each item In KotlinList
+                Dim kotlinName = Path.GetFileName(item).Split(".")(0).Trim
+                Dim KotlinSource = Directory.GetFiles(AndroidProjectPath, "*.*", SearchOption.AllDirectories).Where(Function(f) New List(Of String) From {"" + kotlinName + ".java"}.IndexOf(Path.GetFileName(f)) >= 0).ToArray()
+                If KotlinSource.Count > 0 Then
+                    File.Copy(KotlinSource(0), Path.GetDirectoryName(item) + "\" + kotlinName + ".java", True)
+                    Try
+                        File.Delete(item)
+                    Catch ex As Exception
+
+                    End Try
+
+                End If
+            Next
+            '    If KotlinPath = "" Then MsgBox("No kotlin compiler found", vbInformation + vbMsgBoxSetForeground, "Error") : Return
+            '    Dim kotlin_stdlib_jdk7 = Path.GetDirectoryName(Kotlinfile) + "\lib\kotlin-stdlib-jdk7.jar"
+            '    Using p1 As New Process
+            '        p1.StartInfo.CreateNoWindow = True
+            '        p1.StartInfo.Verb = "runas"
+            '        p1.StartInfo.FileName = "cmd.exe"
+            '        p1.StartInfo.WorkingDirectory = ProjectPath
+            '        p1.StartInfo.Arguments = String.Format(" /c {0} -classpath {1} {2} 2>>&1", KotlinPath, androidjarPath, Kotlinfile)
+            '        Debug.Print(p1.StartInfo.Arguments)
+            '        p1.StartInfo.WindowStyle = ProcessWindowStyle.Hidden
+            '        p1.StartInfo.UseShellExecute = False
+            '        p1.StartInfo.RedirectStandardOutput = True
+            '        p1.Start()
+            '        Dim output As String
+            '        Using streamreader As System.IO.StreamReader = p1.StandardOutput
+            '            output = streamreader.ReadToEnd()
+            '            Debug.Print(output)
+            '            RichTextBox1.Text = output
+            '        End Using
+            '    End Using
+        End If
 
         Dim javaList = Directory.GetFiles(ProjectPath, "*.*", SearchOption.AllDirectories).Where(Function(f) New List(Of String) From {".java"}.IndexOf(Path.GetExtension(f)) >= 0).ToArray()
         If javaList.Count > 0 Then
             javafiles = String.Join(" ", javaList).Replace(ProjectPath + "\", "").Replace("\", "/")
         End If
         Dim javac = SysEnvironment.GetSysEnvironmentByName("JAVA_HOME") + "\bin\javac"
-
 
         Using p1 As New Process
             p1.StartInfo.CreateNoWindow = True

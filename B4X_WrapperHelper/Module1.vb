@@ -14,6 +14,7 @@ Module Module1
     Public WrapperList As New List(Of String)
     Public CodeString As String = ""
     Public ProjectPath As String = ""
+    Public AndroidProjectPath As String = ""
     Public MainActivityPath As String = ""
     Public B4AShared = ""
     Public Core = ""

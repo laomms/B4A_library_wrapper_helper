@@ -31,6 +31,7 @@ Public Class Form1
             TextBox1.ForeColor = Color.Black
             TextBox1.TextAlign = HorizontalAlignment.Left
             TextBox1.Text = path
+            AndroidProjectPath = path
         Next
     End Sub
 
@@ -157,6 +158,7 @@ Public Class Form1
                                               }
             If dlg.ShowDialog = DialogResult.OK Then
                 TextBox1.Text = System.IO.Path.GetDirectoryName(dlg.FileName)
+                AndroidProjectPath = System.IO.Path.GetDirectoryName(dlg.FileName)
             End If
         End Using
     End Sub
@@ -468,7 +470,7 @@ Public Class Form1
                 activityList.Add("        " + match.Value.ToString.Replace(""".", """" + packageName + "."))
             End If
         Next
-        MainActivityPath = Path.GetDirectoryName(ManifestPath) + "\java\" + packageName.Replace(".", "\")
+
         Dim javafiles = Directory.GetFiles(MainActivityPath, "*.*", SearchOption.AllDirectories).Where(Function(f) New List(Of String) From {".java"}.IndexOf(Path.GetExtension(f)) >= 0).ToArray()
         If javafiles.Count > 0 Then
             Dim bs As New BindingSource()
@@ -1280,7 +1282,8 @@ Public Class Form1
                             ZipFile.ExtractToDirectory(targetPath, "D:\Kotlin")
                         End If
                         txt_Kotlin.TextAlign = HorizontalAlignment.Left
-                        txt_Kotlin.Text = "D:\Kotlin\kotlinc\bin\kotlinc"
+                        txt_Kotlin.Text = "D:\Kotlin\kotlinc\bin\kotlin"
+                        KotlinPath = "D:\Kotlin\kotlinc\bin\kotlin"
                         Dim OpenCUKey As RegistryKey = RegistryKey.OpenBaseKey(RegistryHive.CurrentUser, IIf(Environment.Is64BitOperatingSystem, RegistryView.Registry64, RegistryView.Registry32))
                         Using subRegKey = OpenCUKey.OpenSubKey("Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers", True)
                             If subRegKey Is Nothing Then
@@ -1291,6 +1294,8 @@ Public Class Form1
                                 subRegKey.SetValue("KotlinPath", txt_Kotlin.Text, RegistryValueKind.String)
                             End If
                         End Using
+                        SysEnvironment.SetSysEnvironment("KOTLIN_HOME", "D:\Kotlin")
+                        SysEnvironment.SetPathAfter("%KOTLIN_HOME%\kotlinc\bin")
                         Return
                     End Using
                 Else
@@ -1347,6 +1352,19 @@ Public Class Form1
 
     End Sub
     Private Sub btn_Compile_Click(sender As Object, e As EventArgs) Handles btn_Compile.Click
+        If ProjectPath <> "" Then
+            Dim OpenCUKey As RegistryKey = RegistryKey.OpenBaseKey(RegistryHive.CurrentUser, IIf(Environment.Is64BitOperatingSystem, RegistryView.Registry64, RegistryView.Registry32))
+            Using subRegKey = OpenCUKey.OpenSubKey("Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers", True)
+                If subRegKey Is Nothing Then
+                    Using subKey = OpenCUKey.CreateSubKey("Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers", RegistryKeyPermissionCheck.Default)
+                        subKey.SetValue("ProjectPath", ProjectPath, RegistryValueKind.String)
+                    End Using
+                Else
+                    subRegKey.SetValue("ProjectPath", ProjectPath, RegistryValueKind.String)
+                End If
+            End Using
+        End If
+
         CompileForm.ShowDialog()
     End Sub
 
