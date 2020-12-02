@@ -13,12 +13,11 @@ Public Class Form1
     Private packageName As String = ""
     Private minSdkVersion As String = ""
     Private targetSdkVersion As String = ""
-    Private RPath As String = ""
     Private srcPath As String = ""
     Private mycookiecontainer As CookieContainer = New CookieContainer()
     Private ResourceName As String = ""
     Private ResourceType As String = ""
-    Private MainActivityPath As String = ""
+
     Private BuildConfigDic As New Dictionary(Of String, Tuple(Of String, Object))
     Private Sub TextBox1_DragEnter(sender As Object, e As DragEventArgs) Handles TextBox1.DragEnter
         If e.Data.GetDataPresent(DataFormats.FileDrop) Then
@@ -49,32 +48,32 @@ Public Class Form1
             TextBox2.Text = path
         Next
     End Sub
-    Private Sub TextBox3_DragEnter(sender As Object, e As DragEventArgs) Handles TextBox3.DragEnter
-        If e.Data.GetDataPresent(DataFormats.FileDrop) Then
-            e.Effect = DragDropEffects.Copy
-        End If
-    End Sub
-    Private Sub TextBox3_DragDrop(sender As Object, e As DragEventArgs) Handles TextBox3.DragDrop
-        Dim files() As String = e.Data.GetData(DataFormats.FileDrop)
-        For Each path In files
-            TextBox3.Text = String.Empty
-            TextBox3.ForeColor = Color.Black
-            TextBox3.TextAlign = HorizontalAlignment.Left
-            TextBox3.Text = path
-            If TextBox3.Text.Contains("\") And TextBox3.Text <> "" Then
-                If File.Exists(TextBox3.Text + "\R.txt") = False Or File.Exists(TextBox3.Text + "\AndroidManifest.xml") = False Then Return
-                If Directory.Exists(TextBox3.Text + "\jars") = False Or Directory.Exists(TextBox3.Text + "\res") = False Then Return
-                Dim libname = IO.Path.GetFileName(TextBox3.Text) + ".aar"
-                PackAAR(My.Computer.FileSystem.SpecialDirectories.Temp + "\B4X\jar.exe", Application.StartupPath + "\" + libname, TextBox3.Text)
-            End If
-        Next
-    End Sub
+    'Private Sub TextBox3_DragEnter(sender As Object, e As DragEventArgs)
+    '    If e.Data.GetDataPresent(DataFormats.FileDrop) Then
+    '        e.Effect = DragDropEffects.Copy
+    '    End If
+    'End Sub
+    'Private Sub TextBox3_DragDrop(sender As Object, e As DragEventArgs)
+    '    Dim files() As String = e.Data.GetData(DataFormats.FileDrop)
+    '    For Each path In files
+    '        TextBox3.Text = String.Empty
+    '        TextBox3.ForeColor = Color.Black
+    '        TextBox3.TextAlign = HorizontalAlignment.Left
+    '        TextBox3.Text = path
+    '        If TextBox3.Text.Contains("\") And TextBox3.Text <> "" Then
+    '            If File.Exists(TextBox3.Text + "\R.txt") = False Or File.Exists(TextBox3.Text + "\AndroidManifest.xml") = False Then Return
+    '            If Directory.Exists(TextBox3.Text + "\jars") = False Or Directory.Exists(TextBox3.Text + "\res") = False Then Return
+    '            Dim libname = IO.Path.GetFileName(TextBox3.Text) + ".aar"
+    '            PackAAR(My.Computer.FileSystem.SpecialDirectories.Temp + "\B4X\jar.exe", Application.StartupPath + "\" + libname, TextBox3.Text)
+    '        End If
+    '    Next
+    'End Sub
     Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         Me.MaximizeBox = False
         Me.AllowDrop = True
         TextBox1.AllowDrop = True
         TextBox2.AllowDrop = True
-        TextBox3.AllowDrop = True
+        'TextBox3.AllowDrop = True
         If Not Directory.Exists(My.Computer.FileSystem.SpecialDirectories.Temp + "\B4X") Then Directory.CreateDirectory(My.Computer.FileSystem.SpecialDirectories.Temp + "\B4X")
         For Each assembly In System.Reflection.Assembly.GetExecutingAssembly.GetManifestResourceNames()
             If Not assembly.EndsWith(".exe") And Not assembly.EndsWith(".dll") And Not assembly.EndsWith(".class") Then
@@ -92,7 +91,21 @@ Public Class Form1
         Next
 
         If SysEnvironment.CheckSysEnvironmentExist("JAVA_HOME") Then CheckBox_JAVA_HOME.Checked = True : CheckBox_JAVA_HOME.Enabled = False
-        If SysEnvironment.CheckSysEnvironmentExist("ANDROID_SDK_HOME") Then CheckBox_ANDROID_SDK_HOME.Checked = True : CheckBox_ANDROID_SDK_HOME.Enabled = False
+        If SysEnvironment.CheckSysEnvironmentExist("ANDROID_SDK_HOME") Then
+            CheckBox_ANDROID_SDK_HOME.Checked = True
+            CheckBox_ANDROID_SDK_HOME.Enabled = False
+            'Try
+            '    Dim buildtoolsList = Directory.GetDirectories(SysEnvironment.GetSysEnvironmentByName("ANDROID_SDK_HOME") + "\build-tools").Select(Function(x) x.Replace(SysEnvironment.GetSysEnvironmentByName("ANDROID_SDK_HOME") + "\build-tools\", "").Trim).ToList()
+            '    If buildtoolsList.Count > 0 Then
+            '        'cmb_buildtools.ForeColor = Color.Black
+            '        cmb_buildtools.DataSource = buildtoolsList
+            '        cmb_buildtools.SelectedIndex = cmb_buildtools.Items.Count - 1
+            '        buildtoolsPath = SysEnvironment.GetSysEnvironmentByName("ANDROID_SDK_HOME") + "\build-tools\" + cmb_buildtools.Text
+            '    End If
+            'Catch ex As Exception
+
+            'End Try
+        End If
         If SysEnvironment.CheckSysEnvironmentExist("MAVEN_HOME") Then CheckBox_MAVEN_HOME.Checked = True : CheckBox_MAVEN_HOME.Enabled = False
         If SysEnvironment.CheckSysEnvironmentExist("CLASSPATH") Then CheckBox_CLASSPATH.Checked = True : CheckBox_CLASSPATH.Enabled = False
 
@@ -361,12 +374,12 @@ Public Class Form1
                             End If
                         End If
                     End If
-                        Dim newthread As New Thread(Sub()
+                    Dim newthread As New Thread(Sub()
                                                     extractResource(ManifestPath)
                                                 End Sub)
                     newthread.Start()
-                    MainActivityPath = Path.GetDirectoryName(ManifestPath) + "\java\" + packageName.Replace(".", "\")
-                    RPath = MainActivityPath.Replace(MainActivityPath.Substring(0, MainActivityPath.IndexOf("src")), ProjectPath + "\")
+                    Dim OldMainActivityPath = Path.GetDirectoryName(ManifestPath) + "\java\" + packageName.Replace(".", "\")
+                    MainActivityPath = OldMainActivityPath.Replace(OldMainActivityPath.Substring(0, OldMainActivityPath.IndexOf("src")), ProjectPath + "\")
                     If BackgroundWorker2.IsBusy = False Then
                         Dim arguments As New List(Of String)
                         arguments.Add(ManifestPath)
@@ -543,7 +556,7 @@ Public Class Form1
         styleableListArray = styleableListArray.Distinct().ToList()
         If styleableListArray.Count > 0 Then styleableList = styleableList.Except(styleableListArray).Concat(styleableListArray.Except(styleableList)).ToList()
 
-        Dim filePath As String = RPath + "\R.java"
+        Dim filePath As String = MainActivityPath + "\R.java"
         Dim utf8WithoutBom As Encoding = Encoding.GetEncoding("ISO-8859-1")
         Using outputFile As New StreamWriter(filePath, False, utf8WithoutBom)
             outputFile.WriteLine("package " + packageName + ";")
@@ -612,43 +625,41 @@ Public Class Form1
         End Using
     End Sub
 
-    Private Sub btn_Pack_Click(sender As Object, e As EventArgs) Handles btn_Pack.Click
-        TextBox3.ForeColor = Color.Black
-        TextBox3.TextAlign = HorizontalAlignment.Left
-        If TextBox3.Text <> "" And TextBox3.Text.Contains("\") = True Then
-            If File.Exists(TextBox3.Text + "\R.txt") = False Or File.Exists(TextBox3.Text + "\AndroidManifest.xml") = False Then Return
-            If Directory.Exists(TextBox3.Text + "\jars") = False Or Directory.Exists(TextBox3.Text + "\res") = False Then Return
-            Dim libname = Path.GetFileName(TextBox3.Text) + ".aar"
-            PackAAR(My.Computer.FileSystem.SpecialDirectories.Temp + "\B4X\jar.exe", Application.StartupPath + "\" + libname, TextBox3.Text)
-        Else
-            TextBox3.Text = String.Empty
-            Using dlg As New OpenFileDialog With {.AddExtension = True,
-                                              .ValidateNames = False,
-                                              .CheckFileExists = False,
-                                              .CheckPathExists = True,
-                                              .FileName = "Folder Selection"
-                                              }
-                If dlg.ShowDialog = DialogResult.OK Then
-                    TextBox1.Text = System.IO.Path.GetDirectoryName(dlg.FileName)
-                    If File.Exists(TextBox3.Text + "\R.txt") = False Or File.Exists(TextBox3.Text + "\AndroidManifest.xml") = False Then Return
-                    If Directory.Exists(TextBox3.Text + "\jars") = False Or Directory.Exists(TextBox3.Text + "\res") = False Then Return
-                    Dim libname = Path.GetFileName(TextBox3.Text) + ".aar"
-                    PackAAR(My.Computer.FileSystem.SpecialDirectories.Temp + "\B4X\jar.exe", Application.StartupPath + "\" + libname, TextBox3.Text)
-                End If
-            End Using
-        End If
-
+    Private Sub btn_Pack_Click(sender As Object, e As EventArgs)
+        'TextBox3.ForeColor = Color.Black
+        'TextBox3.TextAlign = HorizontalAlignment.Left
+        'If TextBox3.Text <> "" And TextBox3.Text.Contains("\") = True Then
+        '    If File.Exists(TextBox3.Text + "\R.txt") = False Or File.Exists(TextBox3.Text + "\AndroidManifest.xml") = False Then Return
+        '    If Directory.Exists(TextBox3.Text + "\jars") = False Or Directory.Exists(TextBox3.Text + "\res") = False Then Return
+        '    Dim libname = Path.GetFileName(TextBox3.Text) + ".aar"
+        '    PackAAR(My.Computer.FileSystem.SpecialDirectories.Temp + "\B4X\jar.exe", Application.StartupPath + "\" + libname, TextBox3.Text)
+        'Else
+        '    TextBox3.Text = String.Empty
+        '    Using dlg As New OpenFileDialog With {.AddExtension = True,
+        '                                      .ValidateNames = False,
+        '                                      .CheckFileExists = False,
+        '                                      .CheckPathExists = True,
+        '                                      .FileName = "Folder Selection"
+        '                                      }
+        '        If dlg.ShowDialog = DialogResult.OK Then
+        '            TextBox1.Text = System.IO.Path.GetDirectoryName(dlg.FileName)
+        '            If File.Exists(TextBox3.Text + "\R.txt") = False Or File.Exists(TextBox3.Text + "\AndroidManifest.xml") = False Then Return
+        '            If Directory.Exists(TextBox3.Text + "\jars") = False Or Directory.Exists(TextBox3.Text + "\res") = False Then Return
+        '            Dim libname = Path.GetFileName(TextBox3.Text) + ".aar"
+        '            PackAAR(My.Computer.FileSystem.SpecialDirectories.Temp + "\B4X\jar.exe", Application.StartupPath + "\" + libname, TextBox3.Text)
+        '        End If
+        '    End Using
+        'End If
     End Sub
 
-    Private Sub TextBox3_Click(sender As Object, e As EventArgs) Handles TextBox3.Click
-        Dim clipstring As String = GetText()
-        If New Regex("^(?:[c-zC-Z]\:|\\)(\\[a-zA-Z_\-\s0-9\.]+)+").Match(clipstring).Success Then
-            TextBox3.ForeColor = Color.Black
-            TextBox3.TextAlign = HorizontalAlignment.Left
-            TextBox3.Text = clipstring
-        End If
-
-    End Sub
+    'Private Sub TextBox3_Click(sender As Object, e As EventArgs)
+    '    Dim clipstring As String = GetText()
+    '    If New Regex("^(?:[c-zC-Z]\:|\\)(\\[a-zA-Z_\-\s0-9\.]+)+").Match(clipstring).Success Then
+    '        TextBox3.ForeColor = Color.Black
+    '        TextBox3.TextAlign = HorizontalAlignment.Left
+    '        TextBox3.Text = clipstring
+    '    End If
+    'End Sub
     Private Async Function Btn_Download_Click(sender As Object, e As EventArgs) As Task Handles btn_Download.Click
         ItemsDictionary.Clear()
         ItemsDictionary = Await DownloadLib.SearchItem(ComboBox1.Text)
@@ -1119,8 +1130,8 @@ Public Class Form1
     End Sub
 
     Private Sub AddToRjavaToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles AddToRjavaToolStripMenuItem.Click
-        If File.Exists(RPath + "\R.java") = False Then
-            Dim filePath As String = RPath + "\R.java"
+        If File.Exists(MainActivityPath + "\R.java") = False Then
+            Dim filePath As String = MainActivityPath + "\R.java"
             Dim utf8WithoutBom As Encoding = Encoding.GetEncoding("ISO-8859-1")
             Using outputFile As New StreamWriter(filePath, False, utf8WithoutBom)
                 outputFile.WriteLine("package " + packageName + ";")
@@ -1133,7 +1144,7 @@ Public Class Form1
             End Using
         Else
             Dim fileContent As String = ""
-            Using reader As New StreamReader(RPath + "\R.java")
+            Using reader As New StreamReader(MainActivityPath + "\R.java")
                 fileContent = reader.ReadToEnd()
             End Using
 
@@ -1155,7 +1166,7 @@ Public Class Form1
                 fileContent.Insert(fileContent.Trim.LastIndexOf("}") - 1, vbNewLine + newstring + vbNewLine)
             End If
 
-            Using writer As New StreamWriter(RPath + "\R.java", False, Encoding.GetEncoding("ISO-8859-1"))
+            Using writer As New StreamWriter(MainActivityPath + "\R.java", False, Encoding.GetEncoding("ISO-8859-1"))
                 writer.Write(fileContent)
             End Using
 
@@ -1221,13 +1232,17 @@ Public Class Form1
             Core = Path.GetDirectoryName(txt_b4a.Text) + "\libraries\Core.jar"
         End Using
     End Sub
+    Private Sub btn_Buildtools_Click(sender As Object, e As EventArgs)
 
+    End Sub
     Private Sub btn_Compile_Click(sender As Object, e As EventArgs) Handles btn_Compile.Click
         CompileForm.ShowDialog()
     End Sub
 
-    Private Sub TextBox3_TextChanged(sender As Object, e As EventArgs) Handles TextBox3.TextChanged
+    Private Sub TextBox3_TextChanged(sender As Object, e As EventArgs)
 
     End Sub
+
+
 End Class
 

@@ -14,8 +14,10 @@ Module Module1
     Public WrapperList As New List(Of String)
     Public CodeString As String = ""
     Public ProjectPath As String = ""
+    Public MainActivityPath As String = ""
     Public B4AShared = ""
     Public Core = ""
+    Public buildtoolsPath As String = ""
     Public androidjarPath = ""
     Public AndroidXMigrationDic As New Dictionary(Of String, String) From {
         {"android.support.v7.widget.util.SortedListAdapterCallback", "androidx.recyclerview.widget.SortedListAdapterCallback"},

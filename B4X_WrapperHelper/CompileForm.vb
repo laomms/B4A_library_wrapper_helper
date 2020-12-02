@@ -68,6 +68,8 @@ Public Class CompileForm
         Dim cp As String = ""
         If ProjectPath = "" Or ProjectPath.Contains("\") = False Then Return
         If B4AShared = "" Or Core = "" Or androidjarPath = "" Then Return
+
+
         If Directory.Exists(ProjectPath + "\bin\classes") = False Then
             Directory.CreateDirectory(ProjectPath + "\bin\classes")
         Else
@@ -98,7 +100,37 @@ Public Class CompileForm
         Else
             cp = """" + androidjarPath + """;""" + B4AShared + """;""" + Core + """;"
         End If
-        Dim javaList = Directory.GetFiles(ProjectPath, "*.*", SearchOption.AllDirectories).Where(Function(f) New List(Of String) From {".java"}.IndexOf(Path.GetExtension(f)) >= 0).ToArray()  '{".kt", ".java"}
+
+        Dim aidlfile As String = ""
+        Dim aidlList = Directory.GetFiles(ProjectPath, "*.*", SearchOption.AllDirectories).Where(Function(f) New List(Of String) From {".aidl"}.IndexOf(Path.GetExtension(f)) >= 0).ToArray()
+        If aidlList.Count > 0 Then
+            For Each item In aidlList
+                aidlfile = aidlfile + " " + item
+            Next
+            Dim aidlPath = My.Computer.FileSystem.SpecialDirectories.Temp + "\B4X\aidl.exe"
+            Dim frameworkPath = Path.GetDirectoryName(androidjarPath) + "\framework.aidl"
+            Using p1 As New Process
+                p1.StartInfo.CreateNoWindow = True
+                p1.StartInfo.Verb = "runas"
+                p1.StartInfo.FileName = "cmd.exe"
+                p1.StartInfo.WorkingDirectory = ProjectPath
+                p1.StartInfo.Arguments = String.Format(" /c {0} -I{1} -p{2} {3} 2>>&1", aidlPath, "src", frameworkPath, aidlfile)
+                Debug.Print(p1.StartInfo.Arguments)
+                p1.StartInfo.WindowStyle = ProcessWindowStyle.Hidden
+                p1.StartInfo.UseShellExecute = False
+                p1.StartInfo.RedirectStandardOutput = True
+                p1.Start()
+                Dim output As String
+                Using streamreader As System.IO.StreamReader = p1.StandardOutput
+                    output = streamreader.ReadToEnd()
+                    Debug.Print(output)
+                    RichTextBox1.Text = output
+                End Using
+            End Using
+        End If
+
+
+        Dim javaList = Directory.GetFiles(ProjectPath, "*.*", SearchOption.AllDirectories).Where(Function(f) New List(Of String) From {".java"}.IndexOf(Path.GetExtension(f)) >= 0).ToArray()
         If javaList.Count > 0 Then
             javafiles = String.Join(" ", javaList).Replace(ProjectPath + "\", "").Replace("\", "/")
         End If
@@ -110,7 +142,7 @@ Public Class CompileForm
             p1.StartInfo.Verb = "runas"
             p1.StartInfo.FileName = "cmd.exe"
             p1.StartInfo.WorkingDirectory = ProjectPath
-            p1.StartInfo.Arguments = String.Format(" /c {0} -Xmaxerrs 1 -nowarn -Xlint:none -J-Xmx512m  -version -encoding UTF-8 -d {1} -cp {2} {3}  2>>&1", javac, "bin/classes", cp, javafiles)
+            p1.StartInfo.Arguments = String.Format(" /c {0} -Xmaxerrs 1 -nowarn -Xlint:none -J-Xmx512m  -version -encoding UTF-8 -d {1} -sourcepath {2} -cp {3} {4}  2>>&1", javac, "bin/classes", "src", cp, javafiles)
             p1.StartInfo.WindowStyle = ProcessWindowStyle.Hidden
             p1.StartInfo.UseShellExecute = False
             p1.StartInfo.RedirectStandardOutput = True
@@ -143,7 +175,8 @@ Public Class CompileForm
                 p1.StartInfo.Verb = "runas"
                 p1.StartInfo.FileName = "cmd.exe"
                 p1.StartInfo.WorkingDirectory = ProjectPath
-                p1.StartInfo.Arguments = String.Format(" /c {0} -doclet BADoclet -docletpath {1}  -bootclasspath {2} -classpath {3} -ProjectPath {4} -b4atarget {5} -b4aignore org,com.android,com.example,com.hoho {6}  2>>&1", javadoc, My.Computer.FileSystem.SpecialDirectories.Temp + "\B4X", androidjarPath, cp, "src", Path.GetDirectoryName(ProjectPath) + "\" + Path.GetFileName(ProjectPath) + ".xml", javafiles)
+                p1.StartInfo.Arguments = String.Format(" /c {0} -doclet BADoclet -docletpath {1}  -bootclasspath {2} -classpath {3} -sourcepath {4} -b4atarget {5} -b4aignore org,com.android,com.example,com.hoho {6}  2>>&1", javadoc, My.Computer.FileSystem.SpecialDirectories.Temp + "\B4X", androidjarPath, cp, "src", Path.GetDirectoryName(ProjectPath) + "\" + Path.GetFileName(ProjectPath) + ".xml", javafiles)
+                Debug.Print(p1.StartInfo.Arguments)
                 p1.StartInfo.WindowStyle = ProcessWindowStyle.Hidden
                 p1.StartInfo.UseShellExecute = False
                 p1.StartInfo.RedirectStandardOutput = True

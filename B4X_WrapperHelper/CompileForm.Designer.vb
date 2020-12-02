@@ -58,9 +58,9 @@ Partial Class CompileForm
         Me.CheckBox1.AutoSize = True
         Me.CheckBox1.Location = New System.Drawing.Point(5, 538)
         Me.CheckBox1.Name = "CheckBox1"
-        Me.CheckBox1.Size = New System.Drawing.Size(117, 17)
+        Me.CheckBox1.Size = New System.Drawing.Size(118, 17)
         Me.CheckBox1.TabIndex = 2
-        Me.CheckBox1.Text = "Android X migration"
+        Me.CheckBox1.Text = "Android X Migration"
         Me.CheckBox1.UseVisualStyleBackColor = True
         '
         'CheckBox2

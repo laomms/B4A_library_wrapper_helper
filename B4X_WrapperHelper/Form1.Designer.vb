@@ -30,8 +30,6 @@ Partial Class Form1
         Me.TextBox2 = New System.Windows.Forms.TextBox()
         Me.btn_Generator = New System.Windows.Forms.Button()
         Me.GroupBox1 = New System.Windows.Forms.GroupBox()
-        Me.btn_Pack = New System.Windows.Forms.Button()
-        Me.TextBox3 = New System.Windows.Forms.TextBox()
         Me.BackgroundWorker1 = New System.ComponentModel.BackgroundWorker()
         Me.BackgroundWorker2 = New System.ComponentModel.BackgroundWorker()
         Me.ComboBox1 = New System.Windows.Forms.ComboBox()
@@ -42,7 +40,6 @@ Partial Class Form1
         Me.btn_Wrapper = New System.Windows.Forms.Button()
         Me.GroupBox2 = New System.Windows.Forms.GroupBox()
         Me.btn_listener = New System.Windows.Forms.Button()
-        Me.Label3 = New System.Windows.Forms.Label()
         Me.CheckBox_CLASSPATH = New System.Windows.Forms.CheckBox()
         Me.CheckBox_MAVEN_HOME = New System.Windows.Forms.CheckBox()
         Me.CheckBox_ANDROID_SDK_HOME = New System.Windows.Forms.CheckBox()
@@ -62,15 +59,20 @@ Partial Class Form1
         Me.btn_B4A = New System.Windows.Forms.Button()
         Me.Label5 = New System.Windows.Forms.Label()
         Me.GroupBox4 = New System.Windows.Forms.GroupBox()
+        Me.TextBox3 = New System.Windows.Forms.TextBox()
+        Me.Button2 = New System.Windows.Forms.Button()
+        Me.Label3 = New System.Windows.Forms.Label()
         Me.txt_b4a = New System.Windows.Forms.TextBox()
         Me.txt_androidjar = New System.Windows.Forms.TextBox()
         Me.OpenFileDialog1 = New System.Windows.Forms.OpenFileDialog()
+        Me.GroupBox5 = New System.Windows.Forms.GroupBox()
         Me.GroupBox1.SuspendLayout()
         Me.GroupBox2.SuspendLayout()
         Me.ContextMenuStrip1.SuspendLayout()
         Me.GroupBox3.SuspendLayout()
         Me.ContextMenuStrip2.SuspendLayout()
         Me.GroupBox4.SuspendLayout()
+        Me.GroupBox5.SuspendLayout()
         Me.SuspendLayout()
         '
         'TextBox1
@@ -113,7 +115,7 @@ Partial Class Form1
         '
         'btn_Generator
         '
-        Me.btn_Generator.Location = New System.Drawing.Point(205, 91)
+        Me.btn_Generator.Location = New System.Drawing.Point(205, 94)
         Me.btn_Generator.Name = "btn_Generator"
         Me.btn_Generator.Size = New System.Drawing.Size(96, 40)
         Me.btn_Generator.TabIndex = 6
@@ -129,28 +131,9 @@ Partial Class Form1
         Me.GroupBox1.Controls.Add(Me.btn_Generator)
         Me.GroupBox1.Location = New System.Drawing.Point(2, 37)
         Me.GroupBox1.Name = "GroupBox1"
-        Me.GroupBox1.Size = New System.Drawing.Size(506, 143)
+        Me.GroupBox1.Size = New System.Drawing.Size(506, 149)
         Me.GroupBox1.TabIndex = 7
         Me.GroupBox1.TabStop = False
-        '
-        'btn_Pack
-        '
-        Me.btn_Pack.Location = New System.Drawing.Point(427, 88)
-        Me.btn_Pack.Name = "btn_Pack"
-        Me.btn_Pack.Size = New System.Drawing.Size(68, 28)
-        Me.btn_Pack.TabIndex = 7
-        Me.btn_Pack.Text = "Pack"
-        Me.btn_Pack.UseVisualStyleBackColor = True
-        '
-        'TextBox3
-        '
-        Me.TextBox3.ForeColor = System.Drawing.SystemColors.GrayText
-        Me.TextBox3.Location = New System.Drawing.Point(83, 92)
-        Me.TextBox3.Name = "TextBox3"
-        Me.TextBox3.Size = New System.Drawing.Size(326, 20)
-        Me.TextBox3.TabIndex = 6
-        Me.TextBox3.Text = "Drag and drop or open or paste aar source folder path"
-        Me.TextBox3.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
         '
         'BackgroundWorker1
         '
@@ -203,7 +186,7 @@ Partial Class Form1
         '
         'btn_Wrapper
         '
-        Me.btn_Wrapper.Location = New System.Drawing.Point(207, 325)
+        Me.btn_Wrapper.Location = New System.Drawing.Point(203, 83)
         Me.btn_Wrapper.Name = "btn_Wrapper"
         Me.btn_Wrapper.Size = New System.Drawing.Size(96, 39)
         Me.btn_Wrapper.TabIndex = 13
@@ -213,17 +196,15 @@ Partial Class Form1
         'GroupBox2
         '
         Me.GroupBox2.Controls.Add(Me.btn_listener)
-        Me.GroupBox2.Controls.Add(Me.Label3)
-        Me.GroupBox2.Controls.Add(Me.btn_Pack)
-        Me.GroupBox2.Controls.Add(Me.TextBox3)
         Me.GroupBox2.Controls.Add(Me.btn_Download)
         Me.GroupBox2.Controls.Add(Me.Label2)
+        Me.GroupBox2.Controls.Add(Me.btn_Wrapper)
         Me.GroupBox2.Controls.Add(Me.ComboBox2)
         Me.GroupBox2.Controls.Add(Me.Label1)
         Me.GroupBox2.Controls.Add(Me.ComboBox1)
         Me.GroupBox2.Location = New System.Drawing.Point(4, 186)
         Me.GroupBox2.Name = "GroupBox2"
-        Me.GroupBox2.Size = New System.Drawing.Size(503, 124)
+        Me.GroupBox2.Size = New System.Drawing.Size(503, 132)
         Me.GroupBox2.TabIndex = 15
         Me.GroupBox2.TabStop = False
         '
@@ -235,15 +216,6 @@ Partial Class Form1
         Me.btn_listener.TabIndex = 15
         Me.btn_listener.Text = "listener"
         Me.btn_listener.UseVisualStyleBackColor = True
-        '
-        'Label3
-        '
-        Me.Label3.AutoSize = True
-        Me.Label3.Location = New System.Drawing.Point(10, 94)
-        Me.Label3.Name = "Label3"
-        Me.Label3.Size = New System.Drawing.Size(54, 13)
-        Me.Label3.TabIndex = 14
-        Me.Label3.Text = "Pack Aar:"
         '
         'CheckBox_CLASSPATH
         '
@@ -294,9 +266,9 @@ Partial Class Form1
         Me.ListView1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
         Me.ListView1.ContextMenuStrip = Me.ContextMenuStrip1
         Me.ListView1.HideSelection = False
-        Me.ListView1.Location = New System.Drawing.Point(520, 12)
+        Me.ListView1.Location = New System.Drawing.Point(7, 18)
         Me.ListView1.Name = "ListView1"
-        Me.ListView1.Size = New System.Drawing.Size(416, 168)
+        Me.ListView1.Size = New System.Drawing.Size(416, 162)
         Me.ListView1.TabIndex = 0
         Me.ListView1.UseCompatibleStateImageBehavior = False
         '
@@ -318,10 +290,10 @@ Partial Class Form1
         Me.GroupBox3.Controls.Add(Me.ComboBox3)
         Me.GroupBox3.Location = New System.Drawing.Point(516, 186)
         Me.GroupBox3.Name = "GroupBox3"
-        Me.GroupBox3.Size = New System.Drawing.Size(426, 342)
+        Me.GroupBox3.Size = New System.Drawing.Size(426, 318)
         Me.GroupBox3.TabIndex = 21
         Me.GroupBox3.TabStop = False
-        Me.GroupBox3.Text = "Event List"
+        Me.GroupBox3.Text = "Event List (Right click to modify the code)"
         '
         'RichTextBox1
         '
@@ -329,7 +301,7 @@ Partial Class Form1
         Me.RichTextBox1.ContextMenuStrip = Me.ContextMenuStrip2
         Me.RichTextBox1.Location = New System.Drawing.Point(4, 42)
         Me.RichTextBox1.Name = "RichTextBox1"
-        Me.RichTextBox1.Size = New System.Drawing.Size(416, 294)
+        Me.RichTextBox1.Size = New System.Drawing.Size(416, 268)
         Me.RichTextBox1.TabIndex = 1
         Me.RichTextBox1.Text = ""
         '
@@ -357,7 +329,7 @@ Partial Class Form1
         '
         'btn_Compile
         '
-        Me.btn_Compile.Location = New System.Drawing.Point(200, 95)
+        Me.btn_Compile.Location = New System.Drawing.Point(200, 124)
         Me.btn_Compile.Name = "btn_Compile"
         Me.btn_Compile.Size = New System.Drawing.Size(96, 39)
         Me.btn_Compile.TabIndex = 22
@@ -366,7 +338,7 @@ Partial Class Form1
         '
         'btn_androidjar
         '
-        Me.btn_androidjar.Location = New System.Drawing.Point(424, 14)
+        Me.btn_androidjar.Location = New System.Drawing.Point(424, 9)
         Me.btn_androidjar.Name = "btn_androidjar"
         Me.btn_androidjar.Size = New System.Drawing.Size(68, 28)
         Me.btn_androidjar.TabIndex = 25
@@ -376,7 +348,7 @@ Partial Class Form1
         'Label4
         '
         Me.Label4.AutoSize = True
-        Me.Label4.Location = New System.Drawing.Point(13, 22)
+        Me.Label4.Location = New System.Drawing.Point(13, 17)
         Me.Label4.Name = "Label4"
         Me.Label4.Size = New System.Drawing.Size(59, 13)
         Me.Label4.TabIndex = 24
@@ -384,7 +356,7 @@ Partial Class Form1
         '
         'btn_B4A
         '
-        Me.btn_B4A.Location = New System.Drawing.Point(424, 52)
+        Me.btn_B4A.Location = New System.Drawing.Point(424, 46)
         Me.btn_B4A.Name = "btn_B4A"
         Me.btn_B4A.Size = New System.Drawing.Size(68, 28)
         Me.btn_B4A.TabIndex = 28
@@ -394,7 +366,7 @@ Partial Class Form1
         'Label5
         '
         Me.Label5.AutoSize = True
-        Me.Label5.Location = New System.Drawing.Point(17, 61)
+        Me.Label5.Location = New System.Drawing.Point(17, 55)
         Me.Label5.Name = "Label5"
         Me.Label5.Size = New System.Drawing.Size(50, 13)
         Me.Label5.TabIndex = 27
@@ -402,6 +374,9 @@ Partial Class Form1
         '
         'GroupBox4
         '
+        Me.GroupBox4.Controls.Add(Me.TextBox3)
+        Me.GroupBox4.Controls.Add(Me.Button2)
+        Me.GroupBox4.Controls.Add(Me.Label3)
         Me.GroupBox4.Controls.Add(Me.txt_b4a)
         Me.GroupBox4.Controls.Add(Me.txt_androidjar)
         Me.GroupBox4.Controls.Add(Me.btn_B4A)
@@ -409,16 +384,44 @@ Partial Class Form1
         Me.GroupBox4.Controls.Add(Me.btn_androidjar)
         Me.GroupBox4.Controls.Add(Me.Label4)
         Me.GroupBox4.Controls.Add(Me.btn_Compile)
-        Me.GroupBox4.Location = New System.Drawing.Point(7, 374)
+        Me.GroupBox4.Location = New System.Drawing.Point(7, 324)
         Me.GroupBox4.Name = "GroupBox4"
-        Me.GroupBox4.Size = New System.Drawing.Size(501, 154)
+        Me.GroupBox4.Size = New System.Drawing.Size(501, 180)
         Me.GroupBox4.TabIndex = 29
         Me.GroupBox4.TabStop = False
+        '
+        'TextBox3
+        '
+        Me.TextBox3.ForeColor = System.Drawing.SystemColors.GrayText
+        Me.TextBox3.Location = New System.Drawing.Point(80, 86)
+        Me.TextBox3.Name = "TextBox3"
+        Me.TextBox3.Size = New System.Drawing.Size(326, 20)
+        Me.TextBox3.TabIndex = 36
+        Me.TextBox3.Text = "Please select kotlin compiler location"
+        Me.TextBox3.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
+        '
+        'Button2
+        '
+        Me.Button2.Location = New System.Drawing.Point(424, 84)
+        Me.Button2.Name = "Button2"
+        Me.Button2.Size = New System.Drawing.Size(68, 28)
+        Me.Button2.TabIndex = 35
+        Me.Button2.Text = "Select"
+        Me.Button2.UseVisualStyleBackColor = True
+        '
+        'Label3
+        '
+        Me.Label3.AutoSize = True
+        Me.Label3.Location = New System.Drawing.Point(25, 90)
+        Me.Label3.Name = "Label3"
+        Me.Label3.Size = New System.Drawing.Size(36, 13)
+        Me.Label3.TabIndex = 34
+        Me.Label3.Text = "Kotlin:"
         '
         'txt_b4a
         '
         Me.txt_b4a.ForeColor = System.Drawing.SystemColors.GrayText
-        Me.txt_b4a.Location = New System.Drawing.Point(80, 56)
+        Me.txt_b4a.Location = New System.Drawing.Point(80, 50)
         Me.txt_b4a.Name = "txt_b4a"
         Me.txt_b4a.Size = New System.Drawing.Size(326, 20)
         Me.txt_b4a.TabIndex = 30
@@ -428,7 +431,7 @@ Partial Class Form1
         'txt_androidjar
         '
         Me.txt_androidjar.ForeColor = System.Drawing.SystemColors.GrayText
-        Me.txt_androidjar.Location = New System.Drawing.Point(80, 19)
+        Me.txt_androidjar.Location = New System.Drawing.Point(80, 14)
         Me.txt_androidjar.Name = "txt_androidjar"
         Me.txt_androidjar.Size = New System.Drawing.Size(326, 20)
         Me.txt_androidjar.TabIndex = 29
@@ -439,15 +442,24 @@ Partial Class Form1
         '
         Me.OpenFileDialog1.FileName = "OpenFileDialog1"
         '
+        'GroupBox5
+        '
+        Me.GroupBox5.Controls.Add(Me.ListView1)
+        Me.GroupBox5.Location = New System.Drawing.Point(513, 0)
+        Me.GroupBox5.Name = "GroupBox5"
+        Me.GroupBox5.Size = New System.Drawing.Size(428, 186)
+        Me.GroupBox5.TabIndex = 30
+        Me.GroupBox5.TabStop = False
+        Me.GroupBox5.Text = "Right click to add resource ID"
+        '
         'Form1
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(954, 533)
+        Me.ClientSize = New System.Drawing.Size(951, 511)
+        Me.Controls.Add(Me.GroupBox5)
         Me.Controls.Add(Me.GroupBox4)
-        Me.Controls.Add(Me.btn_Wrapper)
         Me.Controls.Add(Me.GroupBox3)
-        Me.Controls.Add(Me.ListView1)
         Me.Controls.Add(Me.CheckBox_CLASSPATH)
         Me.Controls.Add(Me.GroupBox2)
         Me.Controls.Add(Me.CheckBox_MAVEN_HOME)
@@ -468,6 +480,7 @@ Partial Class Form1
         Me.ContextMenuStrip2.ResumeLayout(False)
         Me.GroupBox4.ResumeLayout(False)
         Me.GroupBox4.PerformLayout()
+        Me.GroupBox5.ResumeLayout(False)
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
@@ -482,14 +495,11 @@ Partial Class Form1
     Friend WithEvents BackgroundWorker2 As System.ComponentModel.BackgroundWorker
     Friend WithEvents ComboBox1 As ComboBox
     Friend WithEvents Label1 As Label
-    Friend WithEvents btn_Pack As Button
-    Friend WithEvents TextBox3 As TextBox
     Friend WithEvents Label2 As Label
     Friend WithEvents ComboBox2 As ComboBox
     Friend WithEvents btn_Download As Button
     Friend WithEvents btn_Wrapper As Button
     Friend WithEvents GroupBox2 As GroupBox
-    Friend WithEvents Label3 As Label
     Friend WithEvents CheckBox_MAVEN_HOME As CheckBox
     Friend WithEvents CheckBox_ANDROID_SDK_HOME As CheckBox
     Friend WithEvents CheckBox_JAVA_HOME As CheckBox
@@ -513,4 +523,8 @@ Partial Class Form1
     Friend WithEvents txt_b4a As TextBox
     Friend WithEvents txt_androidjar As TextBox
     Friend WithEvents OpenFileDialog1 As OpenFileDialog
+    Friend WithEvents GroupBox5 As GroupBox
+    Friend WithEvents TextBox3 As TextBox
+    Friend WithEvents Button2 As Button
+    Friend WithEvents Label3 As Label
 End Class

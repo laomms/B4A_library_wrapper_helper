@@ -196,6 +196,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="aidl.exe" />
     <Content Include="icon.ico" />
     <EmbeddedResource Include="jar.exe" />
     <EmbeddedResource Include="jli.dll" />
