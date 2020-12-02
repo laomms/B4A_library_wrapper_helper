@@ -90,7 +90,6 @@ Public Class CompileForm
             Next
         End If
         If Directory.Exists(ProjectPath + "\libs") Then
-
             If File.Exists(My.Computer.FileSystem.SpecialDirectories.Temp + "\CP_Batch.bat") = False Then
                 Try
                     File.Delete(My.Computer.FileSystem.SpecialDirectories.Temp + "\CP_Batch.bat")
@@ -98,22 +97,6 @@ Public Class CompileForm
 
                 End Try
             End If
-
-            Using outputFile As New StreamWriter(My.Computer.FileSystem.SpecialDirectories.Temp + "\CP_Batch.bat", False, Encoding.GetEncoding("ISO-8859-1"))
-                outputFile.WriteLine("@echo off")
-                outputFile.WriteLine("setlocal")
-                outputFile.WriteLine("set CLASS_PATH=C:/Documents and Settings/user/workspace/myProject")
-                outputFile.WriteLine("set CP=%CLASS_PATH%/out/lib/activation-1.0.2.jar;%CP%")
-                outputFile.WriteLine("set CP=%CLASS_PATH%/out/lib/activeio-2.1.jar;%CP%")
-                outputFile.WriteLine("set CP=./;%CP%")
-                outputFile.WriteLine("set CP=""%CP%""")
-                outputFile.WriteLine("ECHO Using Classpath:")
-                outputFile.WriteLine("ECHO %CP%")
-                outputFile.WriteLine("cd ..")
-                outputFile.WriteLine("java -classpath %CP% com.mycompany.myproject.Client")
-            End Using
-
-
             Dim cpList = Directory.GetFiles(ProjectPath + "\libs", "*.*", SearchOption.TopDirectoryOnly).Where(Function(f) New List(Of String) From {".jar", ".aar"}.IndexOf(Path.GetExtension(f)) >= 0).ToArray()
             If cpList.Count > 0 Then
                 'cp = """" + androidjarPath + """;""" + B4AShared + """;""" + Core + """;" +  String.Join(";", cpList).Replace(ProjectPath + "\", "").Replace("\", "/")
