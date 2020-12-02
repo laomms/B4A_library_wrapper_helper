@@ -7,4 +7,12 @@
         WrapperList.Add(RichTextBox1.Text)
         Me.Close()
     End Sub
+
+    Private Sub RichTextBox1_TextChanged(sender As Object, e As EventArgs) Handles RichTextBox1.TextChanged
+        If RichTextBox1.Text.Contains("onActivityResult") Or RichTextBox1.Text.Contains("startActivityForResult") Or RichTextBox1.Text.Contains(".setOnClickListener") Then
+            RichTextBox2.Text = My.Resources.onActivityResultTip
+        Else
+            '...
+        End If
+    End Sub
 End Class

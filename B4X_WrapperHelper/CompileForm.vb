@@ -351,9 +351,9 @@ Public Class CompileForm
             End If
 
         ElseIf errorInfo.Contains("cannot find symbol") Then
-
+            '...
         ElseIf errorInfo.Contains("cannot be accessed from outside package") Then
-
+            '...
         End If
     End Sub
 

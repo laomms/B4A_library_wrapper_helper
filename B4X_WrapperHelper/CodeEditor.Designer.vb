@@ -26,6 +26,8 @@ Partial Class CodeEditor
         Me.RichTextBox1 = New System.Windows.Forms.RichTextBox()
         Me.Button1 = New System.Windows.Forms.Button()
         Me.RichTextBox2 = New System.Windows.Forms.RichTextBox()
+        Me.GroupBox1 = New System.Windows.Forms.GroupBox()
+        Me.GroupBox1.SuspendLayout()
         Me.SuspendLayout()
         '
         'RichTextBox1
@@ -38,7 +40,7 @@ Partial Class CodeEditor
         '
         'Button1
         '
-        Me.Button1.Location = New System.Drawing.Point(330, 442)
+        Me.Button1.Location = New System.Drawing.Point(346, 440)
         Me.Button1.Name = "Button1"
         Me.Button1.Size = New System.Drawing.Size(123, 33)
         Me.Button1.TabIndex = 1
@@ -47,19 +49,30 @@ Partial Class CodeEditor
         '
         'RichTextBox2
         '
-        Me.RichTextBox2.Enabled = False
-        Me.RichTextBox2.Location = New System.Drawing.Point(490, 7)
+        Me.RichTextBox2.ForeColor = System.Drawing.Color.Gray
+        Me.RichTextBox2.Location = New System.Drawing.Point(6, 19)
         Me.RichTextBox2.Name = "RichTextBox2"
-        Me.RichTextBox2.Size = New System.Drawing.Size(302, 427)
+        Me.RichTextBox2.ReadOnly = True
+        Me.RichTextBox2.Size = New System.Drawing.Size(423, 405)
         Me.RichTextBox2.TabIndex = 2
         Me.RichTextBox2.Text = ""
+        '
+        'GroupBox1
+        '
+        Me.GroupBox1.Controls.Add(Me.RichTextBox2)
+        Me.GroupBox1.Location = New System.Drawing.Point(490, 4)
+        Me.GroupBox1.Name = "GroupBox1"
+        Me.GroupBox1.Size = New System.Drawing.Size(435, 430)
+        Me.GroupBox1.TabIndex = 3
+        Me.GroupBox1.TabStop = False
+        Me.GroupBox1.Text = "Tip / Sample"
         '
         'CodeEditor
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(800, 485)
-        Me.Controls.Add(Me.RichTextBox2)
+        Me.ClientSize = New System.Drawing.Size(937, 485)
+        Me.Controls.Add(Me.GroupBox1)
         Me.Controls.Add(Me.Button1)
         Me.Controls.Add(Me.RichTextBox1)
         Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow
@@ -67,6 +80,7 @@ Partial Class CodeEditor
         Me.Name = "CodeEditor"
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
         Me.Text = "Code Editor"
+        Me.GroupBox1.ResumeLayout(False)
         Me.ResumeLayout(False)
 
     End Sub
@@ -74,4 +88,5 @@ Partial Class CodeEditor
     Friend WithEvents RichTextBox1 As RichTextBox
     Friend WithEvents Button1 As Button
     Friend WithEvents RichTextBox2 As RichTextBox
+    Friend WithEvents GroupBox1 As GroupBox
 End Class

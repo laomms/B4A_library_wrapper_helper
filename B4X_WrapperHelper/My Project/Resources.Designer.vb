@@ -108,6 +108,27 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  查找类似 public void startFunction() {
+        '''        ion = new IOnActivityResult() {
+        '''            @Override
+        '''            public void ResultArrived(int resultCode, Intent data) {
+        '''                BA.Log(&quot;ResultArrived&quot;);
+        '''                if (resultCode == Activity.RESULT_OK) {
+        '''                    BA.Log(&quot;RESULT_OK&quot;);
+        '''                    //...
+        '''                }
+        '''                ba.raiseEvent(B4AWrapperClass.this, eventName + &quot;_result&quot;, true, intent);
+        '''            }
+        '''        };
+        '''        ba.startActivityForResult(ion, new [字符串的其余部分被截断]&quot;; 的本地化字符串。
+        '''</summary>
+        Friend ReadOnly Property onActivityResultTip() As String
+            Get
+                Return ResourceManager.GetString("onActivityResultTip", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  查找类似 package ViewNameWrapper;
         '''
         '''

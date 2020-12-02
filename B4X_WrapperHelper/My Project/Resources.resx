@@ -217,6 +217,22 @@ public class B4AWrapperClass   {
 	}
 }</value>
   </data>
+  <data name="onActivityResultTip" xml:space="preserve">
+    <value>public void startFunction() {
+        ion = new IOnActivityResult() {
+            @Override
+            public void ResultArrived(int resultCode, Intent data) {
+                BA.Log("ResultArrived");
+                if (resultCode == Activity.RESULT_OK) {
+                    BA.Log("RESULT_OK");
+                    //...
+                }
+                ba.raiseEvent(B4AWrapperClass.this, eventName + "_result", true, intent);
+            }
+        };
+        ba.startActivityForResult(ion, new Intent(BA.applicationContext, WrapperActivity.class));
+    }</value>
+  </data>
   <data name="ViewWrapper1" xml:space="preserve">
     <value>package ViewNameWrapper;
 
