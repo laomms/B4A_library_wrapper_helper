@@ -59,8 +59,8 @@ Partial Class Form1
         Me.btn_B4A = New System.Windows.Forms.Button()
         Me.Label5 = New System.Windows.Forms.Label()
         Me.GroupBox4 = New System.Windows.Forms.GroupBox()
-        Me.TextBox3 = New System.Windows.Forms.TextBox()
-        Me.Button2 = New System.Windows.Forms.Button()
+        Me.txt_Kotlin = New System.Windows.Forms.TextBox()
+        Me.btn_Kotlin = New System.Windows.Forms.Button()
         Me.Label3 = New System.Windows.Forms.Label()
         Me.txt_b4a = New System.Windows.Forms.TextBox()
         Me.txt_androidjar = New System.Windows.Forms.TextBox()
@@ -374,8 +374,8 @@ Partial Class Form1
         '
         'GroupBox4
         '
-        Me.GroupBox4.Controls.Add(Me.TextBox3)
-        Me.GroupBox4.Controls.Add(Me.Button2)
+        Me.GroupBox4.Controls.Add(Me.txt_Kotlin)
+        Me.GroupBox4.Controls.Add(Me.btn_Kotlin)
         Me.GroupBox4.Controls.Add(Me.Label3)
         Me.GroupBox4.Controls.Add(Me.txt_b4a)
         Me.GroupBox4.Controls.Add(Me.txt_androidjar)
@@ -390,24 +390,24 @@ Partial Class Form1
         Me.GroupBox4.TabIndex = 29
         Me.GroupBox4.TabStop = False
         '
-        'TextBox3
+        'txt_Kotlin
         '
-        Me.TextBox3.ForeColor = System.Drawing.SystemColors.GrayText
-        Me.TextBox3.Location = New System.Drawing.Point(80, 86)
-        Me.TextBox3.Name = "TextBox3"
-        Me.TextBox3.Size = New System.Drawing.Size(326, 20)
-        Me.TextBox3.TabIndex = 36
-        Me.TextBox3.Text = "Please select kotlin compiler location"
-        Me.TextBox3.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
+        Me.txt_Kotlin.ForeColor = System.Drawing.SystemColors.GrayText
+        Me.txt_Kotlin.Location = New System.Drawing.Point(80, 86)
+        Me.txt_Kotlin.Name = "txt_Kotlin"
+        Me.txt_Kotlin.Size = New System.Drawing.Size(326, 20)
+        Me.txt_Kotlin.TabIndex = 36
+        Me.txt_Kotlin.Text = "Please select kotlin compiler location"
+        Me.txt_Kotlin.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
         '
-        'Button2
+        'btn_Kotlin
         '
-        Me.Button2.Location = New System.Drawing.Point(424, 84)
-        Me.Button2.Name = "Button2"
-        Me.Button2.Size = New System.Drawing.Size(68, 28)
-        Me.Button2.TabIndex = 35
-        Me.Button2.Text = "Select"
-        Me.Button2.UseVisualStyleBackColor = True
+        Me.btn_Kotlin.Location = New System.Drawing.Point(424, 84)
+        Me.btn_Kotlin.Name = "btn_Kotlin"
+        Me.btn_Kotlin.Size = New System.Drawing.Size(68, 28)
+        Me.btn_Kotlin.TabIndex = 35
+        Me.btn_Kotlin.Text = "Select"
+        Me.btn_Kotlin.UseVisualStyleBackColor = True
         '
         'Label3
         '
@@ -524,7 +524,7 @@ Partial Class Form1
     Friend WithEvents txt_androidjar As TextBox
     Friend WithEvents OpenFileDialog1 As OpenFileDialog
     Friend WithEvents GroupBox5 As GroupBox
-    Friend WithEvents TextBox3 As TextBox
-    Friend WithEvents Button2 As Button
+    Friend WithEvents txt_Kotlin As TextBox
+    Friend WithEvents btn_Kotlin As Button
     Friend WithEvents Label3 As Label
 End Class

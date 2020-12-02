@@ -135,6 +135,12 @@ Public Class Form1
                     B4AShared = Path.GetDirectoryName(txt_b4a.Text) + "\libraries\B4AShared.jar"
                     Core = Path.GetDirectoryName(txt_b4a.Text) + "\libraries\Core.jar"
                 End If
+
+                If Not subRegKey.GetValue("KotlinPath") Is Nothing Then
+                    txt_Kotlin.TextAlign = HorizontalAlignment.Left
+                    txt_Kotlin.Text = subRegKey.GetValue("KotlinPath")
+                    KotlinPath = txt_Kotlin.Text
+                End If
             End If
         End Using
     End Sub
@@ -529,7 +535,7 @@ Public Class Form1
         Dim arguments As List(Of Object) = TryCast(e.Argument, List(Of Object))
         Dim styleableList As New List(Of String)
         Dim styleableListArray As New List(Of String)
-        Dim sourceList As New List(Of String)
+        Dim ResourceList As New List(Of String)
         For Each java As String In arguments(0)
             Dim fileContent As String = File.ReadAllText(java)
             If fileContent.Contains("R.") Then
@@ -537,21 +543,21 @@ Public Class Form1
                     Dim lines = File.ReadAllLines(java).ToList()
                     Dim list As List(Of String) = lines.Where(Function(x) x.Contains("obtainStyledAttributes") And x.Contains("R.styleable.")).Select(Function(x) New Regex("(?<=R.styleable.).[\s\S]*?(?=[\p{P}\p{S}-[_]])").Match(x).Value.Trim).ToList()
                     styleableListArray.AddRange(list)
-                    list = Regex.Matches(fileContent, "(?<=R.styleable.).[\s\S]*?(?=[\p{P}\p{S}-[_]])").Cast(Of Match)().Select(Function(m) m.Value).ToList()
+                    list = Regex.Matches(fileContent, "(?<=R.styleable.).[\s\S]*?(?=[\p{P}\p{S}-[_]])").Cast(Of Match)().Select(Function(m) m.Value.Trim).ToList()
                     styleableList.AddRange(list)
                 ElseIf fileContent.Contains("R.styleable.") Then
-                    Dim list As List(Of String) = Regex.Matches(fileContent, "(?<=R.styleable.).[\s\S]*?(?=[\p{P}\p{S}-[_]])").Cast(Of Match)().Select(Function(m) m.Value).ToList()
+                    Dim list As List(Of String) = Regex.Matches(fileContent, "(?<=R.styleable.).[\s\S]*?(?=[\p{P}\p{S}-[_]])").Cast(Of Match)().Select(Function(m) m.Value.Trim).ToList()
                     styleableList.AddRange(list)
                 Else
-                    Dim list As List(Of String) = Regex.Matches(fileContent, "(?<=R\.).[\s\S]*?(?=[\p{P}\p{S}-[._]])").Cast(Of Match)().Select(Function(m) m.Value).ToList()
+                    Dim list As List(Of String) = Regex.Matches(fileContent, "(?<=R\.).[\s\S]*?(?=[\p{P}\p{S}-[._]])").Cast(Of Match)().Select(Function(m) m.Value.Trim).ToList()
                     list = list.Where(Function(x) x.Contains(".")).ToList()
-                    sourceList.AddRange(list)
+                    ResourceList.AddRange(list)
                 End If
             End If
         Next
-        sourceList.Sort()
-        sourceList = sourceList.Distinct().ToList()
-        'Debug.Print(String.Join(vbNewLine, sourceList))
+        ResourceList.Sort()
+        ResourceList = ResourceList.Distinct().ToList()
+        'Debug.Print(String.Join(vbNewLine, ResourceList))
         styleableList = styleableList.Distinct().ToList()
         styleableListArray = styleableListArray.Distinct().ToList()
         If styleableListArray.Count > 0 Then styleableList = styleableList.Except(styleableListArray).Concat(styleableListArray.Except(styleableList)).ToList()
@@ -562,16 +568,16 @@ Public Class Form1
             outputFile.WriteLine("package " + packageName + ";")
             outputFile.WriteLine("import anywheresoftware.b4a.BA;")
             outputFile.WriteLine(vbNewLine + "public class R {")
-            If sourceList.Count > 0 Then
+            If ResourceList.Count > 0 Then
                 Dim className As String = ""
-                For Each item In sourceList
+                For Each item In ResourceList
                     If item.Split(".")(0) <> className Then
                         If className <> "" Then outputFile.WriteLine("	}")
                         className = item.Split(".")(0)
                         outputFile.WriteLine("	public static final class " + item.Split(".")(0) + " {")
-                        outputFile.WriteLine("		public static int " + item.Split(".")(1) + " = BA.applicationContext.getResources().getIdentifier(""" + item.Split(".")(1) + """, """ + item.Split(".")(0) + """, BA.packageName);")
+                        outputFile.WriteLine("		public static int " + item.Split(".")(1).Trim + "= BA.applicationContext.getResources().getIdentifier(""" + item.Split(".")(1).Trim + """, """ + item.Split(".")(0).Trim + """, BA.packageName);")
                     Else
-                        outputFile.WriteLine("		public static int " + item.Split(".")(1) + " = BA.applicationContext.getResources().getIdentifier(""" + item.Split(".")(1) + """, """ + item.Split(".")(0) + """, BA.packageName);")
+                        outputFile.WriteLine("		public static int " + item.Split(".")(1).Trim + "= BA.applicationContext.getResources().getIdentifier(""" + item.Split(".")(1).Trim + """, """ + item.Split(".")(0).Trim + """, BA.packageName);")
                     End If
                 Next
                 outputFile.WriteLine("	}")
@@ -580,16 +586,16 @@ Public Class Form1
                 outputFile.WriteLine("	public static final class styleable {")
                 If styleableList.Count > 0 Then
                     For Each item In styleableList
-                        outputFile.WriteLine("		public static int " + item + " = BA.applicationContext.getResources().getIdentifier(""" + item + """, ""styleable"", BA.packageName);")
+                        outputFile.WriteLine("		public static int " + item.Trim + "= BA.applicationContext.getResources().getIdentifier(""" + item.Trim + """, ""styleable"", BA.packageName);")
                     Next
                 End If
                 For Each items In styleableListArray
-                    If styleableList.Count > 0 Then outputFile.WriteLine("		public static int[] " + items + " = {" + String.Join(",", styleableList) + "};")
+                    If styleableList.Count > 0 Then outputFile.WriteLine("		public static int[] " + items.Trim + " = {" + String.Join(",", styleableList) + "};")
                 Next
                 outputFile.WriteLine("	}")
             ElseIf styleableList.Count > 0 Then
                 For Each item In styleableList
-                    outputFile.WriteLine("		public static int " + item + " = BA.applicationContext.getResources().getIdentifier(""" + item + """, ""styleable"", BA.packageName);")
+                    outputFile.WriteLine("		public static int " + item.Trim + "= BA.applicationContext.getResources().getIdentifier(""" + item.Trim + """, ""styleable"", BA.packageName);")
                 Next
             End If
             outputFile.WriteLine("}")
@@ -961,18 +967,42 @@ Public Class Form1
     End Sub
     Private Sub CheckBox_MAVEN_HOME_CheckedChanged(sender As Object, e As EventArgs) Handles CheckBox_MAVEN_HOME.CheckedChanged
         If CheckBox_MAVEN_HOME.Checked = False Then
-            Dim folderDlg As FolderBrowserDialog = New FolderBrowserDialog()
-            folderDlg.ShowNewFolderButton = True
-            Dim result As DialogResult = folderDlg.ShowDialog()
-            If result = DialogResult.OK Then
-                Dim path = folderDlg.SelectedPath
-                If MessageBox.Show(path + vbNewLine + " for MAVEN environment! Please confirm again!", "Confirm", MessageBoxButtons.YesNo, MessageBoxIcon.Asterisk) = DialogResult.Yes Then
-                    SysEnvironment.SetSysEnvironment("MAVEN_HOME", path)
-                    SysEnvironment.SetPathAfter("%MAVEN_HOME%\bin")
-                    SysEnvironment.SetPathAfter("%SystemRoot%\system32;%SystemRoot%;%SystemRoot%\System32\Wbem")
-                    CheckBox_MAVEN_HOME.Checked = True
-                    CheckBox_MAVEN_HOME.Enabled = False
-                    MsgBox("The MAVEN_HOME environment variables have been set, please restart the system!", vbInformation + vbMsgBoxSetForeground, "finished")
+            If MessageBox.Show("MAVEN_HOME environment variable is not detected, do you want to download and install !", "Error", MessageBoxButtons.YesNo, MessageBoxIcon.Asterisk) = DialogResult.Yes Then
+                needSelect = True
+                DownloadForm.ShowDialog()
+                If File.Exists(downloadPath + "\apache-maven.zip") Then
+                    Dim ExtractName As String = ""
+                    Using archive As ZipArchive = ZipFile.OpenRead(downloadPath + "\apache-maven.zip")
+                        For Each entry As ZipArchiveEntry In archive.Entries
+                            ExtractName = entry.FullName.Replace("/", "")
+                            Exit For
+                        Next entry
+                        If Directory.Exists("D:\apache-maven") = False Then
+                            ZipFile.ExtractToDirectory(downloadPath + "\apache-maven.zip", "D:\apache-maven")
+                        End If
+                        SysEnvironment.SetSysEnvironment("MAVEN_HOME", "D:\apache-maven\" + ExtractName)
+                        SysEnvironment.SetPathAfter("%MAVEN_HOME%\bin")
+                        SysEnvironment.SetPathAfter("%SystemRoot%\system32;%SystemRoot%;%SystemRoot%\System32\Wbem")
+                        MsgBox("The MAVEN_HOME environment variables have been set, please restart the system!", vbInformation + vbMsgBoxSetForeground, "finished")
+                        Return
+                    End Using
+                Else
+                    Return
+                End If
+            Else
+                Dim folderDlg As FolderBrowserDialog = New FolderBrowserDialog()
+                folderDlg.ShowNewFolderButton = True
+                Dim result As DialogResult = folderDlg.ShowDialog()
+                If result = DialogResult.OK Then
+                    Dim path = folderDlg.SelectedPath
+                    If MessageBox.Show(path + vbNewLine + " for MAVEN environment! Please confirm again!", "Confirm", MessageBoxButtons.YesNo, MessageBoxIcon.Asterisk) = DialogResult.Yes Then
+                        SysEnvironment.SetSysEnvironment("MAVEN_HOME", path)
+                        SysEnvironment.SetPathAfter("%MAVEN_HOME%\bin")
+                        SysEnvironment.SetPathAfter("%SystemRoot%\system32;%SystemRoot%;%SystemRoot%\System32\Wbem")
+                        CheckBox_MAVEN_HOME.Checked = True
+                        CheckBox_MAVEN_HOME.Enabled = False
+                        MsgBox("The MAVEN_HOME environment variables have been set, please restart the system!", vbInformation + vbMsgBoxSetForeground, "finished")
+                    End If
                 End If
             End If
         End If
@@ -1190,6 +1220,7 @@ Public Class Form1
         Dim result As DialogResult = openFileDialog.ShowDialog()
         If result = System.Windows.Forms.DialogResult.OK Then
             txt_androidjar.Text = openFileDialog.FileName
+            androidjarPath = txt_androidjar.Text
         End If
         If txt_androidjar.Text = "" Or txt_androidjar.Text.Contains("\") = False Then Return
         txt_androidjar.ForeColor = Color.Black
@@ -1203,7 +1234,6 @@ Public Class Form1
             Else
                 subRegKey.SetValue("AndroidJar", txt_androidjar.Text, RegistryValueKind.String)
             End If
-            androidjarPath = txt_androidjar.Text
         End Using
     End Sub
 
@@ -1231,6 +1261,87 @@ Public Class Form1
             B4AShared = Path.GetDirectoryName(txt_b4a.Text) + "\libraries\B4AShared.jar"
             Core = Path.GetDirectoryName(txt_b4a.Text) + "\libraries\Core.jar"
         End Using
+    End Sub
+    Private Sub btn_Kotlin_Click(sender As Object, e As EventArgs) Handles btn_Kotlin.Click
+        If txt_Kotlin.Text = "" Or txt_Kotlin.Text.Contains("\") = False Then
+            If MessageBox.Show("If you want to download the kotlin compiler, please select the confirm button." + vbNewLine + "Otherwise press the cancel button to select the kotlin compiler directory !", "Hint", MessageBoxButtons.YesNo, MessageBoxIcon.Asterisk) = DialogResult.Yes Then
+                needSelect = False
+                downlink = "https://github.com/JetBrains/kotlin/releases/download/v1.4.20/kotlin-compiler-1.4.20.zip"
+                targetPath = "D:\kotlin-compiler-1.4.20.zip"
+                DownloadForm.ShowDialog()
+                If File.Exists(targetPath) Then
+                    Dim ExtractName As String = ""
+                    Using archive As ZipArchive = ZipFile.OpenRead(targetPath)
+                        For Each entry As ZipArchiveEntry In archive.Entries
+                            ExtractName = entry.FullName.Replace("/", "")
+                            Exit For
+                        Next entry
+                        If Directory.Exists("D:\Kotlin") = False Then
+                            ZipFile.ExtractToDirectory(targetPath, "D:\Kotlin")
+                        End If
+                        txt_Kotlin.TextAlign = HorizontalAlignment.Left
+                        txt_Kotlin.Text = "D:\Kotlin\kotlinc\bin\kotlinc"
+                        Dim OpenCUKey As RegistryKey = RegistryKey.OpenBaseKey(RegistryHive.CurrentUser, IIf(Environment.Is64BitOperatingSystem, RegistryView.Registry64, RegistryView.Registry32))
+                        Using subRegKey = OpenCUKey.OpenSubKey("Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers", True)
+                            If subRegKey Is Nothing Then
+                                Using subKey = OpenCUKey.CreateSubKey("Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers", RegistryKeyPermissionCheck.Default)
+                                    subKey.SetValue("KotlinPath", txt_Kotlin.Text, RegistryValueKind.String)
+                                End Using
+                            Else
+                                subRegKey.SetValue("KotlinPath", txt_Kotlin.Text, RegistryValueKind.String)
+                            End If
+                        End Using
+                        Return
+                    End Using
+                Else
+                    Return
+                End If
+            Else
+                Dim openFileDialog As New System.Windows.Forms.OpenFileDialog()
+                openFileDialog.Filter = "Executable file|*.exe"
+                openFileDialog.RestoreDirectory = True
+                openFileDialog.FilterIndex = 1        '
+                Dim result As DialogResult = openFileDialog.ShowDialog()
+                If result = System.Windows.Forms.DialogResult.OK Then
+                    txt_Kotlin.Text = openFileDialog.FileName
+                    KotlinPath = openFileDialog.FileName
+                End If
+                If txt_Kotlin.Text = "" Or txt_Kotlin.Text.Contains("\") = False Then Return
+                txt_Kotlin.TextAlign = HorizontalAlignment.Left
+                Dim OpenCUKey As RegistryKey = RegistryKey.OpenBaseKey(RegistryHive.CurrentUser, IIf(Environment.Is64BitOperatingSystem, RegistryView.Registry64, RegistryView.Registry32))
+                Using subRegKey = OpenCUKey.OpenSubKey("Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers", True)
+                    If subRegKey Is Nothing Then
+                        Using subKey = OpenCUKey.CreateSubKey("Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers", RegistryKeyPermissionCheck.Default)
+                            subKey.SetValue("KotlinPath", txt_Kotlin.Text, RegistryValueKind.String)
+                        End Using
+                    Else
+                        subRegKey.SetValue("KotlinPath", txt_Kotlin.Text, RegistryValueKind.String)
+                    End If
+                End Using
+            End If
+        Else
+            Dim openFileDialog As New System.Windows.Forms.OpenFileDialog()
+            openFileDialog.Filter = "Executable file|*.exe"
+            openFileDialog.RestoreDirectory = True
+            openFileDialog.FilterIndex = 1        '
+            Dim result As DialogResult = openFileDialog.ShowDialog()
+            If result = System.Windows.Forms.DialogResult.OK Then
+                txt_Kotlin.Text = openFileDialog.FileName
+                KotlinPath = openFileDialog.FileName
+            End If
+            If txt_Kotlin.Text = "" Or txt_Kotlin.Text.Contains("\") = False Then Return
+            txt_Kotlin.TextAlign = HorizontalAlignment.Left
+            Dim OpenCUKey As RegistryKey = RegistryKey.OpenBaseKey(RegistryHive.CurrentUser, IIf(Environment.Is64BitOperatingSystem, RegistryView.Registry64, RegistryView.Registry32))
+            Using subRegKey = OpenCUKey.OpenSubKey("Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers", True)
+                If subRegKey Is Nothing Then
+                    Using subKey = OpenCUKey.CreateSubKey("Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers", RegistryKeyPermissionCheck.Default)
+                        subKey.SetValue("KotlinPath", txt_Kotlin.Text, RegistryValueKind.String)
+                    End Using
+                Else
+                    subRegKey.SetValue("KotlinPath", txt_Kotlin.Text, RegistryValueKind.String)
+                End If
+            End Using
+        End If
     End Sub
     Private Sub btn_Buildtools_Click(sender As Object, e As EventArgs)
 
