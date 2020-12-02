@@ -90,6 +90,30 @@ Public Class CompileForm
             Next
         End If
         If Directory.Exists(ProjectPath + "\libs") Then
+
+            If File.Exists(My.Computer.FileSystem.SpecialDirectories.Temp + "\CP_Batch.bat") = False Then
+                Try
+                    File.Delete(My.Computer.FileSystem.SpecialDirectories.Temp + "\CP_Batch.bat")
+                Catch ex As Exception
+
+                End Try
+            End If
+
+            Using outputFile As New StreamWriter(My.Computer.FileSystem.SpecialDirectories.Temp + "\CP_Batch.bat", False, Encoding.GetEncoding("ISO-8859-1"))
+                outputFile.WriteLine("@echo off")
+                outputFile.WriteLine("setlocal")
+                outputFile.WriteLine("set CLASS_PATH=C:/Documents and Settings/user/workspace/myProject")
+                outputFile.WriteLine("set CP=%CLASS_PATH%/out/lib/activation-1.0.2.jar;%CP%")
+                outputFile.WriteLine("set CP=%CLASS_PATH%/out/lib/activeio-2.1.jar;%CP%")
+                outputFile.WriteLine("set CP=./;%CP%")
+                outputFile.WriteLine("set CP=""%CP%""")
+                outputFile.WriteLine("ECHO Using Classpath:")
+                outputFile.WriteLine("ECHO %CP%")
+                outputFile.WriteLine("cd ..")
+                outputFile.WriteLine("java -classpath %CP% com.mycompany.myproject.Client")
+            End Using
+
+
             Dim cpList = Directory.GetFiles(ProjectPath + "\libs", "*.*", SearchOption.TopDirectoryOnly).Where(Function(f) New List(Of String) From {".jar", ".aar"}.IndexOf(Path.GetExtension(f)) >= 0).ToArray()
             If cpList.Count > 0 Then
                 'cp = """" + androidjarPath + """;""" + B4AShared + """;""" + Core + """;" +  String.Join(";", cpList).Replace(ProjectPath + "\", "").Replace("\", "/")
@@ -174,7 +198,7 @@ Public Class CompileForm
             '    End Using
         End If
 
-        Dim javaList = Directory.GetFiles(ProjectPath, "*.*", SearchOption.AllDirectories).Where(Function(f) New List(Of String) From {".java"}.IndexOf(Path.GetExtension(f)) >= 0).ToArray()
+        Dim javaList = Directory.GetDirectories(ProjectPath + "\src", "*.*", SearchOption.AllDirectories).Where(Function(f) Directory.GetFiles(f, "*.java", SearchOption.TopDirectoryOnly).Count > 0).Select(Function(x) x + "\*.java").ToList.ToArray()
         If javaList.Count > 0 Then
             javafiles = String.Join(" ", javaList).Replace(ProjectPath + "\", "").Replace("\", "/")
         End If
@@ -186,6 +210,7 @@ Public Class CompileForm
             p1.StartInfo.FileName = "cmd.exe"
             p1.StartInfo.WorkingDirectory = ProjectPath
             p1.StartInfo.Arguments = String.Format(" /c {0} -Xmaxerrs 1 -nowarn -Xlint:none -J-Xmx512m  -version -encoding UTF-8 -d {1} -sourcepath {2} -cp {3} {4}  2>>&1", javac, "bin/classes", "src", cp, javafiles)
+            Debug.Print(p1.StartInfo.Arguments)
             p1.StartInfo.WindowStyle = ProcessWindowStyle.Hidden
             p1.StartInfo.UseShellExecute = False
             p1.StartInfo.RedirectStandardOutput = True
@@ -352,6 +377,9 @@ Public Class CompileForm
     Private Sub Button2_Click(sender As Object, e As EventArgs) Handles Button2.Click
         Dim folderDlg As FolderBrowserDialog = New FolderBrowserDialog()
         folderDlg.ShowNewFolderButton = True
+        If TextBox1.Text <> "" Or TextBox1.Text.Contains("\") = False Then
+            folderDlg.SelectedPath = TextBox1.Text
+        End If
         Dim result As DialogResult = folderDlg.ShowDialog()
         If result = DialogResult.OK Then
             TextBox1.ForeColor = Color.Black
