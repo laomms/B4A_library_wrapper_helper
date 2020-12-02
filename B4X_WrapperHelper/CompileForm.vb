@@ -283,14 +283,14 @@ Public Class CompileForm
 
     Private Sub CheckBox2_CheckedChanged(sender As Object, e As EventArgs) Handles CheckBox2.CheckedChanged
         If ProjectPath = "" Or ProjectPath.Contains("\") = False Then Return
-        If CheckBox1.Checked = True Then
-            If RichTextBox1.Text = "" Then Return
+
+        If RichTextBox1.Text = "" Then Return
             If BackgroundWorker2.IsBusy = False Then
                 Dim arguments As New List(Of Object)
                 arguments.Add(RichTextBox1.Text)
                 BackgroundWorker2.RunWorkerAsync(arguments)
             End If
-        End If
+
     End Sub
 
     Private Async Sub BackgroundWorker2_DoWork(sender As Object, e As System.ComponentModel.DoWorkEventArgs) Handles BackgroundWorker2.DoWork
@@ -308,13 +308,15 @@ Public Class CompileForm
             ItemsDictionary.Clear()
             ItemsDictionary = Await DownloadLib.SearchItem(packageName)
             If ItemsDictionary.Count > 0 Then
-                SelectForm.ShowDialog()
+                Dim frm As New SelectForm
+                frm.ShowDialog()
                 If SelectItem <> "" Then
                     Dim url = ItemsDictionary(SelectItem.Split("-")(0).Trim)
                     ItemsDictionary.Clear()
                     ItemsDictionary = Await DownloadLib.GetVersion(url)
                     If ItemsDictionary.Count > 0 Then
-                        SelectForm.ShowDialog()
+                        Dim frm2 As New SelectForm
+                        frm2.ShowDialog()
                         If SelectItem <> "" Then
                             url = url + "/" + SelectItem.Split("-")(0).Trim
                             ItemsDictionary.Clear()
@@ -330,7 +332,8 @@ Public Class CompileForm
                                         downlink = keyPair.Value
                                         targetPath = ProjectPath + "\libs\" + Path.GetFileName(keyPair.Value)
                                         needSelect = False
-                                        DownloadForm.ShowDialog()
+                                        Dim frm3 As New DownloadForm
+                                        frm3.ShowDialog()
                                     End If
                                 Next
                             End If
@@ -338,9 +341,7 @@ Public Class CompileForm
                     End If
                 End If
             End If
-            If packageName = "com.android.vending.billing" Then
 
-            End If
         ElseIf errorInfo.Contains("cannot find symbol") Then
 
         ElseIf errorInfo.Contains("cannot be accessed from outside package") Then
