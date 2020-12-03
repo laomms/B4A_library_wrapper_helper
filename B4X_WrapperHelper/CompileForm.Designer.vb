@@ -33,6 +33,7 @@ Partial Class CompileForm
         Me.TextBox1 = New System.Windows.Forms.TextBox()
         Me.Button2 = New System.Windows.Forms.Button()
         Me.FolderBrowserDialog1 = New System.Windows.Forms.FolderBrowserDialog()
+        Me.Button3 = New System.Windows.Forms.Button()
         Me.SuspendLayout()
         '
         'RichTextBox1
@@ -46,11 +47,11 @@ Partial Class CompileForm
         '
         'Button1
         '
-        Me.Button1.Location = New System.Drawing.Point(236, 529)
+        Me.Button1.Location = New System.Drawing.Point(153, 527)
         Me.Button1.Name = "Button1"
         Me.Button1.Size = New System.Drawing.Size(107, 37)
         Me.Button1.TabIndex = 1
-        Me.Button1.Text = "Compile"
+        Me.Button1.Text = "Compile(cmd)"
         Me.Button1.UseVisualStyleBackColor = True
         '
         'CheckBox1
@@ -107,11 +108,21 @@ Partial Class CompileForm
         Me.Button2.Text = "Open"
         Me.Button2.UseVisualStyleBackColor = True
         '
+        'Button3
+        '
+        Me.Button3.Location = New System.Drawing.Point(321, 527)
+        Me.Button3.Name = "Button3"
+        Me.Button3.Size = New System.Drawing.Size(107, 37)
+        Me.Button3.TabIndex = 7
+        Me.Button3.Text = "Compile(gradle)"
+        Me.Button3.UseVisualStyleBackColor = True
+        '
         'CompileForm
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(579, 576)
+        Me.Controls.Add(Me.Button3)
         Me.Controls.Add(Me.Button2)
         Me.Controls.Add(Me.TextBox1)
         Me.Controls.Add(Me.Label1)
@@ -139,4 +150,5 @@ Partial Class CompileForm
     Friend WithEvents TextBox1 As TextBox
     Friend WithEvents Button2 As Button
     Friend WithEvents FolderBrowserDialog1 As FolderBrowserDialog
+    Friend WithEvents Button3 As Button
 End Class

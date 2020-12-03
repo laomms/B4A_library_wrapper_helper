@@ -31,7 +31,9 @@ Public Class SysEnvironment
     Public Shared Function GetSysEnvironmentByName(ByVal name As String) As String
         Dim result As String = String.Empty
         Try
-            result = OpenSysEnvironment().GetValue(name).ToString() '读取
+            If Not OpenSysEnvironment().GetValue(name) Is Nothing Then
+                result = OpenSysEnvironment().GetValue(name).ToString() '读取
+            End If
         Catch e1 As Exception
 
             Return String.Empty

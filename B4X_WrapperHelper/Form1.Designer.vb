@@ -59,6 +59,9 @@ Partial Class Form1
         Me.btn_B4A = New System.Windows.Forms.Button()
         Me.Label5 = New System.Windows.Forms.Label()
         Me.GroupBox4 = New System.Windows.Forms.GroupBox()
+        Me.txt_Gradle = New System.Windows.Forms.TextBox()
+        Me.btn_Gradle = New System.Windows.Forms.Button()
+        Me.Label6 = New System.Windows.Forms.Label()
         Me.txt_Kotlin = New System.Windows.Forms.TextBox()
         Me.btn_Kotlin = New System.Windows.Forms.Button()
         Me.Label3 = New System.Windows.Forms.Label()
@@ -66,6 +69,8 @@ Partial Class Form1
         Me.txt_androidjar = New System.Windows.Forms.TextBox()
         Me.OpenFileDialog1 = New System.Windows.Forms.OpenFileDialog()
         Me.GroupBox5 = New System.Windows.Forms.GroupBox()
+        Me.ToolTip1 = New System.Windows.Forms.ToolTip(Me.components)
+        Me.lbl_Status = New System.Windows.Forms.Label()
         Me.GroupBox1.SuspendLayout()
         Me.GroupBox2.SuspendLayout()
         Me.ContextMenuStrip1.SuspendLayout()
@@ -248,6 +253,7 @@ Partial Class Form1
         Me.CheckBox_ANDROID_SDK_HOME.Size = New System.Drawing.Size(142, 17)
         Me.CheckBox_ANDROID_SDK_HOME.TabIndex = 1
         Me.CheckBox_ANDROID_SDK_HOME.Text = "ANDROID_SDK_HOME"
+        Me.ToolTip1.SetToolTip(Me.CheckBox_ANDROID_SDK_HOME, "X:\Android\Sdk")
         Me.CheckBox_ANDROID_SDK_HOME.UseVisualStyleBackColor = True
         '
         'CheckBox_JAVA_HOME
@@ -259,6 +265,7 @@ Partial Class Form1
         Me.CheckBox_JAVA_HOME.Size = New System.Drawing.Size(90, 17)
         Me.CheckBox_JAVA_HOME.TabIndex = 0
         Me.CheckBox_JAVA_HOME.Text = "JAVA_HOME"
+        Me.ToolTip1.SetToolTip(Me.CheckBox_JAVA_HOME, "X:\..\jdk-xx")
         Me.CheckBox_JAVA_HOME.UseVisualStyleBackColor = True
         '
         'ListView1
@@ -290,7 +297,7 @@ Partial Class Form1
         Me.GroupBox3.Controls.Add(Me.ComboBox3)
         Me.GroupBox3.Location = New System.Drawing.Point(516, 186)
         Me.GroupBox3.Name = "GroupBox3"
-        Me.GroupBox3.Size = New System.Drawing.Size(426, 318)
+        Me.GroupBox3.Size = New System.Drawing.Size(426, 364)
         Me.GroupBox3.TabIndex = 21
         Me.GroupBox3.TabStop = False
         Me.GroupBox3.Text = "Event List (Right click to modify the code)"
@@ -301,7 +308,7 @@ Partial Class Form1
         Me.RichTextBox1.ContextMenuStrip = Me.ContextMenuStrip2
         Me.RichTextBox1.Location = New System.Drawing.Point(4, 42)
         Me.RichTextBox1.Name = "RichTextBox1"
-        Me.RichTextBox1.Size = New System.Drawing.Size(416, 268)
+        Me.RichTextBox1.Size = New System.Drawing.Size(416, 316)
         Me.RichTextBox1.TabIndex = 1
         Me.RichTextBox1.Text = ""
         '
@@ -329,7 +336,7 @@ Partial Class Form1
         '
         'btn_Compile
         '
-        Me.btn_Compile.Location = New System.Drawing.Point(200, 124)
+        Me.btn_Compile.Location = New System.Drawing.Point(200, 172)
         Me.btn_Compile.Name = "btn_Compile"
         Me.btn_Compile.Size = New System.Drawing.Size(96, 39)
         Me.btn_Compile.TabIndex = 22
@@ -374,6 +381,9 @@ Partial Class Form1
         '
         'GroupBox4
         '
+        Me.GroupBox4.Controls.Add(Me.txt_Gradle)
+        Me.GroupBox4.Controls.Add(Me.btn_Gradle)
+        Me.GroupBox4.Controls.Add(Me.Label6)
         Me.GroupBox4.Controls.Add(Me.txt_Kotlin)
         Me.GroupBox4.Controls.Add(Me.btn_Kotlin)
         Me.GroupBox4.Controls.Add(Me.Label3)
@@ -386,14 +396,42 @@ Partial Class Form1
         Me.GroupBox4.Controls.Add(Me.btn_Compile)
         Me.GroupBox4.Location = New System.Drawing.Point(7, 324)
         Me.GroupBox4.Name = "GroupBox4"
-        Me.GroupBox4.Size = New System.Drawing.Size(501, 180)
+        Me.GroupBox4.Size = New System.Drawing.Size(501, 226)
         Me.GroupBox4.TabIndex = 29
         Me.GroupBox4.TabStop = False
+        '
+        'txt_Gradle
+        '
+        Me.txt_Gradle.ForeColor = System.Drawing.SystemColors.GrayText
+        Me.txt_Gradle.Location = New System.Drawing.Point(80, 88)
+        Me.txt_Gradle.Name = "txt_Gradle"
+        Me.txt_Gradle.Size = New System.Drawing.Size(326, 20)
+        Me.txt_Gradle.TabIndex = 39
+        Me.txt_Gradle.Text = "Please select gradle location"
+        Me.txt_Gradle.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
+        '
+        'btn_Gradle
+        '
+        Me.btn_Gradle.Location = New System.Drawing.Point(424, 85)
+        Me.btn_Gradle.Name = "btn_Gradle"
+        Me.btn_Gradle.Size = New System.Drawing.Size(68, 28)
+        Me.btn_Gradle.TabIndex = 38
+        Me.btn_Gradle.Text = "Select"
+        Me.btn_Gradle.UseVisualStyleBackColor = True
+        '
+        'Label6
+        '
+        Me.Label6.AutoSize = True
+        Me.Label6.Location = New System.Drawing.Point(25, 92)
+        Me.Label6.Name = "Label6"
+        Me.Label6.Size = New System.Drawing.Size(41, 13)
+        Me.Label6.TabIndex = 37
+        Me.Label6.Text = "Gradle:"
         '
         'txt_Kotlin
         '
         Me.txt_Kotlin.ForeColor = System.Drawing.SystemColors.GrayText
-        Me.txt_Kotlin.Location = New System.Drawing.Point(80, 86)
+        Me.txt_Kotlin.Location = New System.Drawing.Point(80, 124)
         Me.txt_Kotlin.Name = "txt_Kotlin"
         Me.txt_Kotlin.Size = New System.Drawing.Size(326, 20)
         Me.txt_Kotlin.TabIndex = 36
@@ -402,7 +440,7 @@ Partial Class Form1
         '
         'btn_Kotlin
         '
-        Me.btn_Kotlin.Location = New System.Drawing.Point(424, 84)
+        Me.btn_Kotlin.Location = New System.Drawing.Point(424, 122)
         Me.btn_Kotlin.Name = "btn_Kotlin"
         Me.btn_Kotlin.Size = New System.Drawing.Size(68, 28)
         Me.btn_Kotlin.TabIndex = 35
@@ -412,7 +450,7 @@ Partial Class Form1
         'Label3
         '
         Me.Label3.AutoSize = True
-        Me.Label3.Location = New System.Drawing.Point(25, 90)
+        Me.Label3.Location = New System.Drawing.Point(25, 128)
         Me.Label3.Name = "Label3"
         Me.Label3.Size = New System.Drawing.Size(36, 13)
         Me.Label3.TabIndex = 34
@@ -452,11 +490,25 @@ Partial Class Form1
         Me.GroupBox5.TabStop = False
         Me.GroupBox5.Text = "Right click to add resource ID"
         '
+        'ToolTip1
+        '
+        Me.ToolTip1.ToolTipTitle = "X:\..\jdk-xx"
+        '
+        'lbl_Status
+        '
+        Me.lbl_Status.ForeColor = System.Drawing.Color.MediumPurple
+        Me.lbl_Status.Location = New System.Drawing.Point(10, 551)
+        Me.lbl_Status.Name = "lbl_Status"
+        Me.lbl_Status.Size = New System.Drawing.Size(930, 24)
+        Me.lbl_Status.TabIndex = 31
+        Me.lbl_Status.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
+        '
         'Form1
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(951, 511)
+        Me.ClientSize = New System.Drawing.Size(951, 578)
+        Me.Controls.Add(Me.lbl_Status)
         Me.Controls.Add(Me.GroupBox5)
         Me.Controls.Add(Me.GroupBox4)
         Me.Controls.Add(Me.GroupBox3)
@@ -527,4 +579,9 @@ Partial Class Form1
     Friend WithEvents txt_Kotlin As TextBox
     Friend WithEvents btn_Kotlin As Button
     Friend WithEvents Label3 As Label
+    Friend WithEvents txt_Gradle As TextBox
+    Friend WithEvents btn_Gradle As Button
+    Friend WithEvents Label6 As Label
+    Friend WithEvents ToolTip1 As ToolTip
+    Friend WithEvents lbl_Status As Label
 End Class
