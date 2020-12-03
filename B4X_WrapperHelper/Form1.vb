@@ -454,6 +454,10 @@ Public Class Form1
         If settingsgradleList.Count > 0 Then
             File.Copy(settingsgradleList.Max(Function(arr) arr), ProjectPath + "\settings.gradle", True)
         End If
+        Dim localpropertiesList = Directory.GetFiles(AndroidProjectPath, "local.properties", SearchOption.AllDirectories)
+        If localpropertiesList.Count > 0 Then
+            File.Copy(localpropertiesList.Max(Function(arr) arr), ProjectPath + "\local.properties", True)
+        End If
         Dim gradlewbatList = Directory.GetFiles(AndroidProjectPath, "gradlew.bat", SearchOption.AllDirectories)
         If gradlewbatList.Count > 0 Then
             File.Copy(gradlewbatList.Max(Function(arr) arr), ProjectPath + "\gradlew.bat", True)
