@@ -91,7 +91,12 @@ Public Class Form1
             End Using
         Next
 
-        If SysEnvironment.CheckSysEnvironmentExist("JAVA_HOME") Then CheckBox_JAVA_HOME.Checked = True : CheckBox_JAVA_HOME.Enabled = False
+        If SysEnvironment.CheckSysEnvironmentExist("JAVA_HOME") Then
+            CheckBox_JAVA_HOME.Checked = True
+            CheckBox_JAVA_HOME.Enabled = False
+        Else
+            CheckBox_JAVA_HOME.Enabled = True
+        End If
         If SysEnvironment.CheckSysEnvironmentExist("ANDROID_SDK_HOME") Then
             CheckBox_ANDROID_SDK_HOME.Checked = True
             CheckBox_ANDROID_SDK_HOME.Enabled = False
@@ -106,9 +111,21 @@ Public Class Form1
             'Catch ex As Exception
 
             'End Try
+        Else
+            CheckBox_ANDROID_SDK_HOME.Enabled = True
         End If
-        If SysEnvironment.CheckSysEnvironmentExist("MAVEN_HOME") Then CheckBox_MAVEN_HOME.Checked = True : CheckBox_MAVEN_HOME.Enabled = False
-        If SysEnvironment.CheckSysEnvironmentExist("CLASSPATH") Then CheckBox_CLASSPATH.Checked = True : CheckBox_CLASSPATH.Enabled = False
+        If SysEnvironment.CheckSysEnvironmentExist("MAVEN_HOME") Then
+            CheckBox_MAVEN_HOME.Checked = True
+            CheckBox_MAVEN_HOME.Enabled = False
+        Else
+            CheckBox_MAVEN_HOME.Enabled = True
+        End If
+        If SysEnvironment.CheckSysEnvironmentExist("CLASSPATH") Then
+            CheckBox_CLASSPATH.Checked = True
+            CheckBox_CLASSPATH.Enabled = False
+        Else
+            CheckBox_CLASSPATH.Enabled = True
+        End If
 
         With ListView1
             .Items.Clear()
@@ -135,6 +152,12 @@ Public Class Form1
                     txt_b4a.Text = subRegKey.GetValue("B4aPath")
                     B4AShared = Path.GetDirectoryName(txt_b4a.Text) + "\libraries\B4AShared.jar"
                     Core = Path.GetDirectoryName(txt_b4a.Text) + "\libraries\Core.jar"
+                End If
+
+                If Not subRegKey.GetValue("GradlePath") Is Nothing Then
+                    txt_Gradle.TextAlign = HorizontalAlignment.Left
+                    txt_Gradle.Text = subRegKey.GetValue("GradlePath")
+                    KotlinPath = txt_Gradle.Text
                 End If
 
                 If Not subRegKey.GetValue("KotlinPath") Is Nothing Then
@@ -417,6 +440,32 @@ Public Class Form1
 
         If BuildConfigDic.Count > 0 Then
             CreateBuildConfig(MainActivityPath + "\BuildConfig.java")
+        End If
+
+        Dim buildgradleList = Directory.GetFiles(AndroidProjectPath, "build.gradle", SearchOption.AllDirectories)
+        If buildgradleList.Count > 0 Then
+            File.Copy(buildgradleList.Max(Function(arr) arr), ProjectPath + "\build.gradle", True)
+        End If
+        Dim gradlepropertiesList = Directory.GetFiles(AndroidProjectPath, "gradle.properties", SearchOption.AllDirectories)
+        If gradlepropertiesList.Count > 0 Then
+            File.Copy(gradlepropertiesList.Max(Function(arr) arr), ProjectPath + "\gradle.properties", True)
+        End If
+        Dim settingsgradleList = Directory.GetFiles(AndroidProjectPath, "gradle.properties", SearchOption.AllDirectories)
+        If settingsgradleList.Count > 0 Then
+            File.Copy(settingsgradleList.Max(Function(arr) arr), ProjectPath + "\gradle.properties", True)
+        End If
+        Dim gradlewbatList = Directory.GetFiles(AndroidProjectPath, "gradlew.bat", SearchOption.AllDirectories)
+        If gradlewbatList.Count > 0 Then
+            File.Copy(gradlewbatList.Max(Function(arr) arr), ProjectPath + "\gradlew.bat", True)
+        End If
+        Dim gradlewList = Directory.GetFiles(AndroidProjectPath, "gradlew", SearchOption.AllDirectories)
+        If gradlewList.Count > 0 Then
+            File.Copy(gradlewList.Max(Function(arr) arr), ProjectPath + "\gradlew", True)
+        End If
+
+        Dim gradleList = Directory.GetDirectories(AndroidProjectPath, "*.*", SearchOption.AllDirectories).Where(Function(x) x.EndsWith("\gradle")).Select(Function(y) y.ToString).ToList
+        If gradleList.Count > 0 Then
+            FileIO.FileSystem.CopyDirectory(gradleList.Max(Function(arr) arr), ProjectPath, True)
         End If
 
     End Sub
@@ -915,7 +964,7 @@ Public Class Form1
         Me.Invoke(New MethodInvoker(Sub() ListView1.Items.AddRange(itemlist.Select(Function(row, index) New ListViewItem({index.ToString()}.Concat(row).ToArray())).ToArray())))
     End Sub
     Private Sub CheckBox_JAVA_HOME_CheckedChanged(sender As Object, e As EventArgs) Handles CheckBox_JAVA_HOME.CheckedChanged
-        If CheckBox_JAVA_HOME.Checked = False Then
+        If CheckBox_JAVA_HOME.Checked = True And CheckBox_JAVA_HOME.Enabled = True Then
             Dim folderDlg As FolderBrowserDialog = New FolderBrowserDialog()
             folderDlg.ShowNewFolderButton = True
             Dim result As DialogResult = folderDlg.ShowDialog()
@@ -930,10 +979,11 @@ Public Class Form1
                     MsgBox("The JAVA_HOME environment variables have been set, please restart the system!", vbInformation + vbMsgBoxSetForeground, "finished")
                 End If
             End If
+
         End If
     End Sub
     Private Sub CheckBox_ANDROID_SDK_HOME_CheckedChanged(sender As Object, e As EventArgs) Handles CheckBox_ANDROID_SDK_HOME.CheckedChanged
-        If CheckBox_ANDROID_SDK_HOME.Checked = False Then
+        If CheckBox_ANDROID_SDK_HOME.Checked = True And CheckBox_ANDROID_SDK_HOME.Enabled = True Then
             Dim folderDlg As FolderBrowserDialog = New FolderBrowserDialog()
             folderDlg.ShowNewFolderButton = True
             Dim result As DialogResult = folderDlg.ShowDialog()
@@ -951,7 +1001,7 @@ Public Class Form1
         End If
     End Sub
     Private Sub CheckBox_CLASSPATH_CheckedChanged(sender As Object, e As EventArgs) Handles CheckBox_CLASSPATH.CheckedChanged
-        If CheckBox_CLASSPATH.Checked = False Then
+        If CheckBox_CLASSPATH.Checked = True And CheckBox_CLASSPATH.Enabled = True Then
             Dim folderDlg As FolderBrowserDialog = New FolderBrowserDialog()
             folderDlg.ShowNewFolderButton = True
             Dim result As DialogResult = folderDlg.ShowDialog()
@@ -968,26 +1018,21 @@ Public Class Form1
         End If
     End Sub
     Private Sub CheckBox_MAVEN_HOME_CheckedChanged(sender As Object, e As EventArgs) Handles CheckBox_MAVEN_HOME.CheckedChanged
-        If CheckBox_MAVEN_HOME.Checked = False Then
+        If CheckBox_MAVEN_HOME.Checked = True And CheckBox_MAVEN_HOME.Enabled = True Then
             If MessageBox.Show("MAVEN_HOME environment variable is not detected, do you want to download and install !", "Error", MessageBoxButtons.YesNo, MessageBoxIcon.Asterisk) = DialogResult.Yes Then
                 needSelect = True
+                CheckBox_MAVEN_HOME.Checked = True
                 DownloadForm.ShowDialog()
                 If File.Exists(downloadPath + "\apache-maven.zip") Then
                     Dim ExtractName As String = ""
-                    Using archive As ZipArchive = ZipFile.OpenRead(downloadPath + "\apache-maven.zip")
-                        For Each entry As ZipArchiveEntry In archive.Entries
-                            ExtractName = entry.FullName.Replace("/", "")
-                            Exit For
-                        Next entry
-                        If Directory.Exists("D:\apache-maven") = False Then
-                            ZipFile.ExtractToDirectory(downloadPath + "\apache-maven.zip", "D:\apache-maven")
-                        End If
-                        SysEnvironment.SetSysEnvironment("MAVEN_HOME", "D:\apache-maven\" + ExtractName)
-                        SysEnvironment.SetPathAfter("%MAVEN_HOME%\bin")
-                        SysEnvironment.SetPathAfter("%SystemRoot%\system32;%SystemRoot%;%SystemRoot%\System32\Wbem")
-                        MsgBox("The MAVEN_HOME environment variables have been set, please restart the system!", vbInformation + vbMsgBoxSetForeground, "finished")
-                        Return
-                    End Using
+                    Dim newthread As New Thread(Sub()
+                                                    Extractfiles("D:\apache-maven", downloadPath + "\apache-maven.zip", ExtractName)
+                                                End Sub)
+                    newthread.Start()
+                    SysEnvironment.SetSysEnvironment("MAVEN_HOME", "D:\apache-maven\" + ExtractName)
+                    SysEnvironment.SetPathAfter("%MAVEN_HOME%\bin")
+                    SysEnvironment.SetPathAfter("%SystemRoot%\system32;%SystemRoot%;%SystemRoot%\System32\Wbem")
+                    MsgBox("The MAVEN_HOME environment variables have been set, please restart the system!", vbInformation + vbMsgBoxSetForeground, "finished")
                 Else
                     Return
                 End If
@@ -1264,6 +1309,85 @@ Public Class Form1
             Core = Path.GetDirectoryName(txt_b4a.Text) + "\libraries\Core.jar"
         End Using
     End Sub
+    Private Sub btn_Gradle_Click(sender As Object, e As EventArgs) Handles btn_Gradle.Click
+        If txt_Gradle.Text = "" Or txt_Gradle.Text.Contains("\") = False Then
+            If MessageBox.Show("If you want to download Gradle, please select the confirm button." + vbNewLine + "Otherwise press the cancel button to select Gradle directory !", "Hint", MessageBoxButtons.YesNo, MessageBoxIcon.Asterisk) = DialogResult.Yes Then
+                needSelect = False
+                downlink = "https://downloads.gradle-dn.com/distributions/gradle-6.7.1-all.zip"
+                targetPath = "D:\gradle-6.7.1-all.zip"
+                DownloadForm.ShowDialog()
+                If File.Exists(targetPath) Then
+                    Dim ExtractName As String = ""
+                    Dim newthread As New Thread(Sub()
+                                                    Extractfiles("D:\Gradle", "D:\gradle-6.7.1-all.zip", ExtractName)
+                                                End Sub)
+                    newthread.Start()
+                    txt_Gradle.TextAlign = HorizontalAlignment.Left
+                    txt_Gradle.Text = "D:\Gradle\gradle-6.7.1\bin"
+                    GradlePath = "D:\Gradle\gradle-6.7.1\bin"
+                    Dim OpenCUKey As RegistryKey = RegistryKey.OpenBaseKey(RegistryHive.CurrentUser, IIf(Environment.Is64BitOperatingSystem, RegistryView.Registry64, RegistryView.Registry32))
+                    Using subRegKey = OpenCUKey.OpenSubKey("Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers", True)
+                        If subRegKey Is Nothing Then
+                            Using subKey = OpenCUKey.CreateSubKey("Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers", RegistryKeyPermissionCheck.Default)
+                                subKey.SetValue("GradlePath", txt_Gradle.Text, RegistryValueKind.String)
+                            End Using
+                        Else
+                            subRegKey.SetValue("GradlePath", txt_Gradle.Text, RegistryValueKind.String)
+                        End If
+                    End Using
+                    SysEnvironment.SetSysEnvironment("GRADLE_HOME", "D:\Gradle\gradle-6.7.1\")
+                    SysEnvironment.SetPathAfter("%GRADLE_HOME%\bin")
+                Else
+                    Return
+                End If
+            Else
+                Dim openFileDialog As New System.Windows.Forms.OpenFileDialog()
+                openFileDialog.Filter = "Executable file|*.exe"
+                openFileDialog.RestoreDirectory = True
+                openFileDialog.FilterIndex = 1        '
+                Dim result As DialogResult = openFileDialog.ShowDialog()
+                If result = System.Windows.Forms.DialogResult.OK Then
+                    txt_Gradle.Text = openFileDialog.FileName
+                    GradlePath = openFileDialog.FileName
+                End If
+                If txt_Gradle.Text = "" Or txt_Gradle.Text.Contains("\") = False Then Return
+                txt_Gradle.TextAlign = HorizontalAlignment.Left
+                Dim OpenCUKey As RegistryKey = RegistryKey.OpenBaseKey(RegistryHive.CurrentUser, IIf(Environment.Is64BitOperatingSystem, RegistryView.Registry64, RegistryView.Registry32))
+                Using subRegKey = OpenCUKey.OpenSubKey("Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers", True)
+                    If subRegKey Is Nothing Then
+                        Using subKey = OpenCUKey.CreateSubKey("Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers", RegistryKeyPermissionCheck.Default)
+                            subKey.SetValue("GradlePath", txt_Gradle.Text, RegistryValueKind.String)
+                        End Using
+                    Else
+                        subRegKey.SetValue("GradlePath", txt_Gradle.Text, RegistryValueKind.String)
+                    End If
+                End Using
+            End If
+        Else
+            Dim openFileDialog As New System.Windows.Forms.OpenFileDialog()
+            openFileDialog.Filter = "Executable file|*.exe"
+            openFileDialog.RestoreDirectory = True
+            openFileDialog.FilterIndex = 1        '
+            Dim result As DialogResult = openFileDialog.ShowDialog()
+            If result = System.Windows.Forms.DialogResult.OK Then
+                txt_Gradle.Text = openFileDialog.FileName
+                GradlePath = openFileDialog.FileName
+            End If
+            If txt_Gradle.Text = "" Or txt_Gradle.Text.Contains("\") = False Then Return
+            txt_Gradle.TextAlign = HorizontalAlignment.Left
+            Dim OpenCUKey As RegistryKey = RegistryKey.OpenBaseKey(RegistryHive.CurrentUser, IIf(Environment.Is64BitOperatingSystem, RegistryView.Registry64, RegistryView.Registry32))
+            Using subRegKey = OpenCUKey.OpenSubKey("Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers", True)
+                If subRegKey Is Nothing Then
+                    Using subKey = OpenCUKey.CreateSubKey("Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers", RegistryKeyPermissionCheck.Default)
+                        subKey.SetValue("GradlePath", txt_Gradle.Text, RegistryValueKind.String)
+                    End Using
+                Else
+                    subRegKey.SetValue("GradlePath", txt_Gradle.Text, RegistryValueKind.String)
+                End If
+            End Using
+        End If
+    End Sub
+
     Private Sub btn_Kotlin_Click(sender As Object, e As EventArgs) Handles btn_Kotlin.Click
         If txt_Kotlin.Text = "" Or txt_Kotlin.Text.Contains("\") = False Then
             If MessageBox.Show("If you want to download the kotlin compiler, please select the confirm button." + vbNewLine + "Otherwise press the cancel button to select the kotlin compiler directory !", "Hint", MessageBoxButtons.YesNo, MessageBoxIcon.Asterisk) = DialogResult.Yes Then
@@ -1273,31 +1397,25 @@ Public Class Form1
                 DownloadForm.ShowDialog()
                 If File.Exists(targetPath) Then
                     Dim ExtractName As String = ""
-                    Using archive As ZipArchive = ZipFile.OpenRead(targetPath)
-                        For Each entry As ZipArchiveEntry In archive.Entries
-                            ExtractName = entry.FullName.Replace("/", "")
-                            Exit For
-                        Next entry
-                        If Directory.Exists("D:\Kotlin") = False Then
-                            ZipFile.ExtractToDirectory(targetPath, "D:\Kotlin")
+                    Dim newthread As New Thread(Sub()
+                                                    Extractfiles("D:\Kotlin", "D:\kotlin-compiler-1.4.20.zip", ExtractName)
+                                                End Sub)
+                    newthread.Start()
+                    txt_Kotlin.TextAlign = HorizontalAlignment.Left
+                    txt_Kotlin.Text = "D:\Kotlin\kotlinc\bin\"
+                    KotlinPath = "D:\Kotlin\kotlinc\bin\"
+                    Dim OpenCUKey As RegistryKey = RegistryKey.OpenBaseKey(RegistryHive.CurrentUser, IIf(Environment.Is64BitOperatingSystem, RegistryView.Registry64, RegistryView.Registry32))
+                    Using subRegKey = OpenCUKey.OpenSubKey("Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers", True)
+                        If subRegKey Is Nothing Then
+                            Using subKey = OpenCUKey.CreateSubKey("Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers", RegistryKeyPermissionCheck.Default)
+                                subKey.SetValue("KotlinPath", txt_Kotlin.Text, RegistryValueKind.String)
+                            End Using
+                        Else
+                            subRegKey.SetValue("KotlinPath", txt_Kotlin.Text, RegistryValueKind.String)
                         End If
-                        txt_Kotlin.TextAlign = HorizontalAlignment.Left
-                        txt_Kotlin.Text = "D:\Kotlin\kotlinc\bin\kotlin"
-                        KotlinPath = "D:\Kotlin\kotlinc\bin\kotlin"
-                        Dim OpenCUKey As RegistryKey = RegistryKey.OpenBaseKey(RegistryHive.CurrentUser, IIf(Environment.Is64BitOperatingSystem, RegistryView.Registry64, RegistryView.Registry32))
-                        Using subRegKey = OpenCUKey.OpenSubKey("Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers", True)
-                            If subRegKey Is Nothing Then
-                                Using subKey = OpenCUKey.CreateSubKey("Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers", RegistryKeyPermissionCheck.Default)
-                                    subKey.SetValue("KotlinPath", txt_Kotlin.Text, RegistryValueKind.String)
-                                End Using
-                            Else
-                                subRegKey.SetValue("KotlinPath", txt_Kotlin.Text, RegistryValueKind.String)
-                            End If
-                        End Using
-                        SysEnvironment.SetSysEnvironment("KOTLIN_HOME", "D:\Kotlin")
-                        SysEnvironment.SetPathAfter("%KOTLIN_HOME%\kotlinc\bin")
-                        Return
                     End Using
+                    SysEnvironment.SetSysEnvironment("KOTLIN_HOME", "D:\Kotlin\kotlinc")
+                    SysEnvironment.SetPathAfter("%KOTLIN_HOME%\bin")
                 Else
                     Return
                 End If
@@ -1348,8 +1466,16 @@ Public Class Form1
             End Using
         End If
     End Sub
-    Private Sub btn_Buildtools_Click(sender As Object, e As EventArgs)
-
+    Private Sub Extractfiles(folderPath As String, fileName As String, ExtractName As String)
+        Using archive As ZipArchive = ZipFile.OpenRead(fileName)
+            For Each entry As ZipArchiveEntry In archive.Entries
+                ExtractName = entry.FullName.Replace("/", "")
+                Exit For
+            Next entry
+            If Directory.Exists("D:\Kotlin") = False Then
+                ZipFile.ExtractToDirectory(fileName, "D:\Kotlin")
+            End If
+        End Using
     End Sub
     Private Sub btn_Compile_Click(sender As Object, e As EventArgs) Handles btn_Compile.Click
         If ProjectPath <> "" Then

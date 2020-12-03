@@ -67,7 +67,13 @@ Public Class CompileForm
         Dim javafiles As String = ""
         Dim cp As String = ""
         If ProjectPath = "" Or ProjectPath.Contains("\") = False Then Return
-        If B4AShared = "" Or Core = "" Or androidjarPath = "" Then Return
+        If B4AShared = "" Then
+            MsgBox("No B4AShared.jar path specified", vbInformation + vbMsgBoxSetForeground, "Error") : Return
+        ElseIf Core = "" Then
+            MsgBox("No Core.jar path specified", vbInformation + vbMsgBoxSetForeground, "Error") : Return
+        ElseIf androidjarPath = "" Then
+            MsgBox("No android platforms path specified", vbInformation + vbMsgBoxSetForeground, "Error") : Return
+        End If
 
 
         If Directory.Exists(ProjectPath + "\bin\classes") = False Then
@@ -185,6 +191,8 @@ Public Class CompileForm
         If javaList.Count > 0 Then
             javafiles = String.Join(" ", javaList).Replace(ProjectPath + "\", "").Replace("\", "/")
         End If
+
+        If SysEnvironment.CheckSysEnvironmentExist("JAVA_HOME") = False Then MsgBox("The JAVA_HOME environment has not been set", vbInformation + vbMsgBoxSetForeground, "Error") : Return
         Dim javac = SysEnvironment.GetSysEnvironmentByName("JAVA_HOME") + "\bin\javac"
 
         Using p1 As New Process
@@ -220,7 +228,9 @@ Public Class CompileForm
                 Debug.Print(sr.ReadToEnd)
             End Using
 
+            If SysEnvironment.CheckSysEnvironmentExist("JAVA_HOME") = False Then MsgBox("The JAVA_HOME environment has not been set", vbInformation + vbMsgBoxSetForeground, "Error") : Return
             Dim javadoc = SysEnvironment.GetSysEnvironmentByName("JAVA_HOME") + "\bin\javadoc"
+
             Using p1 As New Process
                 p1.StartInfo.CreateNoWindow = True
                 p1.StartInfo.Verb = "runas"
@@ -403,5 +413,25 @@ Public Class CompileForm
                 End If
             End Using
         End If
+    End Sub
+
+    Private Sub Button3_Click(sender As Object, e As EventArgs) Handles Button3.Click
+        If GradlePath = "" Then MsgBox("No Gradle environment found", vbInformation + vbMsgBoxSetForeground, "Error") : Return
+        If SysEnvironment.CheckSysEnvironmentExist("GRADLE_HOME") = False Then MsgBox("The GRADLE_HOME environment has not been set", vbInformation + vbMsgBoxSetForeground, "Error") : Return
+        If File.Exists(ProjectPath + "\gradlew.bat") Then
+            Dim proc As Process = Nothing
+            Try
+                Dim batDir As String = String.Format(ProjectPath)
+                proc = New Process()
+                proc.StartInfo.WorkingDirectory = batDir
+                proc.StartInfo.FileName = "gradlew.bat"
+                proc.StartInfo.CreateNoWindow = False
+                proc.Start()
+                proc.WaitForExit()
+            Catch ex As Exception
+                Console.WriteLine(ex.StackTrace.ToString())
+            End Try
+        End If
+
     End Sub
 End Class
