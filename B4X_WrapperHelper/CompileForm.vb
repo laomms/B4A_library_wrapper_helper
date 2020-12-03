@@ -417,9 +417,65 @@ Public Class CompileForm
 
     Private Sub Button3_Click(sender As Object, e As EventArgs) Handles Button3.Click
         RichTextBox1.Text = ""
-
         If SysEnvironment.CheckSysEnvironmentExist("GRADLE_HOME") = False Then MsgBox("The GRADLE_HOME environment has not been set", vbInformation + vbMsgBoxSetForeground, "Error") : Return
-        If File.Exists(ProjectPath + "\gradlew.bat") Then
+        If File.Exists(ProjectPath + "\gradlew") Then
+            'Using p1 As New Process
+            '    p1.StartInfo.CreateNoWindow = True
+            '    p1.StartInfo.Verb = "runas"
+            '    p1.StartInfo.FileName = "cmd.exe"
+            '    p1.StartInfo.WorkingDirectory = ProjectPath
+            '    p1.StartInfo.Arguments = String.Format(" /c gradlew build 2>>&1")
+            '    Debug.Print(p1.StartInfo.Arguments)
+            '    p1.StartInfo.WindowStyle = ProcessWindowStyle.Hidden
+            '    p1.StartInfo.UseShellExecute = False
+            '    p1.StartInfo.RedirectStandardOutput = True
+            '    p1.Start()
+            '    Dim output As String
+            '    Using streamreader As System.IO.StreamReader = p1.StandardOutput
+            '        output = streamreader.ReadToEnd()
+            '        Debug.Print(output)
+            '        RichTextBox1.AppendText(vbNewLine + output)
+            '    End Using
+            'End Using
+
+            Using p1 As New Process
+                p1.StartInfo.CreateNoWindow = True
+                p1.StartInfo.Verb = "runas"
+                p1.StartInfo.FileName = "cmd.exe"
+                p1.StartInfo.WorkingDirectory = ProjectPath
+                p1.StartInfo.Arguments = String.Format(" /c gradlew clean 2>>&1")
+                Debug.Print(p1.StartInfo.Arguments)
+                p1.StartInfo.WindowStyle = ProcessWindowStyle.Hidden
+                p1.StartInfo.UseShellExecute = False
+                p1.StartInfo.RedirectStandardOutput = True
+                p1.Start()
+                Dim output As String
+                Using streamreader As System.IO.StreamReader = p1.StandardOutput
+                    output = streamreader.ReadToEnd()
+                    Debug.Print(output)
+                    RichTextBox1.AppendText(vbNewLine + output)
+                End Using
+            End Using
+
+            Using p1 As New Process
+                p1.StartInfo.CreateNoWindow = True
+                p1.StartInfo.Verb = "runas"
+                p1.StartInfo.FileName = "cmd.exe"
+                p1.StartInfo.WorkingDirectory = ProjectPath
+                p1.StartInfo.Arguments = String.Format(" /c gradlew build 2>>&1")
+                Debug.Print(p1.StartInfo.Arguments)
+                p1.StartInfo.WindowStyle = ProcessWindowStyle.Hidden
+                p1.StartInfo.UseShellExecute = False
+                p1.StartInfo.RedirectStandardOutput = True
+                p1.Start()
+                Dim output As String
+                Using streamreader As System.IO.StreamReader = p1.StandardOutput
+                    output = streamreader.ReadToEnd()
+                    Debug.Print(output)
+                    RichTextBox1.AppendText(vbNewLine + output)
+                End Using
+            End Using
+        ElseIf File.Exists(ProjectPath + "\gradlew.bat") Then
             Dim command = ProjectPath + "\gradlew.bat"
             Dim processInfo = New ProcessStartInfo("cmd.exe", "/c " + command)
             processInfo.CreateNoWindow = True
@@ -427,13 +483,7 @@ Public Class CompileForm
             processInfo.RedirectStandardError = True
             processInfo.RedirectStandardOutput = True
             Dim process As Process = Process.Start(processInfo)
-            RichTextBox1.Invoke(New MethodInvoker(Sub() RichTextBox1.Text = process.StandardOutput.ReadToEnd()))
-
-
-
+            RichTextBox1.Invoke(New MethodInvoker(Sub() RichTextBox1.AppendText(process.StandardOutput.ReadToEnd())))
         End If
-
-
-
     End Sub
 End Class
