@@ -131,6 +131,10 @@ import anywheresoftware.b4a.BA.ActivityObject;
 import anywheresoftware.b4a.IOnActivityResult;
 import anywheresoftware.b4a.BA.Permissions;
 
+import android.content.Intent;
+import android.content.Context;
+import android.view.View;
+
 
 @Version(1.0f)
 @ShortName("LibraryName")
@@ -175,6 +179,10 @@ import anywheresoftware.b4a.IOnActivityResult;
 import anywheresoftware.b4a.BA.Permissions;
 import anywheresoftware.b4a.keywords.Bit;
 import anywheresoftware.b4a.objects.IntentWrapper;
+
+import android.content.Intent;
+import android.content.Context;
+import android.view.View;
 
 
 @Version(1.0f)
@@ -323,6 +331,9 @@ import anywheresoftware.b4a.objects.PanelWrapper;
 import anywheresoftware.b4a.objects.ViewWrapper;
 import anywheresoftware.b4a.objects.collections.Map;
 
+import android.content.Intent;
+import android.content.Context;
+import android.view.View;
 
 @Version(1.00f)
 @ShortName("LibraryName")

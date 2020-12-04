@@ -1,4 +1,5 @@
-﻿Imports System.IO
+﻿Imports System.Globalization
+Imports System.IO
 Imports System.Text
 Imports System.Text.RegularExpressions
 Imports System.Xml
@@ -207,7 +208,7 @@ Public Class CompileForm
                 RichTextBox1.Text = output
             End Using
         End Using
-        Dim jarfile As String = Path.GetDirectoryName(ProjectPath) + "\" + Path.GetFileName(ProjectPath) + ".jar"
+        Dim jarfile As String = Path.GetDirectoryName(ProjectPath) + "\" + New CultureInfo("en-US").TextInfo.ToTitleCase(Path.GetFileName(ProjectPath)) + ".jar"
         If File.Exists(jarfile) Then File.Delete(jarfile)
         If HasSubfoldersAlternate(ProjectPath + "\bin\classes") Then
             Dim startInfo = New ProcessStartInfo(My.Computer.FileSystem.SpecialDirectories.Temp + "\B4X\jar.exe")
@@ -231,7 +232,7 @@ Public Class CompileForm
 
             If SysEnvironment.CheckSysEnvironmentExist("JAVA_HOME") = False Then MsgBox("The JAVA_HOME environment has not been set", vbInformation + vbMsgBoxSetForeground, "Error") : Return
             Dim javadoc = SysEnvironment.GetSysEnvironmentByName("JAVA_HOME") + "\bin\javadoc"
-            Dim savefile = Path.GetDirectoryName(ProjectPath) + "\" + Path.GetFileName(ProjectPath) + ".xml"
+            Dim savefile = Path.GetDirectoryName(ProjectPath) + "\" + New CultureInfo("en-US").TextInfo.ToTitleCase(Path.GetFileName(ProjectPath)) + ".xml"
             If File.Exists(savefile) Then File.Delete(savefile)
             Using p1 As New Process
                 p1.StartInfo.CreateNoWindow = True
@@ -305,11 +306,11 @@ Public Class CompileForm
         If ProjectPath = "" Or ProjectPath.Contains("\") = False Then Return
 
         If RichTextBox1.Text = "" Then Return
-            If BackgroundWorker2.IsBusy = False Then
-                Dim arguments As New List(Of Object)
-                arguments.Add(RichTextBox1.Text)
-                BackgroundWorker2.RunWorkerAsync(arguments)
-            End If
+        If BackgroundWorker2.IsBusy = False Then
+            Dim arguments As New List(Of Object)
+            arguments.Add(RichTextBox1.Text)
+            BackgroundWorker2.RunWorkerAsync(arguments)
+        End If
 
     End Sub
 

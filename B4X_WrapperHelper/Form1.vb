@@ -1,4 +1,5 @@
-﻿Imports System.IO
+﻿Imports System.Globalization
+Imports System.IO
 Imports System.IO.Compression
 Imports System.Net
 Imports System.Text
@@ -10,7 +11,6 @@ Imports Microsoft.Win32
 
 Public Class Form1
     Private WrapperList As List(Of List(Of String))
-    Private packageName As String = ""
     Private minSdkVersion As String = ""
     Private targetSdkVersion As String = ""
     Private srcPath As String = ""
@@ -1190,7 +1190,8 @@ Public Class Form1
                 wrapperText = My.Resources.ViewWrapper2
             End If
             Dim viewName = New Regex("(?<=class\s{1,}).*?(?=\s)").Match(className).Value.Trim
-            wrapperText = wrapperText.Replace("LibraryName", Path.GetFileName(ProjectPath))
+            wrapperText = wrapperText.Replace("B4AWrapperClass", New CultureInfo("en-US").TextInfo.ToTitleCase(Path.GetFileName(ProjectPath)) + "Wrapper")
+            wrapperText = wrapperText.Replace("LibraryName", New CultureInfo("en-US").TextInfo.ToTitleCase(Path.GetFileName(ProjectPath)))
             wrapperText = wrapperText.Replace("ViewName", viewName)
             wrapperText = wrapperText.Insert(wrapperText.IndexOf("public class"), DependsOn + vbNewLine)
             wrapperText = wrapperText.Insert(wrapperText.IndexOf("@Version"), String.Join(";" + vbNewLine, importList) + ";" + vbNewLine + vbNewLine)
@@ -1201,8 +1202,9 @@ Public Class Form1
             End If
         ElseIf className.Contains("extends Activity") Or className.Contains("extends AppCompatActivity") Then
             wrapperText = My.Resources.AbsObjectWrapper
-            wrapperText = wrapperText.Replace("LibraryName", Path.GetFileName(ProjectPath))
-            wrapperText = wrapperText.Replace("ActivityName", Path.GetFileName(ComboBox2.Text))
+            wrapperText = wrapperText.Replace("B4AWrapperClass", New CultureInfo("en-US").TextInfo.ToTitleCase(Path.GetFileName(ProjectPath)) + "Wrapper")
+            wrapperText = wrapperText.Replace("LibraryName", New CultureInfo("en-US").TextInfo.ToTitleCase(Path.GetFileName(ProjectPath)))
+            wrapperText = wrapperText.Replace("ActivityName", Path.GetFileName(ComboBox2.Text).Replace(".java", ""))
             wrapperText = wrapperText.Insert(wrapperText.IndexOf("public class"), DependsOn + vbNewLine)
             wrapperText = wrapperText.Insert(wrapperText.IndexOf("@Version"), String.Join(";" + vbNewLine, importList) + ";" + vbNewLine + vbNewLine)
             If Not WrapperList Is Nothing Then
@@ -1212,8 +1214,9 @@ Public Class Form1
             End If
         Else
             wrapperText = My.Resources.FunctionWrapper
-            wrapperText = wrapperText.Replace("LibraryName", Path.GetFileName(ProjectPath))
-            wrapperText = wrapperText.Replace("ActivityName", Path.GetFileName(ComboBox2.Text))
+            wrapperText = wrapperText.Replace("B4AWrapperClass", New CultureInfo("en-US").TextInfo.ToTitleCase(Path.GetFileName(ProjectPath)) + "Wrapper")
+            wrapperText = wrapperText.Replace("LibraryName", New CultureInfo("en-US").TextInfo.ToTitleCase(Path.GetFileName(ProjectPath)))
+            wrapperText = wrapperText.Replace("ActivityName", Path.GetFileName(ComboBox2.Text).Replace(".java", ""))
             wrapperText = wrapperText.Insert(wrapperText.IndexOf("public class"), DependsOn + vbNewLine)
             wrapperText = wrapperText.Insert(wrapperText.IndexOf("@Version"), String.Join(";" + vbNewLine, importList) + ";" + vbNewLine + vbNewLine)
             If Not WrapperList Is Nothing Then
@@ -1222,8 +1225,9 @@ Public Class Form1
                 End If
             End If
         End If
+        wrapperText = wrapperText.Insert(wrapperText.IndexOf("@Version"), "import " + packageName + "." + Path.GetFileName(ComboBox2.Text).Replace(".java", ";") + vbNewLine + vbNewLine)
         Debug.Print(wrapperText)
-        File.WriteAllText(MainActivityPath + "\" + Path.GetFileName(ProjectPath) + "Wrapper.java", wrapperText)
+        File.WriteAllText(MainActivityPath + "\" + New CultureInfo("en-US").TextInfo.ToTitleCase(Path.GetFileName(ProjectPath)) + "Wrapper.java", wrapperText)
         lbl_Status.Invoke(New MethodInvoker(Sub() lbl_Status.Text = "wrapper b4a class finished"))
     End Sub
 

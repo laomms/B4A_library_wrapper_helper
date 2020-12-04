@@ -74,10 +74,8 @@ Namespace My.Resources
         '''import anywheresoftware.b4a.IOnActivityResult;
         '''import anywheresoftware.b4a.BA.Permissions;
         '''
-        '''
-        '''@Version(1.0f)
-        '''@ShortName(&quot;LibraryName&quot;)
-        '''@ActivityObj [字符串的其余部分被截断]&quot;; 的本地化字符串。
+        '''import android.content.Intent;
+        '''import android.content.Co [字符串的其余部分被截断]&quot;; 的本地化字符串。
         '''</summary>
         Friend ReadOnly Property AbsObjectWrapper() As String
             Get
