@@ -1228,8 +1228,42 @@ Public Class Form1
     Private Sub WrapperMethodToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles WrapperMethodToolStripMenuItem.Click
         If RichTextBox1.Text = "" Then Return
         CodeString = RichTextBox1.Text
+        If CodeString.Contains("startService(") Then
+            CodeString = CodeString.Replace("startService(", "ba.activity.startActivity(")
+        End If
+        If CodeString.Contains("stopService(") Then
+            CodeString = CodeString.Replace("startService(", "ba.activity.stopService(")
+        End If
+        If Regex.Match(CodeString, "(?<=\().*.this" + ResourceName + ".[\s\S]*?(?=\;)").Success Then
+            CodeString = Regex.Replace(CodeString, "(?<=\().*.this", "BA.applicationContext")
+        End If
+        If CodeString.Contains("startActivityForResult") Then
+            CodeString = CodeString.Replace("startActivityForResult", "ba.startActivityForResult")
+        End If
+        If CodeString.Contains("setContentView") Then
+            CodeString = CodeString.Replace("setContentView", "ba.activity.setContentView")
+        End If
+        If CodeString.Contains("getSharedPreferences") Then
+            CodeString = CodeString.Replace("getSharedPreferences", "ba.activity.getSharedPreferences")
+        End If
+        If CodeString.Contains("MODE_PRIVATE") Then
+            CodeString = CodeString.Replace("MODE_PRIVATE", "ba.activity.MODE_PRIVATE")
+        End If
+        If CodeString.Contains("getApplicationContext") Then
+            CodeString = CodeString.Replace("getApplicationContext", "ba.activity.getApplicationContext")
+        End If
+        If CodeString.Contains("startActivity") Then
+            CodeString = CodeString.Replace("startActivity", "ba.activity.startActivity")
+        End If
+        Dim lines = CodeString.Split({vbCrLf, vbLf, vbCr}, StringSplitOptions.RemoveEmptyEntries)
+        For Each line In lines
+            If line.Contains("findViewById(R") Then
+                Dim resouceInfo = New Regex("(?<=\().*?(?=\))").Match(line).Value.Trim
+                CodeString = CodeString.Replace(resouceInfo, "BA.applicationContext.getResources().getIdentifier(""" + resouceInfo.Split(".")(2) + """, """ + resouceInfo.Split(".")(1) + """, BA.packageName)")
+                CodeString = CodeString.Replace("findViewById", "ba.activity.findViewById")
+            End If
+        Next
         CodeEditor.ShowDialog()
-
     End Sub
 
     Private Sub AddToRjavaToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles AddToRjavaToolStripMenuItem.Click

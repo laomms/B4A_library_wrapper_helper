@@ -142,14 +142,14 @@ Public Class CompileForm
             End Using
         End If
 
-        Dim Kotlinfile As String = ""
-        Dim cpKotlin As String = ""
-        Dim cpKotlinList = Directory.GetFiles(ProjectPath + "\libs", "*.*", SearchOption.TopDirectoryOnly).Where(Function(f) New List(Of String) From {".jar", ".aar"}.IndexOf(Path.GetExtension(f)) >= 0).ToArray()
-        If cpKotlinList.Count > 0 Then
-            cpKotlin = """" + androidjarPath + """;" + String.Join(";", cpKotlinList)
-        Else
-            cpKotlin = """" + androidjarPath + """;" + """;"
-        End If
+        'Dim Kotlinfile As String = ""
+        'Dim cpKotlin As String = ""
+        'Dim cpKotlinList = Directory.GetFiles(ProjectPath + "\libs", "*.*", SearchOption.TopDirectoryOnly).Where(Function(f) New List(Of String) From {".jar", ".aar"}.IndexOf(Path.GetExtension(f)) >= 0).ToArray()
+        'If cpKotlinList.Count > 0 Then
+        '    cpKotlin = """" + androidjarPath + """;" + String.Join(";", cpKotlinList)
+        'Else
+        '    cpKotlin = """" + androidjarPath + """;" + """;"
+        'End If
         Dim KotlinList = Directory.GetFiles(ProjectPath, "*.*", SearchOption.AllDirectories).Where(Function(f) New List(Of String) From {".kt"}.IndexOf(Path.GetExtension(f)) >= 0).ToArray()
         If KotlinList.Count > 0 Then
             For Each item In KotlinList
@@ -157,12 +157,7 @@ Public Class CompileForm
                 Dim KotlinSource = Directory.GetFiles(AndroidProjectPath, "*.*", SearchOption.AllDirectories).Where(Function(f) New List(Of String) From {"" + kotlinName + ".java"}.IndexOf(Path.GetFileName(f)) >= 0).ToArray()
                 If KotlinSource.Count > 0 Then
                     File.Copy(KotlinSource(0), Path.GetDirectoryName(item) + "\" + kotlinName + ".java", True)
-                    Try
-                        File.Delete(item)
-                    Catch ex As Exception
-
-                    End Try
-
+                    'File.Delete(item)
                 End If
             Next
             '    If KotlinPath = "" Then MsgBox("No kotlin compiler found", vbInformation + vbMsgBoxSetForeground, "Error") : Return
@@ -186,7 +181,6 @@ Public Class CompileForm
             '        End Using
             '    End Using
         End If
-
         Dim javaList = Directory.GetDirectories(ProjectPath + "\src", "*.*", SearchOption.AllDirectories).Where(Function(f) Directory.GetFiles(f, "*.java", SearchOption.TopDirectoryOnly).Count > 0).Select(Function(x) x + "\*.java").ToList.ToArray()
         If javaList.Count > 0 Then
             javafiles = String.Join(" ", javaList).Replace(ProjectPath + "\", "").Replace("\", "/")
@@ -213,10 +207,11 @@ Public Class CompileForm
                 RichTextBox1.Text = output
             End Using
         End Using
-
+        Dim jarfile As String = Path.GetDirectoryName(ProjectPath) + "\" + Path.GetFileName(ProjectPath) + ".jar"
+        If File.Exists(jarfile) Then File.Delete(jarfile)
         If HasSubfoldersAlternate(ProjectPath + "\bin\classes") Then
             Dim startInfo = New ProcessStartInfo(My.Computer.FileSystem.SpecialDirectories.Temp + "\B4X\jar.exe")
-            Dim args As String = String.Format(" cvf {0} .", Path.GetDirectoryName(ProjectPath) + "\" + Path.GetFileName(ProjectPath) + ".jar")
+            Dim args As String = String.Format(" cvf {0} .", jarfile)
             startInfo.Arguments = args
             startInfo.UseShellExecute = False
             startInfo.RedirectStandardOutput = True
@@ -228,15 +223,22 @@ Public Class CompileForm
                 Debug.Print(sr.ReadToEnd)
             End Using
 
+            'Dim docletfiles = ""
+            'javaList = Directory.GetFiles(ProjectPath + "\src", "*.*", SearchOption.AllDirectories).Where(Function(f) New List(Of String) From {".java"}.IndexOf(Path.GetExtension(f)) >= 0).ToArray()
+            'If javaList.Count > 0 Then
+            '    docletfiles = String.Join(" ", javaList)
+            'End If
+
             If SysEnvironment.CheckSysEnvironmentExist("JAVA_HOME") = False Then MsgBox("The JAVA_HOME environment has not been set", vbInformation + vbMsgBoxSetForeground, "Error") : Return
             Dim javadoc = SysEnvironment.GetSysEnvironmentByName("JAVA_HOME") + "\bin\javadoc"
-
+            Dim savefile = Path.GetDirectoryName(ProjectPath) + "\" + Path.GetFileName(ProjectPath) + ".xml"
+            If File.Exists(savefile) Then File.Delete(savefile)
             Using p1 As New Process
                 p1.StartInfo.CreateNoWindow = True
                 p1.StartInfo.Verb = "runas"
                 p1.StartInfo.FileName = "cmd.exe"
                 p1.StartInfo.WorkingDirectory = ProjectPath
-                p1.StartInfo.Arguments = String.Format(" /c {0} -doclet BADoclet -docletpath {1}  -bootclasspath {2} -classpath {3} -sourcepath {4} -b4atarget {5} -b4aignore org,com.android,com.example,com.hoho {6}  2>>&1", javadoc, My.Computer.FileSystem.SpecialDirectories.Temp + "\B4X", androidjarPath, cp, "src", Path.GetDirectoryName(ProjectPath) + "\" + Path.GetFileName(ProjectPath) + ".xml", javafiles)
+                p1.StartInfo.Arguments = String.Format(" /c {0} -doclet BADoclet -docletpath {1} -classpath {2} -sourcepath {3} -b4atarget {4} -b4aignore org,com.android,com.example,com.hoho {5}  2>>&1", javadoc, My.Computer.FileSystem.SpecialDirectories.Temp + "\B4X", cp, "src", savefile, javafiles)
                 Debug.Print(p1.StartInfo.Arguments)
                 p1.StartInfo.WindowStyle = ProcessWindowStyle.Hidden
                 p1.StartInfo.UseShellExecute = False
