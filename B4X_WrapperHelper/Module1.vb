@@ -22,6 +22,7 @@ Module Module1
     Public androidjarPath = ""
     Public KotlinPath As String = ""
     Public GradlePath As String = ""
+    Public wrapperText = ""
     Public AndroidXMigrationDic As New Dictionary(Of String, String) From {
         {"android.support.v7.widget.util.SortedListAdapterCallback", "androidx.recyclerview.widget.SortedListAdapterCallback"},
 {"android.support.v7.widget.helper.ItemTouchUIUtilImpl", "androidx.recyclerview.widget.ItemTouchUIUtilImpl"},

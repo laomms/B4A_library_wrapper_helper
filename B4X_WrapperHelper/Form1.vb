@@ -1169,12 +1169,12 @@ Public Class Form1
     End Sub
     Private Sub btn_Wrapper_Click(sender As Object, e As EventArgs) Handles btn_Wrapper.Click
         If ComboBox2.Text = "" Then Return
-        Dim wrapperText = ""
+
         lbl_Status.Invoke(New MethodInvoker(Sub() lbl_Status.Text = "wrapper b4a class..."))
         If Directory.Exists(ProjectPath + "\libs") Then
             Dim filePaths() As String = Directory.GetFiles(TextBox1.Text, "*.*", SearchOption.TopDirectoryOnly).Where(Function(f) New List(Of String) From {".jar", ".aar"}.IndexOf(Path.GetExtension(f)) >= 0).ToArray()
             Dim DependFils = """" + String.Join(""",""", filePaths) + """"
-            DependsOn.Insert(DependsOn.LastIndexOf("}") - 1, DependFils)
+            DependsOn = DependsOn.Insert(DependsOn.LastIndexOf("}") - 1, DependFils)
             Debug.Print(DependsOn)
         End If
         Dim fileContent As String = File.ReadAllText(ComboBox2.Text)
@@ -1190,33 +1190,33 @@ Public Class Form1
             Dim viewName = New Regex("(?<=class\s{1,}).*?(?=\s)").Match(className).Value.Trim
             wrapperText = wrapperText.Replace("LibraryName", Path.GetFileName(ProjectPath))
             wrapperText = wrapperText.Replace("ViewName", viewName)
-            wrapperText.Insert(wrapperText.IndexOf("public class"), DependsOn + vbNewLine)
-            wrapperText.Insert(wrapperText.IndexOf("@Version"), String.Join(vbNewLine, importList) + vbNewLine + vbNewLine)
+            wrapperText = wrapperText.Insert(wrapperText.IndexOf("public class"), DependsOn + vbNewLine)
+            wrapperText = wrapperText.Insert(wrapperText.IndexOf("@Version"), String.Join(vbNewLine, importList) + vbNewLine + vbNewLine)
             If Not WrapperList Is Nothing Then
                 If WrapperList.Count > 0 Then
-                    wrapperText.Insert(wrapperText.LastIndexOf("}") - 1, vbNewLine + vbNewLine + String.Join(vbNewLine + vbNewLine, WrapperList) + vbNewLine + vbNewLine)
+                    wrapperText = wrapperText.Insert(wrapperText.LastIndexOf("}") - 1, vbNewLine + vbNewLine + String.Join(vbNewLine + vbNewLine, WrapperList) + vbNewLine + vbNewLine)
                 End If
             End If
         ElseIf className.Contains("extends Activity") Or className.Contains("extends AppCompatActivity") Then
             wrapperText = My.Resources.AbsObjectWrapper
             wrapperText = wrapperText.Replace("LibraryName", Path.GetFileName(ProjectPath))
             wrapperText = wrapperText.Replace("ActivityName", Path.GetFileName(ComboBox2.Text))
-            wrapperText.Insert(wrapperText.IndexOf("public class"), DependsOn + vbNewLine)
-            wrapperText.Insert(wrapperText.IndexOf("@Version"), String.Join(vbNewLine, importList) + vbNewLine + vbNewLine)
+            wrapperText = wrapperText.Insert(wrapperText.IndexOf("public class"), DependsOn + vbNewLine)
+            wrapperText = wrapperText.Insert(wrapperText.IndexOf("@Version"), String.Join(vbNewLine, importList) + vbNewLine + vbNewLine)
             If Not WrapperList Is Nothing Then
                 If WrapperList.Count > 0 Then
-                    wrapperText.Insert(wrapperText.LastIndexOf("}") - 1, vbNewLine + vbNewLine + String.Join(vbNewLine + vbNewLine, WrapperList) + vbNewLine + vbNewLine)
+                    wrapperText = wrapperText.Insert(wrapperText.LastIndexOf("}") - 1, vbNewLine + vbNewLine + String.Join(vbNewLine + vbNewLine, WrapperList) + vbNewLine + vbNewLine)
                 End If
             End If
         Else
             wrapperText = My.Resources.FunctionWrapper
             wrapperText = wrapperText.Replace("LibraryName", Path.GetFileName(ProjectPath))
             wrapperText = wrapperText.Replace("ActivityName", Path.GetFileName(ComboBox2.Text))
-            wrapperText.Insert(wrapperText.IndexOf("public class"), DependsOn + vbNewLine)
-            wrapperText.Insert(wrapperText.IndexOf("@Version"), String.Join(vbNewLine, importList) + vbNewLine + vbNewLine)
+            wrapperText = wrapperText.Insert(wrapperText.IndexOf("public class"), DependsOn + vbNewLine)
+            wrapperText = wrapperText.Insert(wrapperText.IndexOf("@Version"), String.Join(vbNewLine, importList) + vbNewLine + vbNewLine)
             If Not WrapperList Is Nothing Then
                 If WrapperList.Count > 0 Then
-                    wrapperText.Insert(wrapperText.LastIndexOf("}") - 1, vbNewLine + vbNewLine + String.Join(vbNewLine + vbNewLine, WrapperList) + vbNewLine + vbNewLine)
+                    wrapperText = wrapperText.Insert(wrapperText.LastIndexOf("}") - 1, vbNewLine + vbNewLine + String.Join(vbNewLine + vbNewLine, WrapperList) + vbNewLine + vbNewLine)
                 End If
             End If
         End If
@@ -1259,8 +1259,10 @@ Public Class Form1
         For Each line In lines
             If line.Contains("findViewById(R") Then
                 Dim resouceInfo = New Regex("(?<=\().*?(?=\))").Match(line).Value.Trim
-                CodeString = CodeString.Replace(resouceInfo, "BA.applicationContext.getResources().getIdentifier(""" + resouceInfo.Split(".")(2) + """, """ + resouceInfo.Split(".")(1) + """, BA.packageName)")
-                CodeString = CodeString.Replace("findViewById", "ba.activity.findViewById")
+                If resouceInfo.Count = 3 Then
+                    CodeString = CodeString.Replace(resouceInfo, "BA.applicationContext.getResources().getIdentifier(""" + resouceInfo.Split(".")(2) + """, """ + resouceInfo.Split(".")(1) + """, BA.packageName)")
+                    CodeString = CodeString.Replace("findViewById", "ba.activity.findViewById")
+                End If
             End If
         Next
         CodeEditor.ShowDialog()
@@ -1293,14 +1295,13 @@ Public Class Form1
                 Else
                     Dim index = fileContent.IndexOf(classContent)
                     Dim index2 = classContent.LastIndexOf(";")
-                    Dim newString = fileContent.Insert(index + classContent.LastIndexOf(";"), vbNewLine + "		public static int " + ResourceName + " = BA.applicationContext.getResources().getIdentifier(""" + ResourceName + """, """ + ResourceType + """, BA.packageName);" + vbNewLine)
-                    fileContent = newString
+                    fileContent = fileContent.Insert(index + classContent.LastIndexOf(";"), vbNewLine + "		public static int " + ResourceName + " = BA.applicationContext.getResources().getIdentifier(""" + ResourceName + """, """ + ResourceType + """, BA.packageName);" + vbNewLine)
                 End If
             Else
                 Dim newstring = "	public static final class " + ResourceType + " {" +
                                "		public static int " + ResourceName + " = BA.applicationContext.getResources().getIdentifier(""" + ResourceName + """, """ + ResourceType + """, BA.packageName);" +
                                "	}"
-                fileContent.Insert(fileContent.Trim.LastIndexOf("}") - 1, vbNewLine + newstring + vbNewLine)
+                fileContent = fileContent.Insert(fileContent.Trim.LastIndexOf("}") - 1, vbNewLine + newstring + vbNewLine)
             End If
 
             Using writer As New StreamWriter(MainActivityPath + "\R.java", False, Encoding.GetEncoding("ISO-8859-1"))
