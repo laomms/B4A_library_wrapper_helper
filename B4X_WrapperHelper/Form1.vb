@@ -1234,32 +1234,35 @@ Public Class Form1
     Private Sub WrapperMethodToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles WrapperMethodToolStripMenuItem.Click
         If RichTextBox1.Text = "" Then Return
         CodeString = RichTextBox1.Text
-        If CodeString.Contains("startService(") Then
-            CodeString = CodeString.Replace("startService(", "ba.activity.startActivity(")
+        If CodeString.Contains("startService") And CodeString.Contains("ba.activity.startService") = False Then
+            CodeString = CodeString.Replace("startService", "ba.activity.startService")
         End If
-        If CodeString.Contains("stopService(") Then
-            CodeString = CodeString.Replace("startService(", "ba.activity.stopService(")
+        If CodeString.Contains("stopService") And CodeString.Contains("ba.activity.stopService") = False Then
+            CodeString = CodeString.Replace("startService", "ba.activity.stopService")
         End If
         If Regex.Match(CodeString, "(?<=\().*.this" + ResourceName + ".[\s\S]*?(?=\;)").Success Then
             CodeString = Regex.Replace(CodeString, "(?<=\().*.this", "BA.applicationContext")
         End If
-        If CodeString.Contains("startActivityForResult") Then
+        If CodeString.Contains("startActivityForResult") And CodeString.Contains("ba.startActivityForResult") = False Then
             CodeString = CodeString.Replace("startActivityForResult", "ba.startActivityForResult")
         End If
-        If CodeString.Contains("setContentView") Then
+        If CodeString.Contains("setContentView") And CodeString.Contains("ba.activity.setContentView") = False Then
             CodeString = CodeString.Replace("setContentView", "ba.activity.setContentView")
         End If
-        If CodeString.Contains("getSharedPreferences") Then
+        If CodeString.Contains("getSharedPreferences") And CodeString.Contains("ba.activity.getSharedPreferences") = False Then
             CodeString = CodeString.Replace("getSharedPreferences", "ba.activity.getSharedPreferences")
         End If
-        If CodeString.Contains("MODE_PRIVATE") Then
+        If CodeString.Contains("MODE_PRIVATE") And CodeString.Contains("ba.activity.MODE_PRIVATE") = False Then
             CodeString = CodeString.Replace("MODE_PRIVATE", "ba.activity.MODE_PRIVATE")
         End If
-        If CodeString.Contains("getApplicationContext") Then
+        If CodeString.Contains("getApplicationContext") And CodeString.Contains("ba.activity.getApplicationContext") = False Then
             CodeString = CodeString.Replace("getApplicationContext", "ba.activity.getApplicationContext")
         End If
-        If CodeString.Contains("startActivity") Then
+        If CodeString.Contains("startActivity") And CodeString.Contains("ba.activity.startActivity") = False Then
             CodeString = CodeString.Replace("startActivity", "ba.activity.startActivity")
+        End If
+        If CodeString.Contains("onActivityResult") And CodeString.Contains("ba.activity.onActivityResult") = False Then
+            CodeString = CodeString.Replace("onActivityResult", "ba.activity.onActivityResult")
         End If
         Dim lines = CodeString.Split({vbCrLf, vbLf, vbCr}, StringSplitOptions.RemoveEmptyEntries)
         For Each line In lines
