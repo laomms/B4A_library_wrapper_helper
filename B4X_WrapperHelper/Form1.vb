@@ -1173,8 +1173,10 @@ Public Class Form1
         lbl_Status.Invoke(New MethodInvoker(Sub() lbl_Status.Text = "wrapper b4a class..."))
         If Directory.Exists(ProjectPath + "\libs") Then
             Dim filePaths() As String = Directory.GetFiles(TextBox1.Text, "*.*", SearchOption.TopDirectoryOnly).Where(Function(f) New List(Of String) From {".jar", ".aar"}.IndexOf(Path.GetExtension(f)) >= 0).ToArray()
-            Dim DependFils = """" + String.Join(""",""", filePaths) + """"
-            DependsOn = DependsOn.Insert(DependsOn.LastIndexOf("}") - 1, DependFils)
+            If filePaths.Length > 0 Then
+                Dim DependFils = """" + String.Join(""",""", filePaths) + """"
+                DependsOn = DependsOn.Insert(DependsOn.LastIndexOf("}") - 1, DependFils)
+            End If
             Debug.Print(DependsOn)
         End If
         Dim fileContent As String = File.ReadAllText(ComboBox2.Text)
@@ -1191,7 +1193,7 @@ Public Class Form1
             wrapperText = wrapperText.Replace("LibraryName", Path.GetFileName(ProjectPath))
             wrapperText = wrapperText.Replace("ViewName", viewName)
             wrapperText = wrapperText.Insert(wrapperText.IndexOf("public class"), DependsOn + vbNewLine)
-            wrapperText = wrapperText.Insert(wrapperText.IndexOf("@Version"), String.Join(vbNewLine, importList) + vbNewLine + vbNewLine)
+            wrapperText = wrapperText.Insert(wrapperText.IndexOf("@Version"), String.Join(";" + vbNewLine, importList) + ";" + vbNewLine + vbNewLine)
             If Not WrapperList Is Nothing Then
                 If WrapperList.Count > 0 Then
                     wrapperText = wrapperText.Insert(wrapperText.LastIndexOf("}") - 1, vbNewLine + vbNewLine + String.Join(vbNewLine + vbNewLine, WrapperList) + vbNewLine + vbNewLine)
@@ -1202,7 +1204,7 @@ Public Class Form1
             wrapperText = wrapperText.Replace("LibraryName", Path.GetFileName(ProjectPath))
             wrapperText = wrapperText.Replace("ActivityName", Path.GetFileName(ComboBox2.Text))
             wrapperText = wrapperText.Insert(wrapperText.IndexOf("public class"), DependsOn + vbNewLine)
-            wrapperText = wrapperText.Insert(wrapperText.IndexOf("@Version"), String.Join(vbNewLine, importList) + vbNewLine + vbNewLine)
+            wrapperText = wrapperText.Insert(wrapperText.IndexOf("@Version"), String.Join(";" + vbNewLine, importList) + ";" + vbNewLine + vbNewLine)
             If Not WrapperList Is Nothing Then
                 If WrapperList.Count > 0 Then
                     wrapperText = wrapperText.Insert(wrapperText.LastIndexOf("}") - 1, vbNewLine + vbNewLine + String.Join(vbNewLine + vbNewLine, WrapperList) + vbNewLine + vbNewLine)
@@ -1213,7 +1215,7 @@ Public Class Form1
             wrapperText = wrapperText.Replace("LibraryName", Path.GetFileName(ProjectPath))
             wrapperText = wrapperText.Replace("ActivityName", Path.GetFileName(ComboBox2.Text))
             wrapperText = wrapperText.Insert(wrapperText.IndexOf("public class"), DependsOn + vbNewLine)
-            wrapperText = wrapperText.Insert(wrapperText.IndexOf("@Version"), String.Join(vbNewLine, importList) + vbNewLine + vbNewLine)
+            wrapperText = wrapperText.Insert(wrapperText.IndexOf("@Version"), String.Join(";" + vbNewLine, importList) + ";" + vbNewLine + vbNewLine)
             If Not WrapperList Is Nothing Then
                 If WrapperList.Count > 0 Then
                     wrapperText = wrapperText.Insert(wrapperText.LastIndexOf("}") - 1, vbNewLine + vbNewLine + String.Join(vbNewLine + vbNewLine, WrapperList) + vbNewLine + vbNewLine)
