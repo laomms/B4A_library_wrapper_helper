@@ -8,6 +8,9 @@
 ##### parsing java code
 ##### compile java code
 
+
+https://youtu.be/hxmrB04pXfs
+
 ![image](https://github.com/laomms/B4A_library_wrapper_helper/blob/master/pic.png)   
 
 
