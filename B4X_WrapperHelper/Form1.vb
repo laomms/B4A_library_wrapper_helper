@@ -1274,6 +1274,12 @@ Public Class Form1
                 End If
             End If
         Next
+        If Regex.Match(CodeString, "(?<=\().*.this" + ResourceName + ".[\s\S]*?(?=\;)").Success Then
+            CodeString = Regex.Replace(CodeString, "(?<=\().*.this", "BA.applicationContext")
+        End If
+        If CodeString.Contains("this") And CodeString.Contains("BA.applicationContext") = False Then
+            CodeString = CodeString.Replace("this", "BA.applicationContext")
+        End If
         CodeEditor.ShowDialog()
     End Sub
 

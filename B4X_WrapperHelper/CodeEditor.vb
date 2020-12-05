@@ -12,6 +12,7 @@ Public Class CodeEditor
         WrapperList.Add(RichTextBox1.Text)
         If wrapperText <> "" Then
             If File.Exists(MainActivityPath + "\" + New CultureInfo("en-US").TextInfo.ToTitleCase(Path.GetFileName(ProjectPath)) + "Wrapper.java") Then
+                wrapperText = File.ReadAllText(MainActivityPath + "\" + New CultureInfo("en-US").TextInfo.ToTitleCase(Path.GetFileName(ProjectPath)) + "Wrapper.java")
                 If Not WrapperList Is Nothing Then
                     If WrapperList.Count > 0 Then
                         wrapperText = wrapperText.Insert(wrapperText.trim.LastIndexOf("}") - 1, vbNewLine + String.Join(vbNewLine + vbNewLine, WrapperList) + vbNewLine)
