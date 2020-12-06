@@ -68,6 +68,7 @@ Public Class CompileForm
         RichTextBox1.Text = ""
         Dim javafiles As String = ""
         Dim cp As String = ""
+        Dim cp_javadoc As String = ""
         If ProjectPath = "" Or ProjectPath.Contains("\") = False Then Return
         If B4AShared = "" Then
             MsgBox("No B4AShared.jar path specified", vbInformation + vbMsgBoxSetForeground, "Error") : Return
@@ -109,11 +110,14 @@ Public Class CompileForm
             If cpList.Count > 0 Then
                 'cp = """" + androidjarPath + """;""" + B4AShared + """;""" + Core + """;" +  String.Join(";", cpList).Replace(ProjectPath + "\", "").Replace("\", "/")
                 cp = """" + androidjarPath + """;""" + B4AShared + """;""" + Core + """;" + "libs/*;libs;"
+                cp_javadoc = """" + B4AShared + """;""" + Core + """;" + "libs/*;libs;"
             Else
                 cp = """" + androidjarPath + """;""" + B4AShared + """;""" + Core + """;"
+                cp_javadoc = """" + B4AShared + """;""" + Core + """;"
             End If
         Else
             cp = """" + androidjarPath + """;""" + B4AShared + """;""" + Core + """;"
+            cp_javadoc = """" + B4AShared + """;""" + Core + """;"
         End If
 
         Dim aidlfile As String = ""
@@ -242,7 +246,7 @@ Public Class CompileForm
                 p1.StartInfo.Verb = "runas"
                 p1.StartInfo.FileName = "cmd.exe"
                 p1.StartInfo.WorkingDirectory = ProjectPath
-                p1.StartInfo.Arguments = String.Format(" /c {0} -doclet BADoclet -docletpath {1} -sourcepath {2} -classpath {3} -b4atarget {4} -b4aignore org,com.android,com.example,com.hoho {5}  2>>&1", javadoc, My.Computer.FileSystem.SpecialDirectories.Temp + "\B4X\", "src", cp, savefile, javafiles)
+                p1.StartInfo.Arguments = String.Format(" /c {0} -doclet BADoclet -docletpath {1} -sourcepath {2} -classpath {3} -b4atarget {4} -b4aignore org,com.android,com.example,com.hoho {5}  2>>&1", javadoc, My.Computer.FileSystem.SpecialDirectories.Temp + "\B4X\", "src", cp_javadoc, savefile, javafiles)
                 Debug.Print(p1.StartInfo.Arguments)
                 p1.StartInfo.WindowStyle = ProcessWindowStyle.Hidden
                 p1.StartInfo.UseShellExecute = False
