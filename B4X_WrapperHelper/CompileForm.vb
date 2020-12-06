@@ -155,10 +155,12 @@ Public Class CompileForm
         If KotlinList.Count > 0 Then
             For Each item In KotlinList
                 Dim kotlinName = Path.GetFileName(item).Split(".")(0).Trim
-                Dim KotlinSource = Directory.GetFiles(AndroidProjectPath, "*.*", SearchOption.AllDirectories).Where(Function(f) New List(Of String) From {"" + kotlinName + ".java"}.IndexOf(Path.GetFileName(f)) >= 0).ToArray()
-                If KotlinSource.Count > 0 Then
-                    File.Copy(KotlinSource(0), Path.GetDirectoryName(item) + "\" + kotlinName + ".java", True)
-                    'File.Delete(item)
+                If AndroidProjectPath <> "" Then
+                    Dim KotlinSource = Directory.GetFiles(AndroidProjectPath, "*.*", SearchOption.AllDirectories).Where(Function(f) New List(Of String) From {"" + kotlinName + ".java"}.IndexOf(Path.GetFileName(f)) >= 0).ToArray()
+                    If KotlinSource.Count > 0 Then
+                        File.Copy(KotlinSource(0), Path.GetDirectoryName(item) + "\" + kotlinName + ".java", True)
+                        'File.Delete(item)
+                    End If
                 End If
             Next
             '    If KotlinPath = "" Then MsgBox("No kotlin compiler found", vbInformation + vbMsgBoxSetForeground, "Error") : Return
@@ -195,7 +197,7 @@ Public Class CompileForm
             p1.StartInfo.Verb = "runas"
             p1.StartInfo.FileName = "cmd.exe"
             p1.StartInfo.WorkingDirectory = ProjectPath
-            p1.StartInfo.Arguments = String.Format(" /c {0} -Xmaxerrs 1 -nowarn -Xlint:none -J-Xmx512m  -version -encoding UTF-8 -d {1} -sourcepath {2} -cp {3} {4}  2>>&1", javac, "bin/classes", "src", cp, javafiles)
+            p1.StartInfo.Arguments = String.Format(" /c {0} -Xmaxerrs 1 -Xlint:none -J-Xmx512m  -version -encoding UTF-8 -d {1} -sourcepath {2} -cp {3} {4}  2>>&1", javac, "bin/classes", "src", cp, javafiles)
             Debug.Print(p1.StartInfo.Arguments)
             p1.StartInfo.WindowStyle = ProcessWindowStyle.Hidden
             p1.StartInfo.UseShellExecute = False
@@ -366,7 +368,11 @@ Public Class CompileForm
         ElseIf errorInfo.Contains("cannot find symbol") Then
             '...
         ElseIf errorInfo.Contains("cannot be accessed from outside package") Then
-            '...
+            Dim variableName = New Regex("(?<=error\:).*?(?=is not public in)").Match(arguments(0)).Value.Trim
+            Dim fileContent As String = File.ReadAllText(filepath)
+            fileContent = fileContent.Insert(fileContent.IndexOf("public class") - 1, vbNewLine + "import java.util.HashMap;" + vbNewLine)
+            fileContent = fileContent.Replace("(" + variableName, "(HashMap." + variableName)
+            File.WriteAllText(filepath, fileContent)
         End If
     End Sub
 
