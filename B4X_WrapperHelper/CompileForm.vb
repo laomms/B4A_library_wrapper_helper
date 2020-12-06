@@ -1,5 +1,6 @@
 ﻿Imports System.Globalization
 Imports System.IO
+Imports System.IO.Compression
 Imports System.Text
 Imports System.Text.RegularExpressions
 Imports System.Xml
@@ -212,7 +213,7 @@ Public Class CompileForm
         End Using
         Dim jarfile As String = Path.GetDirectoryName(ProjectPath) + "\" + New CultureInfo("en-US").TextInfo.ToTitleCase(Path.GetFileName(ProjectPath)) + ".jar"
         If File.Exists(jarfile) Then File.Delete(jarfile)
-        If HasSubfoldersAlternate(ProjectPath + "\bin\classes") Then
+        If HasSubfoldersAlternate(ProjectPath + "\bin\classes") And RichTextBox1.Text.Contains("error") = False Then
             Dim startInfo = New ProcessStartInfo(My.Computer.FileSystem.SpecialDirectories.Temp + "\B4X\jar.exe")
             Dim args As String = String.Format(" cvf {0} .", jarfile)
             startInfo.Arguments = args
@@ -351,28 +352,44 @@ Public Class CompileForm
                                         document.Load(keyPair.Value)
                                         If File.Exists(packageName + "\pom.xml") Then File.Delete(packageName + "\pom.xml")
                                         File.WriteAllText(packageName + "\pom.xml", document.InnerXml)
-                                    ElseIf keyPair.Key.Contains("aar") Or keyPair.Key.Contains("jar") Then
+                                    ElseIf keyPair.Key.Contains("jar") Then
                                         downlink = keyPair.Value
                                         targetPath = ProjectPath + "\libs\" + Path.GetFileName(keyPair.Value)
                                         needSelect = False
                                         Dim frm3 As New DownloadForm
                                         frm3.ShowDialog()
+                                    ElseIf keyPair.Key.Contains("aar") Then
+                                        downlink = keyPair.Value
+                                        targetPath = ProjectPath + "\libs\" + Path.GetFileName(keyPair.Value)
+                                        needSelect = False
+                                        Dim frm3 As New DownloadForm
+                                        frm3.ShowDialog()
+                                        Using archive As ZipArchive = ZipFile.OpenRead(targetPath)
+                                            For Each entry As ZipArchiveEntry In archive.Entries
+                                                If entry.FullName = "classes.jar" Then
+                                                    Dim destinationPath As String = Path.GetFullPath(Path.Combine(ProjectPath + "\libs", Path.GetFileNameWithoutExtension(keyPair.Value) + ".jar"))
+                                                    If destinationPath.StartsWith(ProjectPath + "\libs", StringComparison.Ordinal) Then
+                                                        entry.ExtractToFile(destinationPath)
+                                                    End If
+                                                End If
+                                            Next entry
+                                        End Using
                                     End If
                                 Next
                             End If
-                        End If
                     End If
                 End If
             End If
+        End If
 
         ElseIf errorInfo.Contains("cannot find symbol") Then
-            '...
+        '...
         ElseIf errorInfo.Contains("cannot be accessed from outside package") Then
-            Dim variableName = New Regex("(?<=error\:).*?(?=is not public in)").Match(arguments(0)).Value.Trim
-            Dim fileContent As String = File.ReadAllText(filepath)
-            fileContent = fileContent.Insert(fileContent.IndexOf("public class") - 1, vbNewLine + "import java.util.HashMap;" + vbNewLine)
-            fileContent = fileContent.Replace("(" + variableName, "(HashMap." + variableName)
-            File.WriteAllText(filepath, fileContent)
+        Dim variableName = New Regex("(?<=error\:).*?(?=is not public in)").Match(arguments(0)).Value.Trim
+        Dim fileContent As String = File.ReadAllText(filepath)
+        fileContent = fileContent.Insert(fileContent.IndexOf("public class") - 1, vbNewLine + "import java.util.HashMap;" + vbNewLine)
+        fileContent = fileContent.Replace("(" + variableName, "(HashMap." + variableName)
+        File.WriteAllText(filepath, fileContent)
         End If
     End Sub
 

@@ -752,11 +752,26 @@ Public Class Form1
                                     document.Load(keyPair.Value)
                                     If File.Exists(TextBox2.Text + "\pom.xml") Then File.Delete(TextBox2.Text + "\pom.xml")
                                     File.WriteAllText(TextBox2.Text + "\pom.xml", document.InnerXml)
-                                ElseIf keyPair.Key.Contains("aar") Or keyPair.Key.Contains("jar") Then
+                                ElseIf keyPair.Key.Contains("jar") Then
                                     downlink = keyPair.Value
                                     targetPath = ProjectPath + "\libs\" + Path.GetFileName(keyPair.Value)
                                     needSelect = False
                                     DownloadForm.ShowDialog()
+                                ElseIf keyPair.Key.Contains("aar") Then
+                                    downlink = keyPair.Value
+                                    targetPath = ProjectPath + "\libs\" + Path.GetFileName(keyPair.Value)
+                                    needSelect = False
+                                    DownloadForm.ShowDialog()
+                                    Using archive As ZipArchive = ZipFile.OpenRead(targetPath)
+                                        For Each entry As ZipArchiveEntry In archive.Entries
+                                            If entry.FullName = "classes.jar" Then
+                                                Dim destinationPath As String = Path.GetFullPath(Path.Combine(ProjectPath + "\libs", Path.GetFileNameWithoutExtension(keyPair.Value) + ".jar"))
+                                                If destinationPath.StartsWith(ProjectPath + "\libs", StringComparison.Ordinal) Then
+                                                    entry.ExtractToFile(destinationPath)
+                                                End If
+                                            End If
+                                        Next entry
+                                    End Using
                                 End If
                             Next
                         End If
@@ -764,6 +779,7 @@ Public Class Form1
                 End If
             End If
         End If
+
     End Function
     Private Async Sub DownWithPom()
         If SysEnvironment.CheckSysEnvironmentExist("MAVEN_HOME") = False Then
