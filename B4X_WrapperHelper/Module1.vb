@@ -18,6 +18,7 @@ Module Module1
     Public MainActivityPath As String = ""
     Public B4AShared = ""
     Public Core = ""
+    Public AdditionalLibrariesPath As String = ""
     Public buildtoolsPath As String = ""
     Public packageName As String = ""
     Public androidjarPath = ""

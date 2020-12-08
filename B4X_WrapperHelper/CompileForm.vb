@@ -148,13 +148,13 @@ Public Class CompileForm
             End Using
         End If
 
-        'Dim Kotlinfile As String = ""
+        Dim Kotlinfile As String = ""
         'Dim cpKotlin As String = ""
         'Dim cpKotlinList = Directory.GetFiles(ProjectPath + "\libs", "*.*", SearchOption.TopDirectoryOnly).Where(Function(f) New List(Of String) From {".jar", ".aar"}.IndexOf(Path.GetExtension(f)) >= 0).ToArray()
         'If cpKotlinList.Count > 0 Then
-        '    cpKotlin = """" + androidjarPath + """;" + String.Join(";", cpKotlinList)
+        '    cpKotlin = """" + androidjarPath + """:" + String.Join(":", cpKotlinList)
         'Else
-        '    cpKotlin = """" + androidjarPath + """;" + """;"
+        '    cpKotlin = """" + androidjarPath + """:"
         'End If
         Dim KotlinList = Directory.GetFiles(ProjectPath, "*.*", SearchOption.AllDirectories).Where(Function(f) New List(Of String) From {".kt"}.IndexOf(Path.GetExtension(f)) >= 0).ToArray()
         If KotlinList.Count > 0 Then
@@ -215,7 +215,7 @@ Public Class CompileForm
                 RichTextBox1.Text = output
             End Using
         End Using
-        Dim jarfile As String = Path.GetDirectoryName(ProjectPath) + "\" + New CultureInfo("en-US").TextInfo.ToTitleCase(Path.GetFileName(ProjectPath)) + ".jar"
+        Dim jarfile As String = AdditionalLibrariesPath + "\" + New CultureInfo("en-US").TextInfo.ToTitleCase(Path.GetFileName(ProjectPath)) + ".jar"
         If File.Exists(jarfile) Then File.Delete(jarfile)
         If HasSubfoldersAlternate(ProjectPath + "\bin\classes") And RichTextBox1.Text.Contains("error") = False Then
             Dim startInfo = New ProcessStartInfo(My.Computer.FileSystem.SpecialDirectories.Temp + "\B4X\jar.exe")
@@ -239,7 +239,7 @@ Public Class CompileForm
 
             If SysEnvironment.CheckSysEnvironmentExist("JAVA_HOME") = False Then MsgBox("The JAVA_HOME environment has not been set", vbInformation + vbMsgBoxSetForeground, "Error") : Return
             Dim javadoc = SysEnvironment.GetSysEnvironmentByName("JAVA_HOME") + "\bin\javadoc"
-            Dim savefile = Path.GetDirectoryName(ProjectPath) + "\" + New CultureInfo("en-US").TextInfo.ToTitleCase(Path.GetFileName(ProjectPath)) + ".xml"
+            Dim savefile = AdditionalLibrariesPath + "\" + New CultureInfo("en-US").TextInfo.ToTitleCase(Path.GetFileName(ProjectPath)) + ".xml"
             If File.Exists(savefile) Then File.Delete(savefile)
             Using p1 As New Process
                 p1.StartInfo.CreateNoWindow = True

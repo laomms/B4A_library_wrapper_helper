@@ -32,6 +32,16 @@ Public Class Form1
             TextBox1.TextAlign = HorizontalAlignment.Left
             TextBox1.Text = path
             AndroidProjectPath = path
+            Dim OpenCUKey As RegistryKey = RegistryKey.OpenBaseKey(RegistryHive.CurrentUser, IIf(Environment.Is64BitOperatingSystem, RegistryView.Registry64, RegistryView.Registry32))
+            Using subRegKey = OpenCUKey.OpenSubKey("Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers", True)
+                If subRegKey Is Nothing Then
+                    Using subKey = OpenCUKey.CreateSubKey("Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers", RegistryKeyPermissionCheck.Default)
+                        subKey.SetValue("OpenPath", path, RegistryValueKind.String)
+                    End Using
+                Else
+                    subRegKey.SetValue("OpenPath", path, RegistryValueKind.String)
+                End If
+            End Using
         Next
     End Sub
 
@@ -47,6 +57,16 @@ Public Class Form1
             TextBox2.ForeColor = Color.Black
             TextBox2.TextAlign = HorizontalAlignment.Left
             TextBox2.Text = path
+            Dim OpenCUKey As RegistryKey = RegistryKey.OpenBaseKey(RegistryHive.CurrentUser, IIf(Environment.Is64BitOperatingSystem, RegistryView.Registry64, RegistryView.Registry32))
+            Using subRegKey = OpenCUKey.OpenSubKey("Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers", True)
+                If subRegKey Is Nothing Then
+                    Using subKey = OpenCUKey.CreateSubKey("Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers", RegistryKeyPermissionCheck.Default)
+                        subKey.SetValue("SavePath", TextBox2.Text, RegistryValueKind.String)
+                    End Using
+                Else
+                    subRegKey.SetValue("SavePath", TextBox2.Text, RegistryValueKind.String)
+                End If
+            End Using
         Next
     End Sub
     'Private Sub TextBox3_DragEnter(sender As Object, e As DragEventArgs)
@@ -141,6 +161,17 @@ Public Class Form1
         Dim OpenCUKey As RegistryKey = RegistryKey.OpenBaseKey(RegistryHive.CurrentUser, IIf(Environment.Is64BitOperatingSystem, RegistryView.Registry64, RegistryView.Registry32))
         Using subRegKey = OpenCUKey.OpenSubKey("Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers", True)
             If Not subRegKey Is Nothing Then
+                If Not subRegKey.GetValue("OpenPath") Is Nothing Then
+                    TextBox1.TextAlign = HorizontalAlignment.Left
+                    TextBox1.Text = subRegKey.GetValue("OpenPath")
+                    AndroidProjectPath = TextBox1.Text
+                End If
+
+                If Not subRegKey.GetValue("SavePath") Is Nothing Then
+                    TextBox2.TextAlign = HorizontalAlignment.Left
+                    TextBox2.Text = subRegKey.GetValue("SavePath")
+                End If
+
                 If Not subRegKey.GetValue("AndroidJar") Is Nothing Then
                     txt_androidjar.TextAlign = HorizontalAlignment.Left
                     txt_androidjar.Text = subRegKey.GetValue("AndroidJar")
@@ -152,6 +183,10 @@ Public Class Form1
                     txt_b4a.Text = subRegKey.GetValue("B4aPath")
                     B4AShared = Path.GetDirectoryName(txt_b4a.Text) + "\libraries\B4AShared.jar"
                     Core = Path.GetDirectoryName(txt_b4a.Text) + "\libraries\Core.jar"
+                    If Directory.Exists(Path.GetDirectoryName(txt_b4a.Text) + "Additional Libraries") = False Then
+                        Directory.CreateDirectory(Path.GetDirectoryName(txt_b4a.Text) + "Additional Libraries")
+                    End If
+                    AdditionalLibrariesPath = Path.GetDirectoryName(txt_b4a.Text) + "Additional Libraries"
                 End If
 
                 If Not subRegKey.GetValue("GradlePath") Is Nothing Then
@@ -182,6 +217,17 @@ Public Class Form1
             If dlg.ShowDialog = DialogResult.OK Then
                 TextBox1.Text = System.IO.Path.GetDirectoryName(dlg.FileName)
                 AndroidProjectPath = System.IO.Path.GetDirectoryName(dlg.FileName)
+                Dim OpenCUKey As RegistryKey = RegistryKey.OpenBaseKey(RegistryHive.CurrentUser, IIf(Environment.Is64BitOperatingSystem, RegistryView.Registry64, RegistryView.Registry32))
+                Using subRegKey = OpenCUKey.OpenSubKey("Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers", True)
+                    If subRegKey Is Nothing Then
+                        Using subKey = OpenCUKey.CreateSubKey("Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers", RegistryKeyPermissionCheck.Default)
+                            subKey.SetValue("OpenPath", TextBox1.Text, RegistryValueKind.String)
+                        End Using
+                    Else
+                        subRegKey.SetValue("OpenPath", TextBox1.Text, RegistryValueKind.String)
+                    End If
+                    AndroidProjectPath = TextBox1.Text
+                End Using
             End If
         End Using
     End Sub
@@ -205,6 +251,16 @@ Public Class Form1
                                               .ValidateNames = True}
             If dlg.ShowDialog = DialogResult.OK Then
                 TextBox2.Text = System.IO.Path.GetDirectoryName(dlg.FileName)
+                Dim OpenCUKey As RegistryKey = RegistryKey.OpenBaseKey(RegistryHive.CurrentUser, IIf(Environment.Is64BitOperatingSystem, RegistryView.Registry64, RegistryView.Registry32))
+                Using subRegKey = OpenCUKey.OpenSubKey("Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers", True)
+                    If subRegKey Is Nothing Then
+                        Using subKey = OpenCUKey.CreateSubKey("Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers", RegistryKeyPermissionCheck.Default)
+                            subKey.SetValue("SavePath", TextBox2.Text, RegistryValueKind.String)
+                        End Using
+                    Else
+                        subRegKey.SetValue("SavePath", TextBox2.Text, RegistryValueKind.String)
+                    End If
+                End Using
             End If
         End Using
     End Sub
@@ -1399,6 +1455,10 @@ Public Class Form1
             End If
             B4AShared = Path.GetDirectoryName(txt_b4a.Text) + "\libraries\B4AShared.jar"
             Core = Path.GetDirectoryName(txt_b4a.Text) + "\libraries\Core.jar"
+            If Directory.Exists(Path.GetDirectoryName(txt_b4a.Text) + "Additional Libraries") = False Then
+                Directory.CreateDirectory(Path.GetDirectoryName(txt_b4a.Text) + "Additional Libraries")
+            End If
+            AdditionalLibrariesPath = Path.GetDirectoryName(txt_b4a.Text) + "Additional Libraries"
         End Using
     End Sub
     Private Sub btn_Gradle_Click(sender As Object, e As EventArgs) Handles btn_Gradle.Click
