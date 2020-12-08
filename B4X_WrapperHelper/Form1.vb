@@ -296,7 +296,7 @@ Public Class Form1
     End Sub
 
     Private Sub btn_Generator_Click(sender As Object, e As EventArgs) Handles btn_Generator.Click
-
+        RichTextBoxGenerate.Text = ""
         If TextBox1.Text = "" Or TextBox1.Text.Contains("\") = False Then Return
         If TextBox2.Text = "" Or TextBox2.Text.Contains("\") = False Then
             TextBox2.Text = String.Empty
@@ -323,6 +323,7 @@ Public Class Form1
             Dim srcPath As String = directories.Where(Function(x) x.Contains("src") And x.Contains("res")).FirstOrDefault()
             Dim buildFiles() As String = System.IO.Directory.GetFiles(TextBox1.Text, "*build.gradle*", SearchOption.AllDirectories)
             Dim buildFilePath As String = ""
+            RichTextBoxGenerate.Invoke(New MethodInvoker(Sub() RichTextBoxGenerate.AppendText("Generate dependencies list" + vbNewLine)))
             Dim dependenciesList As New List(Of String)
             If buildFiles.Count > 0 Then
                 For Each buildFile In buildFiles
@@ -470,6 +471,7 @@ Public Class Form1
                             '    Directory.CreateDirectory(ProjectPath)
                         End If
                     End If
+                    RichTextBoxGenerate.Invoke(New MethodInvoker(Sub() RichTextBoxGenerate.AppendText("Copy source project..." + vbNewLine)))
                     If ManifestPath.Contains("src") Then
                         srcPath = ManifestPath.Substring(0, ManifestPath.IndexOf("src") + 3)
                         FileIO.FileSystem.CopyDirectory(srcPath, ProjectPath + "\src", True)
@@ -540,6 +542,7 @@ Public Class Form1
             CreateBuildConfig(MainActivityPath + "\BuildConfig.java")
         End If
 
+        RichTextBoxGenerate.Invoke(New MethodInvoker(Sub() RichTextBoxGenerate.AppendText("Copy gradle files..." + vbNewLine)))
         Dim buildgradleList = Directory.GetFiles(AndroidProjectPath, "build.gradle", SearchOption.AllDirectories)
         If buildgradleList.Count > 0 Then
             Try
@@ -582,6 +585,7 @@ Public Class Form1
 
     End Sub
     Private Sub CreateBuildConfig(savepath As String)
+        RichTextBoxGenerate.Invoke(New MethodInvoker(Sub() RichTextBoxGenerate.AppendText("Create Build Config file..." + vbNewLine)))
         Dim utf8WithoutBom As Encoding = Encoding.GetEncoding("ISO-8859-1")
         Using outputFile As New StreamWriter(savepath, False, utf8WithoutBom)
             outputFile.WriteLine("package " + packageName + ";")
@@ -600,6 +604,7 @@ Public Class Form1
         Dim ManifestPath As String = arguments(0)
         Dim PermissionList As New List(Of String)
 
+        RichTextBoxGenerate.Invoke(New MethodInvoker(Sub() RichTextBoxGenerate.AppendText("Create manifest file..." + vbNewLine)))
         lbl_Status.Invoke(New MethodInvoker(Sub() lbl_Status.Text = "wrapper manifest..."))
         Dim fileContent As String = File.ReadAllText(ManifestPath)
         Dim lines = File.ReadAllLines(arguments(0)).ToList()
@@ -694,13 +699,17 @@ Public Class Form1
             If metadataList.Count > 0 Then outputFile.WriteLine(String.Join(vbNewLine, metadataList))
             outputFile.WriteLine(")")
         End Using
+        RichTextBoxManifest.Text = File.ReadAllText(filePath)
         lbl_Status.Invoke(New MethodInvoker(Sub() lbl_Status.Text = "wrapper manifest finished"))
+        RichTextBoxGenerate.Invoke(New MethodInvoker(Sub() RichTextBoxGenerate.AppendText(filePath + vbNewLine)))
     End Sub
     Private Sub BackgroundWorker1_DoWork(sender As Object, e As System.ComponentModel.DoWorkEventArgs) Handles BackgroundWorker1.DoWork
         Dim arguments As List(Of Object) = TryCast(e.Argument, List(Of Object))
         Dim styleableList As New List(Of String)
         Dim styleableListArray As New List(Of String)
         Dim ResourceList As New List(Of String)
+
+        RichTextBoxGenerate.Invoke(New MethodInvoker(Sub() RichTextBoxGenerate.AppendText("Create R.java file..." + vbNewLine)))
         lbl_Status.Invoke(New MethodInvoker(Sub() lbl_Status.Text = "generate r.java..."))
         For Each java As String In arguments(0)
             Dim fileContent As String = File.ReadAllText(java)
@@ -767,6 +776,7 @@ Public Class Form1
             outputFile.WriteLine("}")
         End Using
         lbl_Status.Invoke(New MethodInvoker(Sub() lbl_Status.Text = "generate r.java finished"))
+        RichTextBoxGenerate.Invoke(New MethodInvoker(Sub() RichTextBoxGenerate.AppendText(filePath + vbNewLine)))
         MsgBox("Done!", vbInformation + vbMsgBoxSetForeground, "finished")
     End Sub
     Private Sub PackAAR(ByVal jarPath As String, ByVal savePath As String, ByVal sourcePath As String)
@@ -964,6 +974,7 @@ Public Class Form1
         Dim viewtype As String = ""
         Dim viewname As String = ""
         Dim itemlist As New List(Of List(Of String))
+        RichTextBoxGenerate.Invoke(New MethodInvoker(Sub() RichTextBoxGenerate.AppendText("Extract resource info..." + vbNewLine)))
         lbl_Status.Invoke(New MethodInvoker(Sub() lbl_Status.Text = "extract resource..."))
         Me.Invoke(New MethodInvoker(Sub() ListView1.Items.Clear()))
         If Directory.Exists(Path.GetDirectoryName(szPath) + "\res") = True Then
@@ -1625,7 +1636,7 @@ Public Class Form1
         CompileForm.ShowDialog()
     End Sub
 
-    Private Sub btn_Compile_Click_1(sender As Object, e As EventArgs) Handles btn_Compile.Click
+    Private Sub btn_Compile_Click_1(sender As Object, e As EventArgs)
         RichTextBoxCompile.Text = ""
         Dim javafiles As String = ""
         Dim cp As String = ""
@@ -1826,14 +1837,14 @@ Public Class Form1
         End If
     End Sub
 
-    Private Sub Button3_Click(sender As Object, e As EventArgs) Handles Button3.Click
+    Private Sub Button3_Click(sender As Object, e As EventArgs)
         RichTextBoxCompile.Text = ""
         If GradleWorker.IsBusy = False Then
             GradleWorker.RunWorkerAsync()
         End If
     End Sub
 
-    Private Sub CheckBox1_CheckedChanged(sender As Object, e As EventArgs) Handles CheckBox1.CheckedChanged
+    Private Sub CheckBox1_CheckedChanged(sender As Object, e As EventArgs)
         Dim javaList = Directory.GetFiles(ProjectPath, "*.*", SearchOption.AllDirectories).Where(Function(f) New List(Of String) From {".java"}.IndexOf(Path.GetExtension(f)) >= 0).ToArray()
         If javaList.Count > 0 Then
             For Each javaFile In javaList
@@ -1866,7 +1877,7 @@ Public Class Form1
         End If
     End Sub
 
-    Private Sub CheckBox2_CheckedChanged(sender As Object, e As EventArgs) Handles CheckBox2.CheckedChanged
+    Private Sub CheckBox2_CheckedChanged(sender As Object, e As EventArgs)
 
         If ProjectPath = "" Or ProjectPath.Contains("\") = False Then Return
 

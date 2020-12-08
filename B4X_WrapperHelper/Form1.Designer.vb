@@ -78,6 +78,7 @@ Partial Class Form1
         Me.Label7 = New System.Windows.Forms.Label()
         Me.TabPage5 = New System.Windows.Forms.TabPage()
         Me.TabPage6 = New System.Windows.Forms.TabPage()
+        Me.TabPage7 = New System.Windows.Forms.TabPage()
         Me.Button3 = New System.Windows.Forms.Button()
         Me.CheckBox2 = New System.Windows.Forms.CheckBox()
         Me.CheckBox1 = New System.Windows.Forms.CheckBox()
@@ -85,8 +86,11 @@ Partial Class Form1
         Me.RichTextBoxCompile = New System.Windows.Forms.RichTextBox()
         Me.ContextMenuStrip4 = New System.Windows.Forms.ContextMenuStrip(Me.components)
         Me.CompileToolStripMenuItem1 = New System.Windows.Forms.ToolStripMenuItem()
+        Me.RichTextBox2 = New System.Windows.Forms.RichTextBox()
         Me.CompileWorker1 = New System.ComponentModel.BackgroundWorker()
         Me.GradleWorker = New System.ComponentModel.BackgroundWorker()
+        Me.RichTextBoxManifest = New System.Windows.Forms.RichTextBox()
+        Me.RichTextBoxGenerate = New System.Windows.Forms.RichTextBox()
         Me.ContextMenuStrip1.SuspendLayout()
         Me.ContextMenuStrip2.SuspendLayout()
         Me.TabControl1.SuspendLayout()
@@ -97,22 +101,23 @@ Partial Class Form1
         Me.TabPage4.SuspendLayout()
         Me.TabPage5.SuspendLayout()
         Me.TabPage6.SuspendLayout()
+        Me.TabPage7.SuspendLayout()
         Me.ContextMenuStrip4.SuspendLayout()
         Me.SuspendLayout()
         '
         'TextBox1
         '
         Me.TextBox1.ForeColor = System.Drawing.SystemColors.GrayText
-        Me.TextBox1.Location = New System.Drawing.Point(23, 41)
+        Me.TextBox1.Location = New System.Drawing.Point(12, 23)
         Me.TextBox1.Name = "TextBox1"
-        Me.TextBox1.Size = New System.Drawing.Size(434, 20)
+        Me.TextBox1.Size = New System.Drawing.Size(468, 20)
         Me.TextBox1.TabIndex = 1
         Me.TextBox1.Text = "Drag and drop or open java project folder"
         Me.TextBox1.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
         '
         'btn_Open
         '
-        Me.btn_Open.Location = New System.Drawing.Point(478, 38)
+        Me.btn_Open.Location = New System.Drawing.Point(486, 18)
         Me.btn_Open.Name = "btn_Open"
         Me.btn_Open.Size = New System.Drawing.Size(68, 28)
         Me.btn_Open.TabIndex = 2
@@ -121,7 +126,7 @@ Partial Class Form1
         '
         'btn_Save
         '
-        Me.btn_Save.Location = New System.Drawing.Point(478, 86)
+        Me.btn_Save.Location = New System.Drawing.Point(486, 56)
         Me.btn_Save.Name = "btn_Save"
         Me.btn_Save.Size = New System.Drawing.Size(68, 28)
         Me.btn_Save.TabIndex = 5
@@ -131,18 +136,18 @@ Partial Class Form1
         'TextBox2
         '
         Me.TextBox2.ForeColor = System.Drawing.SystemColors.GrayText
-        Me.TextBox2.Location = New System.Drawing.Point(23, 94)
+        Me.TextBox2.Location = New System.Drawing.Point(12, 61)
         Me.TextBox2.Name = "TextBox2"
-        Me.TextBox2.Size = New System.Drawing.Size(434, 20)
+        Me.TextBox2.Size = New System.Drawing.Size(468, 20)
         Me.TextBox2.TabIndex = 4
         Me.TextBox2.Text = "Select the directory to save"
         Me.TextBox2.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
         '
         'btn_Generator
         '
-        Me.btn_Generator.Location = New System.Drawing.Point(210, 243)
+        Me.btn_Generator.Location = New System.Drawing.Point(201, 300)
         Me.btn_Generator.Name = "btn_Generator"
-        Me.btn_Generator.Size = New System.Drawing.Size(139, 56)
+        Me.btn_Generator.Size = New System.Drawing.Size(139, 40)
         Me.btn_Generator.TabIndex = 6
         Me.btn_Generator.Text = "Generate Project"
         Me.btn_Generator.UseVisualStyleBackColor = True
@@ -287,6 +292,7 @@ Partial Class Form1
         '
         Me.RichTextBox1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
         Me.RichTextBox1.ContextMenuStrip = Me.ContextMenuStrip2
+        Me.RichTextBox1.ForeColor = System.Drawing.SystemColors.MenuHighlight
         Me.RichTextBox1.Location = New System.Drawing.Point(7, 89)
         Me.RichTextBox1.Name = "RichTextBox1"
         Me.RichTextBox1.Size = New System.Drawing.Size(550, 254)
@@ -396,6 +402,7 @@ Partial Class Form1
         Me.TabControl1.Controls.Add(Me.TabPage4)
         Me.TabControl1.Controls.Add(Me.TabPage5)
         Me.TabControl1.Controls.Add(Me.TabPage6)
+        Me.TabControl1.Controls.Add(Me.TabPage7)
         Me.TabControl1.Location = New System.Drawing.Point(3, 6)
         Me.TabControl1.Name = "TabControl1"
         Me.TabControl1.SelectedIndex = 0
@@ -508,6 +515,7 @@ Partial Class Form1
         '
         'TabPage2
         '
+        Me.TabPage2.Controls.Add(Me.RichTextBoxGenerate)
         Me.TabPage2.Controls.Add(Me.btn_Save)
         Me.TabPage2.Controls.Add(Me.TextBox1)
         Me.TabPage2.Controls.Add(Me.TextBox2)
@@ -594,64 +602,75 @@ Partial Class Form1
         '
         'TabPage6
         '
-        Me.TabPage6.Controls.Add(Me.Button3)
-        Me.TabPage6.Controls.Add(Me.CheckBox2)
-        Me.TabPage6.Controls.Add(Me.CheckBox1)
-        Me.TabPage6.Controls.Add(Me.btn_Compile)
-        Me.TabPage6.Controls.Add(Me.RichTextBoxCompile)
+        Me.TabPage6.Controls.Add(Me.RichTextBoxManifest)
         Me.TabPage6.Location = New System.Drawing.Point(4, 22)
         Me.TabPage6.Name = "TabPage6"
         Me.TabPage6.Size = New System.Drawing.Size(566, 346)
-        Me.TabPage6.TabIndex = 5
-        Me.TabPage6.Text = "Compile"
+        Me.TabPage6.TabIndex = 7
+        Me.TabPage6.Text = "ManifestEditor"
         Me.TabPage6.UseVisualStyleBackColor = True
+        '
+        'TabPage7
+        '
+        Me.TabPage7.Controls.Add(Me.Button3)
+        Me.TabPage7.Controls.Add(Me.CheckBox2)
+        Me.TabPage7.Controls.Add(Me.CheckBox1)
+        Me.TabPage7.Controls.Add(Me.btn_Compile)
+        Me.TabPage7.Controls.Add(Me.RichTextBoxCompile)
+        Me.TabPage7.Controls.Add(Me.RichTextBox2)
+        Me.TabPage7.Location = New System.Drawing.Point(4, 22)
+        Me.TabPage7.Name = "TabPage7"
+        Me.TabPage7.Size = New System.Drawing.Size(566, 346)
+        Me.TabPage7.TabIndex = 6
+        Me.TabPage7.Text = "Compile"
+        Me.TabPage7.UseVisualStyleBackColor = True
         '
         'Button3
         '
-        Me.Button3.Location = New System.Drawing.Point(310, 302)
+        Me.Button3.Location = New System.Drawing.Point(312, 304)
         Me.Button3.Name = "Button3"
         Me.Button3.Size = New System.Drawing.Size(107, 37)
-        Me.Button3.TabIndex = 11
+        Me.Button3.TabIndex = 16
         Me.Button3.Text = "Compile(gradle)"
         Me.Button3.UseVisualStyleBackColor = True
         '
         'CheckBox2
         '
         Me.CheckBox2.AutoSize = True
-        Me.CheckBox2.Location = New System.Drawing.Point(499, 313)
+        Me.CheckBox2.Location = New System.Drawing.Point(501, 315)
         Me.CheckBox2.Name = "CheckBox2"
         Me.CheckBox2.Size = New System.Drawing.Size(61, 17)
-        Me.CheckBox2.TabIndex = 10
+        Me.CheckBox2.TabIndex = 15
         Me.CheckBox2.Text = "AutoFix"
         Me.CheckBox2.UseVisualStyleBackColor = True
         '
         'CheckBox1
         '
         Me.CheckBox1.AutoSize = True
-        Me.CheckBox1.Location = New System.Drawing.Point(8, 313)
+        Me.CheckBox1.Location = New System.Drawing.Point(10, 315)
         Me.CheckBox1.Name = "CheckBox1"
         Me.CheckBox1.Size = New System.Drawing.Size(118, 17)
-        Me.CheckBox1.TabIndex = 9
+        Me.CheckBox1.TabIndex = 14
         Me.CheckBox1.Text = "Android X Migration"
         Me.CheckBox1.UseVisualStyleBackColor = True
         '
         'btn_Compile
         '
-        Me.btn_Compile.Location = New System.Drawing.Point(142, 302)
+        Me.btn_Compile.Location = New System.Drawing.Point(144, 304)
         Me.btn_Compile.Name = "btn_Compile"
         Me.btn_Compile.Size = New System.Drawing.Size(107, 37)
-        Me.btn_Compile.TabIndex = 8
+        Me.btn_Compile.TabIndex = 13
         Me.btn_Compile.Text = "Compile(cmd)"
         Me.btn_Compile.UseVisualStyleBackColor = True
         '
         'RichTextBoxCompile
         '
         Me.RichTextBoxCompile.ContextMenuStrip = Me.ContextMenuStrip4
-        Me.RichTextBoxCompile.Location = New System.Drawing.Point(3, 3)
+        Me.RichTextBoxCompile.Location = New System.Drawing.Point(5, 5)
         Me.RichTextBoxCompile.Name = "RichTextBoxCompile"
         Me.RichTextBoxCompile.ReadOnly = True
         Me.RichTextBoxCompile.Size = New System.Drawing.Size(557, 293)
-        Me.RichTextBoxCompile.TabIndex = 1
+        Me.RichTextBoxCompile.TabIndex = 12
         Me.RichTextBoxCompile.Text = ""
         '
         'ContextMenuStrip4
@@ -666,11 +685,40 @@ Partial Class Form1
         Me.CompileToolStripMenuItem1.Size = New System.Drawing.Size(119, 22)
         Me.CompileToolStripMenuItem1.Text = "Compile"
         '
+        'RichTextBox2
+        '
+        Me.RichTextBox2.Location = New System.Drawing.Point(5, 5)
+        Me.RichTextBox2.Name = "RichTextBox2"
+        Me.RichTextBox2.Size = New System.Drawing.Size(558, 340)
+        Me.RichTextBox2.TabIndex = 0
+        Me.RichTextBox2.Text = ""
+        '
         'CompileWorker1
         '
         '
         'GradleWorker
         '
+        '
+        'RichTextBoxManifest
+        '
+        Me.RichTextBoxManifest.ContextMenuStrip = Me.ContextMenuStrip4
+        Me.RichTextBoxManifest.ForeColor = System.Drawing.Color.Gray
+        Me.RichTextBoxManifest.Location = New System.Drawing.Point(3, 3)
+        Me.RichTextBoxManifest.Name = "RichTextBoxManifest"
+        Me.RichTextBoxManifest.ReadOnly = True
+        Me.RichTextBoxManifest.Size = New System.Drawing.Size(557, 340)
+        Me.RichTextBoxManifest.TabIndex = 13
+        Me.RichTextBoxManifest.Text = ""
+        '
+        'RichTextBoxGenerate
+        '
+        Me.RichTextBoxGenerate.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+        Me.RichTextBoxGenerate.Enabled = False
+        Me.RichTextBoxGenerate.Location = New System.Drawing.Point(12, 90)
+        Me.RichTextBoxGenerate.Name = "RichTextBoxGenerate"
+        Me.RichTextBoxGenerate.Size = New System.Drawing.Size(542, 199)
+        Me.RichTextBoxGenerate.TabIndex = 7
+        Me.RichTextBoxGenerate.Text = ""
         '
         'Form1
         '
@@ -698,7 +746,8 @@ Partial Class Form1
         Me.TabPage4.PerformLayout()
         Me.TabPage5.ResumeLayout(False)
         Me.TabPage6.ResumeLayout(False)
-        Me.TabPage6.PerformLayout()
+        Me.TabPage7.ResumeLayout(False)
+        Me.TabPage7.PerformLayout()
         Me.ContextMenuStrip4.ResumeLayout(False)
         Me.ResumeLayout(False)
 
@@ -747,12 +796,6 @@ Partial Class Form1
     Friend WithEvents TabPage4 As TabPage
     Friend WithEvents Label7 As Label
     Friend WithEvents TabPage5 As TabPage
-    Friend WithEvents TabPage6 As TabPage
-    Friend WithEvents RichTextBoxCompile As RichTextBox
-    Friend WithEvents Button3 As Button
-    Friend WithEvents CheckBox2 As CheckBox
-    Friend WithEvents CheckBox1 As CheckBox
-    Friend WithEvents btn_Compile As Button
     Friend WithEvents ListView2 As ListView
     Friend WithEvents ContextMenuStrip3 As ContextMenuStrip
     Friend WithEvents DownloadToolStripMenuItem1 As ToolStripMenuItem
@@ -766,4 +809,14 @@ Partial Class Form1
     Friend WithEvents lbl_CLASSPATH As Label
     Friend WithEvents lbl_ANDROID_SDK_HOME As Label
     Friend WithEvents lbl_JAVA_HOME As Label
+    Friend WithEvents TabPage7 As TabPage
+    Friend WithEvents TabPage6 As TabPage
+    Friend WithEvents Button3 As Button
+    Friend WithEvents CheckBox2 As CheckBox
+    Friend WithEvents CheckBox1 As CheckBox
+    Friend WithEvents btn_Compile As Button
+    Friend WithEvents RichTextBoxCompile As RichTextBox
+    Friend WithEvents RichTextBox2 As RichTextBox
+    Friend WithEvents RichTextBoxManifest As RichTextBox
+    Friend WithEvents RichTextBoxGenerate As RichTextBox
 End Class
