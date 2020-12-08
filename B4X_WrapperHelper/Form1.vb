@@ -66,6 +66,7 @@ Public Class Form1
                 Else
                     subRegKey.SetValue("SavePath", TextBox2.Text, RegistryValueKind.String)
                 End If
+                ProjectPath = TextBox2.Text
             End Using
         Next
     End Sub
@@ -170,6 +171,7 @@ Public Class Form1
                 If Not subRegKey.GetValue("SavePath") Is Nothing Then
                     TextBox2.TextAlign = HorizontalAlignment.Left
                     TextBox2.Text = subRegKey.GetValue("SavePath")
+                    ProjectPath = TextBox2.Text
                 End If
 
                 If Not subRegKey.GetValue("AndroidJar") Is Nothing Then
@@ -260,6 +262,7 @@ Public Class Form1
                     Else
                         subRegKey.SetValue("SavePath", TextBox2.Text, RegistryValueKind.String)
                     End If
+                    ProjectPath = TextBox2.Text
                 End Using
             End If
         End Using
