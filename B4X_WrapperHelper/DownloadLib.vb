@@ -23,15 +23,45 @@ Public Class DownloadLib
             Dim doc As New HtmlAgilityPack.HtmlDocument
             doc.LoadHtml(Res.Result)
             Try
+                Dim i = 0
                 For Each Node As HtmlAgilityPack.HtmlNode In doc.DocumentNode.SelectNodes("//div//h2[@class='im-title']")
+                    i += 1
                     Dim title = Node.SelectNodes(".//a").Select(Function(x) x.InnerText.Trim())(0)
                     Dim link = Node.SelectNodes(".//a").Select(Function(x) x.GetAttributeValue("href", ""))(0)
-                    ItemDictionary.Add(title.Trim, link.Trim)
+                    If ItemDictionary.ContainsKey(title.Trim) = False Then
+                        ItemDictionary.Add(title.Trim, link.Trim)
+                    Else
+                        ItemDictionary.Add(title.Trim + "_" + i.ToString, link.Trim)
+                    End If
                 Next
             Catch ex As Exception
 
             End Try
         End If
+
+        UrlReferer = url
+        url = "https://mvnrepository.com/search?q=" + name + "&p=2"
+        Res = HttpHelper.HttpClientGetAsync(url, Headerdics, mycookiecontainer, redirecturl)
+        If Await Res <> "" Then
+            Dim doc As New HtmlAgilityPack.HtmlDocument
+            doc.LoadHtml(Res.Result)
+            Try
+                Dim i = 0
+                For Each Node As HtmlAgilityPack.HtmlNode In doc.DocumentNode.SelectNodes("//div//h2[@class='im-title']")
+                    i += 1
+                    Dim title = Node.SelectNodes(".//a").Select(Function(x) x.InnerText.Trim())(0)
+                    Dim link = Node.SelectNodes(".//a").Select(Function(x) x.GetAttributeValue("href", ""))(0)
+                    If ItemDictionary.ContainsKey(title.Trim) = False Then
+                        ItemDictionary.Add(title.Trim, link.Trim)
+                    Else
+                        ItemDictionary.Add(title.Trim + "_" + i.ToString, link.Trim)
+                    End If
+                Next
+            Catch ex As Exception
+
+            End Try
+        End If
+
         Return ItemDictionary
     End Function
     Public Shared Async Function GetVersion(url As String) As Task(Of Dictionary(Of String, String))
@@ -50,10 +80,15 @@ Public Class DownloadLib
             Dim doc As New HtmlAgilityPack.HtmlDocument
             doc.LoadHtml(Res.Result)
             Try
+                Dim i = 0
                 For Each Node As HtmlAgilityPack.HtmlNode In doc.DocumentNode.SelectNodes("//div//table[@class='grid versions']//tbody//tr")
                     Dim title = Node.SelectNodes(".//td//a").Select(Function(x) x.InnerText.Trim())(0)
                     Dim link = Node.SelectNodes(".//td//a").Select(Function(x) x.GetAttributeValue("href", ""))(0)
-                    ItemDictionary.Add(title, link)
+                    If ItemDictionary.ContainsKey(title.Trim) = False Then
+                        ItemDictionary.Add(title.Trim, link.Trim)
+                    Else
+                        ItemDictionary.Add(title.Trim + "_" + i.tostring, link.Trim)
+                    End If
                 Next
             Catch ex As Exception
 

@@ -329,9 +329,17 @@ Public Class CompileForm
             filepath = ProjectPath + "\" + New Regex("src\\.[\s\S]*?(?=\:)").Match(files).Value.Trim
         End If
         Dim errorInfo = New Regex("(?<=error:).[\s\S]*?(?=error)").Match(arguments(0)).Value.Trim
-        If errorInfo.Contains("does not exist") Then
-            Dim packageName = New Regex("(?<=error: package).[\s\S]*?(?=does not exist)").Match(arguments(0)).Value.Trim
+        If errorInfo.Contains("does not exist") Or errorInfo.Contains("not found") Then
+            Dim packageName = ""
+            If errorInfo.Contains("does not exist") Then
+                packageName = New Regex("(?<=error: package).[\s\S]*?(?=does not exist)").Match(arguments(0)).Value.Trim
+            Else
+                packageName = New Regex("(?<=class file for ).[\s\S]*?(?= not found)").Match(arguments(0)).Value.Trim
+            End If
             If packageName = "" Then Return
+            If packageName.Contains(".") Then
+                packageName = packageName.Substring(0, packageName.LastIndexOf("."))
+            End If
             ItemsDictionary = New Dictionary(Of String, String)
             ItemsDictionary.Clear()
             ItemsDictionary = Await DownloadLib.SearchItem(packageName)
