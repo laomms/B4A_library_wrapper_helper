@@ -1929,6 +1929,7 @@ Public Class Form1
                 frm.ShowDialog()
                 If SelectItem <> "" Then
                     Dim url = ItemsDictionary(SelectItem.Split("-")(0).Trim)
+                    lbl_Status.Invoke(New MethodInvoker(Sub() lbl_Status.Text = "Please select version..."))
                     ItemsDictionary.Clear()
                     ItemsDictionary = Await DownloadLib.GetVersion(url)
                     If ItemsDictionary.Count > 0 Then
@@ -1957,7 +1958,7 @@ Public Class Form1
                                         needSelect = False
                                         Dim frm3 As New DownloadForm
                                         frm3.ShowDialog()
-                                        lbl_Status.Invoke(New MethodInvoker(Sub() lbl_Status.Text = "Download completed..."))
+                                        lbl_Status.Invoke(New MethodInvoker(Sub() lbl_Status.Text = "Download completed."))
                                         Using archive As ZipArchive = ZipFile.OpenRead(targetPath)
                                             For Each entry As ZipArchiveEntry In archive.Entries
                                                 If entry.FullName = "classes.jar" Then
@@ -1989,6 +1990,9 @@ Public Class Form1
 
     Private Sub GradleWorker_DoWork(sender As Object, e As System.ComponentModel.DoWorkEventArgs) Handles GradleWorker.DoWork
         If SysEnvironment.CheckSysEnvironmentExist("GRADLE_HOME") = False Then MsgBox("The GRADLE_HOME environment has not been set", vbInformation + vbMsgBoxSetForeground, "Error") : Return
+
+        lbl_Status.Invoke(New MethodInvoker(Sub() lbl_Status.Text = "Compile with gradle..."))
+
         If File.Exists(ProjectPath + "\gradlew") Then
             'Using p1 As New Process
             '    p1.StartInfo.CreateNoWindow = True
@@ -2056,6 +2060,7 @@ Public Class Form1
             Dim process As Process = Process.Start(processInfo)
             RichTextBoxCompile.Invoke(New MethodInvoker(Sub() RichTextBoxCompile.AppendText(process.StandardOutput.ReadToEnd())))
         End If
+        lbl_Status.Invoke(New MethodInvoker(Sub() lbl_Status.Text = "Compile finished"))
     End Sub
 
     Private Sub ListView1_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ListView1.SelectedIndexChanged
