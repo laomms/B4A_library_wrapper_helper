@@ -382,6 +382,20 @@ Public Class CompileForm
                                         needSelect = False
                                         Dim frm3 As New DownloadForm
                                         frm3.ShowDialog()
+                                        If dependenciesList.Contains(Path.GetFileNameWithoutExtension(keyPair.Value)) = False Then
+                                            dependenciesList.Add(Path.GetFileName(targetPath))
+                                        End If
+                                        If MainActivityPath <> "" Then
+                                            If File.Exists(WrapperJavaPath) Then
+                                                Dim fileContents As String = File.ReadAllText(WrapperJavaPath)
+                                                Dim OldDependsOn = New Regex("\@DependsOn.[\s\S]*?(?=\}\))").Match(fileContents).Value.Trim
+                                                Dim NewDependsOn = "@DependsOn(values={""" + String.Join(""", """, dependenciesList) + """"
+                                                fileContents = fileContents.Replace(OldDependsOn, NewDependsOn)
+                                                Using writer As New StreamWriter(WrapperJavaPath, False, Encoding.GetEncoding("ISO-8859-1"))
+                                                    writer.Write(fileContents)
+                                                End Using
+                                            End If
+                                        End If
                                     ElseIf keyPair.Key.Contains("aar") Then
                                         downlink = keyPair.Value
                                         targetPath = ProjectPath + "\libs\" + Path.GetFileName(keyPair.Value)
@@ -400,8 +414,8 @@ Public Class CompileForm
                                         End Using
                                         If dependenciesList.Contains(Path.GetFileNameWithoutExtension(keyPair.Value)) = False Then
                                             dependenciesList.Add(Path.GetFileName(targetPath))
-                                            dependenciesList.Add(Path.GetFileName(destinationPath))
-                                            If MainActivityPath <> "" Then
+                                        End If
+                                        If MainActivityPath <> "" Then
                                                 If File.Exists(WrapperJavaPath) Then
                                                     Dim fileContents As String = File.ReadAllText(WrapperJavaPath)
                                                     Dim OldDependsOn = New Regex("\@DependsOn.[\s\S]*?(?=\}\))").Match(fileContents).Value.Trim
@@ -412,8 +426,8 @@ Public Class CompileForm
                                                     End Using
                                                 End If
                                             End If
+
                                         End If
-                                    End If
                                 Next
                             End If
                     End If
