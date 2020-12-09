@@ -212,7 +212,7 @@ Public Class CompileForm
         If File.Exists(jarfile) Then File.Delete(jarfile)
         If HasSubfoldersAlternate(ProjectPath + "\bin\classes") And RichTextBox1.Text.Contains("error") = False Then
             Dim startInfo = New ProcessStartInfo(My.Computer.FileSystem.SpecialDirectories.Temp + "\B4X\jar.exe")
-            Dim args As String = String.Format(" cvf {0} .", jarfile)
+            Dim args As String = String.Format(" cvf ""{0}"" .", jarfile)
             startInfo.Arguments = args
             startInfo.UseShellExecute = False
             startInfo.RedirectStandardOutput = True
@@ -239,7 +239,7 @@ Public Class CompileForm
                 p1.StartInfo.Verb = "runas"
                 p1.StartInfo.FileName = "cmd.exe"
                 p1.StartInfo.WorkingDirectory = ProjectPath
-                p1.StartInfo.Arguments = String.Format(" /c {0} -doclet BADoclet -docletpath {1} -sourcepath {2} -classpath {3} -b4atarget {4} -b4aignore org,com.android,com.example,com.hoho {5}  2>>&1", javadoc, My.Computer.FileSystem.SpecialDirectories.Temp + "\B4X\", "src", cp_javadoc, savefile, javafiles)
+                p1.StartInfo.Arguments = String.Format(" /c {0} -doclet BADoclet -docletpath {1} -sourcepath {2} -classpath {3} -b4atarget ""{4}"" -b4aignore org,com.android,com.example,com.hoho {5}  2>>&1", javadoc, My.Computer.FileSystem.SpecialDirectories.Temp + "\B4X\", "src", cp_javadoc, savefile, javafiles)
                 Debug.Print(p1.StartInfo.Arguments)
                 p1.StartInfo.WindowStyle = ProcessWindowStyle.Hidden
                 p1.StartInfo.UseShellExecute = False

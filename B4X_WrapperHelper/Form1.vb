@@ -1783,7 +1783,13 @@ Public Class Form1
             End Using
         End Using
         Dim jarfile As String = AdditionalLibrariesPath + "\" + New CultureInfo("en-US").TextInfo.ToTitleCase(Path.GetFileName(ProjectPath)) + ".jar"
-        If File.Exists(jarfile) Then File.Delete(jarfile)
+        If File.Exists(jarfile) Then
+            Try
+                File.Delete(jarfile)
+            Catch ex As Exception
+
+            End Try
+        End If
         If HasSubfoldersAlternate(ProjectPath + "\bin\classes") And RichTextBoxCompile.Text.Contains("error") = False Then
             Dim startInfo = New ProcessStartInfo(My.Computer.FileSystem.SpecialDirectories.Temp + "\B4X\jar.exe")
             startInfo.Arguments = String.Format(" cvf ""{0}"" .", jarfile)
@@ -1815,7 +1821,7 @@ Public Class Form1
                 p1.StartInfo.Verb = "runas"
                 p1.StartInfo.FileName = "cmd.exe"
                 p1.StartInfo.WorkingDirectory = ProjectPath
-                p1.StartInfo.Arguments = String.Format(" /c {0} -doclet BADoclet -docletpath {1} -sourcepath {2} -classpath {3} -b4atarget {4} -b4aignore org,com.android,com.example,com.hoho {5}  2>>&1", javadoc, My.Computer.FileSystem.SpecialDirectories.Temp + "\B4X\", "src", cp_javadoc, savefile, javafiles)
+                p1.StartInfo.Arguments = String.Format(" /c {0} -doclet BADoclet -docletpath {1} -sourcepath {2} -classpath {3} -b4atarget ""{4}"" -b4aignore org,com.android,com.example,com.hoho {5}  2>>&1", javadoc, My.Computer.FileSystem.SpecialDirectories.Temp + "\B4X\", "src", cp_javadoc, savefile, javafiles)
                 Debug.Print(p1.StartInfo.Arguments)
                 p1.StartInfo.WindowStyle = ProcessWindowStyle.Hidden
                 p1.StartInfo.UseShellExecute = False
