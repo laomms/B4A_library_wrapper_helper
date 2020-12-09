@@ -699,7 +699,8 @@ Public Class Form1
             If metadataList.Count > 0 Then outputFile.WriteLine(String.Join(vbNewLine, metadataList))
             outputFile.WriteLine(")")
         End Using
-        RichTextBoxManifest.Text = File.ReadAllText(filePath)
+
+        RichTextBoxManifest.Invoke(New MethodInvoker(Sub() RichTextBoxManifest.Text = File.ReadAllText(filePath)))
         lbl_Status.Invoke(New MethodInvoker(Sub() lbl_Status.Text = "wrapper manifest finished"))
         RichTextBoxGenerate.Invoke(New MethodInvoker(Sub() RichTextBoxGenerate.AppendText(filePath + vbNewLine)))
     End Sub
