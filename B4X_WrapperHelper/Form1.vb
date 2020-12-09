@@ -218,7 +218,7 @@ Public Class Form1
                     If Directory.Exists(Path.GetDirectoryName(txt_b4a.Text) + "Additional Libraries") = False Then
                         Directory.CreateDirectory(Path.GetDirectoryName(txt_b4a.Text) + "Additional Libraries")
                     End If
-                    AdditionalLibrariesPath = Path.GetDirectoryName(txt_b4a.Text) + "Additional Libraries"
+                    AdditionalLibrariesPath = Path.GetDirectoryName(txt_b4a.Text) + "\Additional Libraries"
                 End If
 
                 If Not subRegKey.GetValue("GradlePath") Is Nothing Then
@@ -1620,7 +1620,7 @@ Public Class Form1
             If Directory.Exists(Path.GetDirectoryName(txt_b4a.Text) + "Additional Libraries") = False Then
                 Directory.CreateDirectory(Path.GetDirectoryName(txt_b4a.Text) + "Additional Libraries")
             End If
-            AdditionalLibrariesPath = Path.GetDirectoryName(txt_b4a.Text) + "Additional Libraries"
+            AdditionalLibrariesPath = Path.GetDirectoryName(txt_b4a.Text) + "\Additional Libraries"
         End Using
     End Sub
     Private Sub Extractfiles(folderPath As String, fileName As String, ExtractName As String)
@@ -1786,8 +1786,8 @@ Public Class Form1
         If File.Exists(jarfile) Then File.Delete(jarfile)
         If HasSubfoldersAlternate(ProjectPath + "\bin\classes") And RichTextBoxCompile.Text.Contains("error") = False Then
             Dim startInfo = New ProcessStartInfo(My.Computer.FileSystem.SpecialDirectories.Temp + "\B4X\jar.exe")
-            Dim args As String = String.Format(" cvf {0} .", jarfile)
-            startInfo.Arguments = args
+            startInfo.Arguments = String.Format(" cvf ""{0}"" .", jarfile)
+            Debug.Print(startInfo.Arguments)
             startInfo.UseShellExecute = False
             startInfo.RedirectStandardOutput = True
             startInfo.WorkingDirectory = ProjectPath + "\bin\classes"
@@ -1797,6 +1797,8 @@ Public Class Form1
                 Dim sr = process.StandardOutput
                 Debug.Print(sr.ReadToEnd)
             End Using
+
+            lbl_Status.Invoke(New MethodInvoker(Sub() lbl_Status.Text = "Successfully generated:" + jarfile))
 
             'Dim docletfiles = ""
             'javaList = Directory.GetFiles(ProjectPath + "\src", "*.*", SearchOption.AllDirectories).Where(Function(f) New List(Of String) From {".java"}.IndexOf(Path.GetExtension(f)) >= 0).ToArray()
