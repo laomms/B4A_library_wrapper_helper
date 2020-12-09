@@ -209,7 +209,14 @@ Public Class CompileForm
             End Using
         End Using
         Dim jarfile As String = AdditionalLibrariesPath + "\" + New CultureInfo("en-US").TextInfo.ToTitleCase(Path.GetFileName(ProjectPath)) + ".jar"
-        If File.Exists(jarfile) Then File.Delete(jarfile)
+        If File.Exists(jarfile) Then
+            Try
+                File.Delete(jarfile)
+            Catch ex As Exception
+
+            End Try
+
+        End If
         If HasSubfoldersAlternate(ProjectPath + "\bin\classes") And RichTextBox1.Text.Contains("error") = False Then
             Dim startInfo = New ProcessStartInfo(My.Computer.FileSystem.SpecialDirectories.Temp + "\B4X\jar.exe")
             Dim args As String = String.Format(" cvf ""{0}"" .", jarfile)
@@ -270,6 +277,17 @@ Public Class CompileForm
     End Sub
 
     Private Sub BackgroundWorker1_DoWork(sender As Object, e As System.ComponentModel.DoWorkEventArgs) Handles BackgroundWorker1.DoWork
+
+        Dim buildFiles() As String = System.IO.Directory.GetFiles(ProjectPath, "*gradle.properties*", SearchOption.AllDirectories)
+        If buildFiles.Count > 0 Then
+            Dim fileContents As String = File.ReadAllText(buildFiles(0))
+            fileContents = fileContents.Insert(fileContents.Length, vbNewLine + "android.useAndroidX=true")
+            fileContents = fileContents.Insert(fileContents.Length, vbNewLine + "android.enableJetifier=true")
+            Using writer As New StreamWriter(buildFiles(0), False, Encoding.GetEncoding("Windows-1252"))
+                writer.Write(fileContents)
+            End Using
+        End If
+
         Dim javaList = Directory.GetFiles(ProjectPath, "*.*", SearchOption.AllDirectories).Where(Function(f) New List(Of String) From {".java"}.IndexOf(Path.GetExtension(f)) >= 0).ToArray()
         If javaList.Count > 0 Then
             For Each javaFile In javaList
@@ -286,7 +304,7 @@ Public Class CompileForm
                     End Using
                 End If
             Next
-            RichTextBox1.Invoke(New MethodInvoker(Sub() RichTextBox1.Text = "MigrationAndroidX finished"))
+
         End If
         Dim xmlfiles = Directory.GetFiles(ProjectPath, SearchOption.AllDirectories).Where(Function(f) New List(Of String) From {".xml"}.IndexOf(Path.GetExtension(f)) >= 0).ToArray()
         If xmlfiles.Count > 0 Then
@@ -300,6 +318,7 @@ Public Class CompileForm
                 End If
             Next
         End If
+        RichTextBox1.Invoke(New MethodInvoker(Sub() RichTextBox1.Text = "MigrationAndroidX finished"))
     End Sub
 
     Private Sub CheckBox2_CheckedChanged(sender As Object, e As EventArgs) Handles CheckBox2.CheckedChanged

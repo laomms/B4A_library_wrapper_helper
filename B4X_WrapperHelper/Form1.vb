@@ -1848,6 +1848,18 @@ Public Class Form1
     End Sub
 
     Private Sub CheckBox1_CheckedChanged(sender As Object, e As EventArgs) Handles CheckBox1.CheckedChanged
+
+        Dim buildFiles() As String = System.IO.Directory.GetFiles(ProjectPath, "*gradle.properties*", SearchOption.AllDirectories)
+        If buildFiles.Count > 0 Then
+            Dim fileContents As String = File.ReadAllText(buildFiles(0))
+            fileContents = fileContents.Insert(fileContents.Length, vbNewLine + "android.useAndroidX=true")
+            fileContents = fileContents.Insert(fileContents.Length, vbNewLine + "android.enableJetifier=true")
+            Using writer As New StreamWriter(buildFiles(0), False, Encoding.GetEncoding("Windows-1252"))
+                writer.Write(fileContents)
+            End Using
+        End If
+
+
         Dim javaList = Directory.GetFiles(ProjectPath, "*.*", SearchOption.AllDirectories).Where(Function(f) New List(Of String) From {".java"}.IndexOf(Path.GetExtension(f)) >= 0).ToArray()
         If javaList.Count > 0 Then
             For Each javaFile In javaList
@@ -1864,7 +1876,7 @@ Public Class Form1
                     End Using
                 End If
             Next
-            RichTextBoxCompile.Invoke(New MethodInvoker(Sub() RichTextBoxCompile.Text = "MigrationAndroidX finished"))
+
         End If
         Dim xmlfiles = Directory.GetFiles(ProjectPath, SearchOption.AllDirectories).Where(Function(f) New List(Of String) From {".xml"}.IndexOf(Path.GetExtension(f)) >= 0).ToArray()
         If xmlfiles.Count > 0 Then
@@ -1878,6 +1890,7 @@ Public Class Form1
                 End If
             Next
         End If
+        RichTextBoxCompile.Invoke(New MethodInvoker(Sub() RichTextBoxCompile.Text = "MigrationAndroidX finished"))
     End Sub
 
     Private Sub CheckBox2_CheckedChanged(sender As Object, e As EventArgs) Handles CheckBox2.CheckedChanged
