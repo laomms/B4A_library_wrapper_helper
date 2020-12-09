@@ -72,6 +72,9 @@ Partial Class Form1
         Me.TabPage2 = New System.Windows.Forms.TabPage()
         Me.RichTextBoxGenerate = New System.Windows.Forms.RichTextBox()
         Me.TabPage3 = New System.Windows.Forms.TabPage()
+        Me.cmb_lib = New System.Windows.Forms.ComboBox()
+        Me.btn_deletelib = New System.Windows.Forms.Button()
+        Me.Label3 = New System.Windows.Forms.Label()
         Me.ListView2 = New System.Windows.Forms.ListView()
         Me.ContextMenuStrip3 = New System.Windows.Forms.ContextMenuStrip(Me.components)
         Me.DownloadToolStripMenuItem1 = New System.Windows.Forms.ToolStripMenuItem()
@@ -541,6 +544,9 @@ Partial Class Form1
         '
         'TabPage3
         '
+        Me.TabPage3.Controls.Add(Me.cmb_lib)
+        Me.TabPage3.Controls.Add(Me.btn_deletelib)
+        Me.TabPage3.Controls.Add(Me.Label3)
         Me.TabPage3.Controls.Add(Me.ListView2)
         Me.TabPage3.Controls.Add(Me.ComboBox1)
         Me.TabPage3.Controls.Add(Me.btn_Download)
@@ -552,6 +558,32 @@ Partial Class Form1
         Me.TabPage3.Text = "DependsOn"
         Me.TabPage3.UseVisualStyleBackColor = True
         '
+        'cmb_lib
+        '
+        Me.cmb_lib.FormattingEnabled = True
+        Me.cmb_lib.Location = New System.Drawing.Point(61, 314)
+        Me.cmb_lib.Name = "cmb_lib"
+        Me.cmb_lib.Size = New System.Drawing.Size(413, 21)
+        Me.cmb_lib.TabIndex = 14
+        '
+        'btn_deletelib
+        '
+        Me.btn_deletelib.Location = New System.Drawing.Point(485, 309)
+        Me.btn_deletelib.Name = "btn_deletelib"
+        Me.btn_deletelib.Size = New System.Drawing.Size(68, 28)
+        Me.btn_deletelib.TabIndex = 16
+        Me.btn_deletelib.Text = "Delete"
+        Me.btn_deletelib.UseVisualStyleBackColor = True
+        '
+        'Label3
+        '
+        Me.Label3.AutoSize = True
+        Me.Label3.Location = New System.Drawing.Point(11, 317)
+        Me.Label3.Name = "Label3"
+        Me.Label3.Size = New System.Drawing.Size(44, 13)
+        Me.Label3.TabIndex = 15
+        Me.Label3.Text = "Libs list:"
+        '
         'ListView2
         '
         Me.ListView2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
@@ -559,7 +591,7 @@ Partial Class Form1
         Me.ListView2.HideSelection = False
         Me.ListView2.Location = New System.Drawing.Point(11, 56)
         Me.ListView2.Name = "ListView2"
-        Me.ListView2.Size = New System.Drawing.Size(544, 279)
+        Me.ListView2.Size = New System.Drawing.Size(544, 248)
         Me.ListView2.TabIndex = 13
         Me.ListView2.UseCompatibleStateImageBehavior = False
         '
@@ -819,4 +851,7 @@ Partial Class Form1
     Friend WithEvents RichTextBox2 As RichTextBox
     Friend WithEvents RichTextBoxManifest As RichTextBox
     Friend WithEvents RichTextBoxGenerate As RichTextBox
+    Friend WithEvents cmb_lib As ComboBox
+    Friend WithEvents btn_deletelib As Button
+    Friend WithEvents Label3 As Label
 End Class

@@ -477,6 +477,13 @@ Public Class Form1
                         FileIO.FileSystem.CopyDirectory(srcPath, ProjectPath + "\src", True)
                         If Directory.Exists(srcPath.Replace("src", "libs")) Then
                             FileIO.FileSystem.CopyDirectory(srcPath.Replace("src", "libs"), ProjectPath + "\libs", True)
+                            Dim libList = Directory.GetFiles(ProjectPath + "\libs", "*.*", SearchOption.AllDirectories).Where(Function(f) New List(Of String) From {".jar", ".aar"}.IndexOf(Path.GetExtension(f)) >= 0).ToArray()
+                            If libList.Count > 0 Then
+                                cmb_lib.Items.Clear()
+                                Dim bs As New BindingSource()
+                                bs.DataSource = libList
+                                cmb_lib.Invoke(New MethodInvoker(Sub() cmb_lib.DataSource = bs))
+                            End If
                         Else
                             Directory.CreateDirectory(ProjectPath + "\libs")
                         End If
@@ -1913,6 +1920,7 @@ Public Class Form1
             If packageName.Contains(".") Then
                 packageName = packageName.Substring(0, packageName.LastIndexOf("."))
             End If
+            lbl_Status.Invoke(New MethodInvoker(Sub() lbl_Status.Text = "Searching for missing package name..."))
             ItemsDictionary = New Dictionary(Of String, String)
             ItemsDictionary.Clear()
             ItemsDictionary = Await DownloadLib.SearchItem(packageName)
@@ -1949,6 +1957,7 @@ Public Class Form1
                                         needSelect = False
                                         Dim frm3 As New DownloadForm
                                         frm3.ShowDialog()
+                                        lbl_Status.Invoke(New MethodInvoker(Sub() lbl_Status.Text = "Download completed..."))
                                         Using archive As ZipArchive = ZipFile.OpenRead(targetPath)
                                             For Each entry As ZipArchiveEntry In archive.Entries
                                                 If entry.FullName = "classes.jar" Then
@@ -2092,6 +2101,13 @@ Public Class Form1
                                     End If
                                 Next entry
                             End Using
+                            Dim libList = Directory.GetFiles(ProjectPath + "\libs", "*.*", SearchOption.AllDirectories).Where(Function(f) New List(Of String) From {".jar", ".aar"}.IndexOf(Path.GetExtension(f)) >= 0).ToArray()
+                            If libList.Count > 0 Then
+                                cmb_lib.Items.Clear()
+                                Dim bs As New BindingSource()
+                                bs.DataSource = libList
+                                cmb_lib.Invoke(New MethodInvoker(Sub() cmb_lib.DataSource = bs))
+                            End If
                         End If
                     Next
                 End If
@@ -2100,10 +2116,14 @@ Public Class Form1
         lbl_Status.Invoke(New MethodInvoker(Sub() lbl_Status.Text = "Download finished"))
     End Sub
 
-    Private Sub ListView2_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ListView2.SelectedIndexChanged
+    Private Sub btn_deletelib_Click(sender As Object, e As EventArgs) Handles btn_deletelib.Click
+        If cmb_lib.Text <> "" Then
+            Try
+                File.Delete(cmb_lib.Text)
+            Catch ex As Exception
 
+            End Try
+        End If
     End Sub
-
-
 End Class
 
