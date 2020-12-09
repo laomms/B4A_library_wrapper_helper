@@ -10,7 +10,6 @@ Module Module1
     Public needSelect As Boolean = False
     Public targetPath As String = ""
     Public downlink As String = ""
-    Public DependsOn As String = ""
     Public WrapperList As New List(Of String)
     Public CodeString As String = ""
     Public ProjectPath As String = ""
@@ -24,7 +23,9 @@ Module Module1
     Public androidjarPath = ""
     Public KotlinPath As String = ""
     Public GradlePath As String = ""
-    Public wrapperText = ""
+    Public WrapperText = ""
+    Public WrapperJavaPath As String = ""
+    Public dependenciesList As New List(Of String)
     Public AndroidXMigrationDic As New Dictionary(Of String, String) From {
         {"android.support.v7.widget.util.SortedListAdapterCallback", "androidx.recyclerview.widget.SortedListAdapterCallback"},
 {"android.support.v7.widget.helper.ItemTouchUIUtilImpl", "androidx.recyclerview.widget.ItemTouchUIUtilImpl"},

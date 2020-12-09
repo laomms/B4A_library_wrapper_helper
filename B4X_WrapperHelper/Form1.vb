@@ -324,7 +324,7 @@ Public Class Form1
             Dim buildFiles() As String = System.IO.Directory.GetFiles(TextBox1.Text, "*build.gradle*", SearchOption.AllDirectories)
             Dim buildFilePath As String = ""
             RichTextBoxGenerate.Invoke(New MethodInvoker(Sub() RichTextBoxGenerate.AppendText("Generate dependencies list" + vbNewLine)))
-            Dim dependenciesList As New List(Of String)
+
             If buildFiles.Count > 0 Then
                 For Each buildFile In buildFiles
                     Dim fileContent As String = File.ReadAllText(buildFile)
@@ -365,7 +365,7 @@ Public Class Form1
                                         ComboBox1.Invoke(New MethodInvoker(Sub() ComboBox1.Items.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'").Replace("libs/", ""))))
                                     End If
                                 Next
-                                DependsOn = "@DependsOn(values={""" + String.Join(""", """, dependenciesList) + """})"
+                                'DependsOn = "@DependsOn(values={""" + String.Join(""", """, dependenciesList) + """})"
                             Next
                             Exit For
                         ElseIf fileContent.Contains("com.android.application") Then
@@ -394,7 +394,7 @@ Public Class Form1
                                         ComboBox1.Invoke(New MethodInvoker(Sub() ComboBox1.Items.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'").Replace("libs/", ""))))
                                     End If
                                 Next
-                                DependsOn = "@DependsOn(values={""" + String.Join(""", """, dependenciesList) + """})"
+                                'DependsOn = "@DependsOn(values={""" + String.Join(""", """, dependenciesList) + """})"
                             Next
                         End If
                     End If
@@ -527,6 +527,7 @@ Public Class Form1
                     newthread.Start()
                     Dim OldMainActivityPath = Path.GetDirectoryName(ManifestPath) + "\java\" + packageName.Replace(".", "\")
                     MainActivityPath = OldMainActivityPath.Replace(OldMainActivityPath.Substring(0, OldMainActivityPath.IndexOf("src")), ProjectPath + "\")
+                    WrapperJavaPath = MainActivityPath + "\" + New CultureInfo("en-US").TextInfo.ToTitleCase(Path.GetFileName(ProjectPath)) + "Wrapper.java"
                     If BackgroundWorker2.IsBusy = False Then
                         Dim arguments As New List(Of String)
                         arguments.Add(ManifestPath)
@@ -1398,16 +1399,15 @@ Public Class Form1
     End Sub
     Private Sub btn_Wrapper_Click(sender As Object, e As EventArgs) Handles btn_Wrapper.Click
         If ComboBox2.Text = "" Then Return
-
+        Dim DependsOn As String = "@DependsOn(values={})"
         lbl_Status.Invoke(New MethodInvoker(Sub() lbl_Status.Text = "wrapper b4a class..."))
-        If Directory.Exists(ProjectPath + "\libs") Then
-            Dim filePaths() As String = Directory.GetFiles(TextBox1.Text, "*.*", SearchOption.TopDirectoryOnly).Where(Function(f) New List(Of String) From {".jar", ".aar"}.IndexOf(Path.GetExtension(f)) >= 0).ToArray()
-            If filePaths.Length > 0 Then
-                Dim DependFils = """" + String.Join(""",""", filePaths) + """"
-                DependsOn = DependsOn.Insert(DependsOn.LastIndexOf("}") - 1, DependFils)
-            End If
-            Debug.Print(DependsOn)
+        'If Directory.Exists(ProjectPath + "\libs") Then
+        '    dependenciesList = Directory.GetFiles(ProjectPath + "\libs", "*.*", SearchOption.TopDirectoryOnly).Where(Function(f) New List(Of String) From {".jar", ".aar"}.IndexOf(Path.GetExtension(f)) >= 0).Select(Function(x) Path.GetFileName(x)).ToList
+        If dependenciesList.Count > 0 Then
+            DependsOn = "@DependsOn(values={""" + String.Join(""", """, dependenciesList) + """})"
         End If
+        '    Debug.Print(DependsOn)
+        'End If
         Dim fileContent As String = File.ReadAllText(ComboBox2.Text)
         Dim importList = Regex.Matches(fileContent, "import .*?(?=;)", RegexOptions.Multiline Or RegexOptions.IgnoreCase).Cast(Of Match)().Select(Function(m) m.Value).ToList()
         Dim className As String = New Regex("(((internal)|(public)|(private)|(protected)|(sealed)|(abstract)|(static))?[\s\r\n\t]+){0,2}class[\s\S]+?(?={)").Match(fileContent).Value.Trim '.*?\sclass\s[\S\s]*?(?={)
@@ -1454,9 +1454,11 @@ Public Class Form1
                 End If
             End If
         End If
-        wrapperText = wrapperText.Insert(wrapperText.IndexOf("@Version"), "import " + packageName + "." + Path.GetFileName(ComboBox2.Text).Replace(".java", ";") + vbNewLine + vbNewLine)
-        Debug.Print(wrapperText)
-        File.WriteAllText(MainActivityPath + "\" + New CultureInfo("en-US").TextInfo.ToTitleCase(Path.GetFileName(ProjectPath)) + "Wrapper.java", wrapperText)
+
+
+        WrapperText = wrapperText.Insert(wrapperText.IndexOf("@Version"), "import " + packageName + "." + Path.GetFileName(ComboBox2.Text).Replace(".java", ";") + vbNewLine + vbNewLine)
+        Debug.Print(WrapperText)
+        If File.Exists(WrapperJavaPath) = False Then File.WriteAllText(WrapperJavaPath, WrapperText)
         lbl_Status.Invoke(New MethodInvoker(Sub() lbl_Status.Text = "wrapper b4a class finished"))
     End Sub
 
@@ -2119,24 +2121,39 @@ Public Class Form1
                             targetPath = ProjectPath + "\libs\" + Path.GetFileName(keyPair.Value)
                             needSelect = False
                             DownloadForm.ShowDialog()
+                            Dim destinationPath As String = Path.GetFullPath(Path.Combine(ProjectPath + "\libs", Path.GetFileNameWithoutExtension(keyPair.Value) + ".jar"))
                             Using archive As ZipArchive = ZipFile.OpenRead(targetPath)
                                 For Each entry As ZipArchiveEntry In archive.Entries
                                     If entry.FullName = "classes.jar" Then
-                                        Dim destinationPath As String = Path.GetFullPath(Path.Combine(ProjectPath + "\libs", Path.GetFileNameWithoutExtension(keyPair.Value) + ".jar"))
                                         If destinationPath.StartsWith(ProjectPath + "\libs", StringComparison.Ordinal) Then
-                                            entry.ExtractToFile(destinationPath)
+                                            If File.Exists(destinationPath) = False Then entry.ExtractToFile(destinationPath)
                                         End If
                                     End If
                                 Next entry
                             End Using
-                            Dim libList = Directory.GetFiles(ProjectPath + "\libs", "*.*", SearchOption.AllDirectories).Where(Function(f) New List(Of String) From {".jar", ".aar"}.IndexOf(Path.GetExtension(f)) >= 0).ToArray()
-                            If libList.Count > 0 Then
-                                cmb_lib.Items.Clear()
-                                Dim bs As New BindingSource()
-                                bs.DataSource = libList
-                                cmb_lib.Invoke(New MethodInvoker(Sub() cmb_lib.DataSource = bs))
+                            If dependenciesList.Contains(Path.GetFileNameWithoutExtension(keyPair.Value)) = False Then
+                                dependenciesList.Add(Path.GetFileName(targetPath))
+                                dependenciesList.Add(Path.GetFileName(destinationPath))
+                                If MainActivityPath <> "" Then
+                                    If File.Exists(WrapperJavaPath) Then
+                                        Dim fileContents As String = File.ReadAllText(WrapperJavaPath)
+                                        Dim OldDependsOn = New Regex("\@DependsOn.[\s\S]*?(?=\}\))").Match(fileContents).Value.Trim
+                                        Dim NewDependsOn = "@DependsOn(values={""" + String.Join(""", """, dependenciesList) + """"
+                                        fileContents = fileContents.Replace(OldDependsOn, NewDependsOn)
+                                        Using writer As New StreamWriter(WrapperJavaPath, False, Encoding.GetEncoding("ISO-8859-1"))
+                                            writer.Write(fileContents)
+                                        End Using
+                                    End If
+                                End If
                             End If
-                        End If
+                            Dim libList = Directory.GetFiles(ProjectPath + "\libs", "*.*", SearchOption.AllDirectories).Where(Function(f) New List(Of String) From {".jar", ".aar"}.IndexOf(Path.GetExtension(f)) >= 0).ToArray()
+                                If libList.Count > 0 Then
+                                'cmb_lib.Invoke(New MethodInvoker(Sub() cmb_lib.Items.Clear()))
+                                Dim bs As New BindingSource()
+                                    bs.DataSource = libList
+                                    cmb_lib.Invoke(New MethodInvoker(Sub() cmb_lib.DataSource = bs))
+                                End If
+                            End If
                     Next
                 End If
             End If

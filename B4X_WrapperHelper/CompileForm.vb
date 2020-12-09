@@ -388,16 +388,31 @@ Public Class CompileForm
                                         needSelect = False
                                         Dim frm3 As New DownloadForm
                                         frm3.ShowDialog()
+                                        Dim destinationPath As String = Path.GetFullPath(Path.Combine(ProjectPath + "\libs", Path.GetFileNameWithoutExtension(keyPair.Value) + ".jar"))
                                         Using archive As ZipArchive = ZipFile.OpenRead(targetPath)
                                             For Each entry As ZipArchiveEntry In archive.Entries
                                                 If entry.FullName = "classes.jar" Then
-                                                    Dim destinationPath As String = Path.GetFullPath(Path.Combine(ProjectPath + "\libs", Path.GetFileNameWithoutExtension(keyPair.Value) + ".jar"))
                                                     If destinationPath.StartsWith(ProjectPath + "\libs", StringComparison.Ordinal) Then
-                                                        entry.ExtractToFile(destinationPath)
+                                                        If File.Exists(destinationPath) = False Then entry.ExtractToFile(destinationPath)
                                                     End If
                                                 End If
                                             Next entry
                                         End Using
+                                        If dependenciesList.Contains(Path.GetFileNameWithoutExtension(keyPair.Value)) = False Then
+                                            dependenciesList.Add(Path.GetFileName(targetPath))
+                                            dependenciesList.Add(Path.GetFileName(destinationPath))
+                                            If MainActivityPath <> "" Then
+                                                If File.Exists(WrapperJavaPath) Then
+                                                    Dim fileContents As String = File.ReadAllText(WrapperJavaPath)
+                                                    Dim OldDependsOn = New Regex("\@DependsOn.[\s\S]*?(?=\}\))").Match(fileContents).Value.Trim
+                                                    Dim NewDependsOn = "@DependsOn(values={""" + String.Join(""", """, dependenciesList) + """"
+                                                    fileContents = fileContents.Replace(OldDependsOn, NewDependsOn)
+                                                    Using writer As New StreamWriter(WrapperJavaPath, False, Encoding.GetEncoding("ISO-8859-1"))
+                                                        writer.Write(fileContents)
+                                                    End Using
+                                                End If
+                                            End If
+                                        End If
                                     End If
                                 Next
                             End If
