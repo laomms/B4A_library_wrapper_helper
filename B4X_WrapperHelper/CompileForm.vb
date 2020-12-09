@@ -99,13 +99,6 @@ Public Class CompileForm
             Next
         End If
         If Directory.Exists(ProjectPath + "\libs") Then
-            If File.Exists(My.Computer.FileSystem.SpecialDirectories.Temp + "\CP_Batch.bat") = False Then
-                Try
-                    File.Delete(My.Computer.FileSystem.SpecialDirectories.Temp + "\CP_Batch.bat")
-                Catch ex As Exception
-
-                End Try
-            End If
             Dim cpList = Directory.GetFiles(ProjectPath + "\libs", "*.*", SearchOption.TopDirectoryOnly).Where(Function(f) New List(Of String) From {".jar", ".aar"}.IndexOf(Path.GetExtension(f)) >= 0).ToArray()
             If cpList.Count > 0 Then
                 'cp = """" + androidjarPath + """;""" + B4AShared + """;""" + Core + """;" +  String.Join(";", cpList).Replace(ProjectPath + "\", "").Replace("\", "/")

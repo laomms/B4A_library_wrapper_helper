@@ -654,7 +654,6 @@ Partial Class Form1
         '
         'RichTextBoxManifest
         '
-        Me.RichTextBoxManifest.ContextMenuStrip = Me.ContextMenuStrip4
         Me.RichTextBoxManifest.ForeColor = System.Drawing.Color.Gray
         Me.RichTextBoxManifest.Location = New System.Drawing.Point(3, 3)
         Me.RichTextBoxManifest.Name = "RichTextBoxManifest"

@@ -487,6 +487,15 @@ Public Class Form1
                         Else
                             Directory.CreateDirectory(ProjectPath + "\libs")
                         End If
+                        Dim javaList = Directory.GetFiles(ProjectPath, "*.*", SearchOption.AllDirectories).Where(Function(f) New List(Of String) From {".kt", ".java"}.IndexOf(Path.GetExtension(f)) >= 0).ToArray()
+                        If javaList.Count > 0 Then
+                            For Each javaFile In javaList
+                                Dim fileContent As String = File.ReadAllText(javaFile)
+                                Using writer As New StreamWriter(javaFile, False, Encoding.GetEncoding("Windows-1252"))
+                                    writer.Write(fileContent)
+                                End Using
+                            Next
+                        End If
                         Dim androidTestFolder = Directory.GetDirectories(ProjectPath + "\src", "androidTest", SearchOption.AllDirectories)
                         If androidTestFolder.Count > 0 Then
                             Debug.Print(androidTestFolder(0))
@@ -1664,13 +1673,6 @@ Public Class Form1
             Next
         End If
         If Directory.Exists(ProjectPath + "\libs") Then
-            If File.Exists(My.Computer.FileSystem.SpecialDirectories.Temp + "\CP_Batch.bat") = False Then
-                Try
-                    File.Delete(My.Computer.FileSystem.SpecialDirectories.Temp + "\CP_Batch.bat")
-                Catch ex As Exception
-
-                End Try
-            End If
             Dim cpList = Directory.GetFiles(ProjectPath + "\libs", "*.*", SearchOption.TopDirectoryOnly).Where(Function(f) New List(Of String) From {".jar", ".aar"}.IndexOf(Path.GetExtension(f)) >= 0).ToArray()
             If cpList.Count > 0 Then
                 'cp = """" + androidjarPath + """;""" + B4AShared + """;""" + Core + """;" +  String.Join(";", cpList).Replace(ProjectPath + "\", "").Replace("\", "/")
