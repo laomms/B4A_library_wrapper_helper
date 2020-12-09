@@ -1620,24 +1620,9 @@ Public Class Form1
         End Using
         lbl_Status.Invoke(New MethodInvoker(Sub() lbl_Status.Text = "extract zip files finished"))
     End Sub
-    Private Sub btn_Compile_Click(sender As Object, e As EventArgs)
-        If ProjectPath <> "" Then
-            Dim OpenCUKey As RegistryKey = RegistryKey.OpenBaseKey(RegistryHive.CurrentUser, IIf(Environment.Is64BitOperatingSystem, RegistryView.Registry64, RegistryView.Registry32))
-            Using subRegKey = OpenCUKey.OpenSubKey("Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers", True)
-                If subRegKey Is Nothing Then
-                    Using subKey = OpenCUKey.CreateSubKey("Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers", RegistryKeyPermissionCheck.Default)
-                        subKey.SetValue("ProjectPath", ProjectPath, RegistryValueKind.String)
-                    End Using
-                Else
-                    subRegKey.SetValue("ProjectPath", ProjectPath, RegistryValueKind.String)
-                End If
-            End Using
-        End If
 
-        CompileForm.ShowDialog()
-    End Sub
 
-    Private Sub btn_Compile_Click_1(sender As Object, e As EventArgs)
+    Private Sub btn_Compile_Click(sender As Object, e As EventArgs) Handles btn_Compile.Click
         RichTextBoxCompile.Text = ""
         Dim javafiles As String = ""
         Dim cp As String = ""
@@ -1838,14 +1823,14 @@ Public Class Form1
         End If
     End Sub
 
-    Private Sub Button3_Click(sender As Object, e As EventArgs)
+    Private Sub Button3_Click(sender As Object, e As EventArgs) Handles Button3.Click
         RichTextBoxCompile.Text = ""
         If GradleWorker.IsBusy = False Then
             GradleWorker.RunWorkerAsync()
         End If
     End Sub
 
-    Private Sub CheckBox1_CheckedChanged(sender As Object, e As EventArgs)
+    Private Sub CheckBox1_CheckedChanged(sender As Object, e As EventArgs) Handles CheckBox1.CheckedChanged
         Dim javaList = Directory.GetFiles(ProjectPath, "*.*", SearchOption.AllDirectories).Where(Function(f) New List(Of String) From {".java"}.IndexOf(Path.GetExtension(f)) >= 0).ToArray()
         If javaList.Count > 0 Then
             For Each javaFile In javaList
@@ -1878,7 +1863,7 @@ Public Class Form1
         End If
     End Sub
 
-    Private Sub CheckBox2_CheckedChanged(sender As Object, e As EventArgs)
+    Private Sub CheckBox2_CheckedChanged(sender As Object, e As EventArgs) Handles CheckBox2.CheckedChanged
 
         If ProjectPath = "" Or ProjectPath.Contains("\") = False Then Return
 
@@ -2118,5 +2103,7 @@ Public Class Form1
     Private Sub ListView2_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ListView2.SelectedIndexChanged
 
     End Sub
+
+
 End Class
 

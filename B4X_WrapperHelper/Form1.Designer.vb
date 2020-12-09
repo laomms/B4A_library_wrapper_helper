@@ -70,6 +70,7 @@ Partial Class Form1
         Me.CheckBox_KOTLIN_HOME = New System.Windows.Forms.CheckBox()
         Me.CheckBox_GRADLE_HOME = New System.Windows.Forms.CheckBox()
         Me.TabPage2 = New System.Windows.Forms.TabPage()
+        Me.RichTextBoxGenerate = New System.Windows.Forms.RichTextBox()
         Me.TabPage3 = New System.Windows.Forms.TabPage()
         Me.ListView2 = New System.Windows.Forms.ListView()
         Me.ContextMenuStrip3 = New System.Windows.Forms.ContextMenuStrip(Me.components)
@@ -78,19 +79,18 @@ Partial Class Form1
         Me.Label7 = New System.Windows.Forms.Label()
         Me.TabPage5 = New System.Windows.Forms.TabPage()
         Me.TabPage6 = New System.Windows.Forms.TabPage()
+        Me.RichTextBoxManifest = New System.Windows.Forms.RichTextBox()
+        Me.ContextMenuStrip4 = New System.Windows.Forms.ContextMenuStrip(Me.components)
+        Me.CompileToolStripMenuItem1 = New System.Windows.Forms.ToolStripMenuItem()
         Me.TabPage7 = New System.Windows.Forms.TabPage()
         Me.Button3 = New System.Windows.Forms.Button()
         Me.CheckBox2 = New System.Windows.Forms.CheckBox()
         Me.CheckBox1 = New System.Windows.Forms.CheckBox()
         Me.btn_Compile = New System.Windows.Forms.Button()
         Me.RichTextBoxCompile = New System.Windows.Forms.RichTextBox()
-        Me.ContextMenuStrip4 = New System.Windows.Forms.ContextMenuStrip(Me.components)
-        Me.CompileToolStripMenuItem1 = New System.Windows.Forms.ToolStripMenuItem()
         Me.RichTextBox2 = New System.Windows.Forms.RichTextBox()
         Me.CompileWorker1 = New System.ComponentModel.BackgroundWorker()
         Me.GradleWorker = New System.ComponentModel.BackgroundWorker()
-        Me.RichTextBoxManifest = New System.Windows.Forms.RichTextBox()
-        Me.RichTextBoxGenerate = New System.Windows.Forms.RichTextBox()
         Me.ContextMenuStrip1.SuspendLayout()
         Me.ContextMenuStrip2.SuspendLayout()
         Me.TabControl1.SuspendLayout()
@@ -101,8 +101,8 @@ Partial Class Form1
         Me.TabPage4.SuspendLayout()
         Me.TabPage5.SuspendLayout()
         Me.TabPage6.SuspendLayout()
-        Me.TabPage7.SuspendLayout()
         Me.ContextMenuStrip4.SuspendLayout()
+        Me.TabPage7.SuspendLayout()
         Me.SuspendLayout()
         '
         'TextBox1
@@ -529,6 +529,16 @@ Partial Class Form1
         Me.TabPage2.Text = "GenerateProject"
         Me.TabPage2.UseVisualStyleBackColor = True
         '
+        'RichTextBoxGenerate
+        '
+        Me.RichTextBoxGenerate.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+        Me.RichTextBoxGenerate.Enabled = False
+        Me.RichTextBoxGenerate.Location = New System.Drawing.Point(12, 90)
+        Me.RichTextBoxGenerate.Name = "RichTextBoxGenerate"
+        Me.RichTextBoxGenerate.Size = New System.Drawing.Size(542, 199)
+        Me.RichTextBoxGenerate.TabIndex = 7
+        Me.RichTextBoxGenerate.Text = ""
+        '
         'TabPage3
         '
         Me.TabPage3.Controls.Add(Me.ListView2)
@@ -610,6 +620,29 @@ Partial Class Form1
         Me.TabPage6.Text = "ManifestEditor"
         Me.TabPage6.UseVisualStyleBackColor = True
         '
+        'RichTextBoxManifest
+        '
+        Me.RichTextBoxManifest.ContextMenuStrip = Me.ContextMenuStrip4
+        Me.RichTextBoxManifest.ForeColor = System.Drawing.Color.Gray
+        Me.RichTextBoxManifest.Location = New System.Drawing.Point(3, 3)
+        Me.RichTextBoxManifest.Name = "RichTextBoxManifest"
+        Me.RichTextBoxManifest.ReadOnly = True
+        Me.RichTextBoxManifest.Size = New System.Drawing.Size(557, 340)
+        Me.RichTextBoxManifest.TabIndex = 13
+        Me.RichTextBoxManifest.Text = ""
+        '
+        'ContextMenuStrip4
+        '
+        Me.ContextMenuStrip4.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.CompileToolStripMenuItem1})
+        Me.ContextMenuStrip4.Name = "ContextMenuStrip1"
+        Me.ContextMenuStrip4.Size = New System.Drawing.Size(120, 26)
+        '
+        'CompileToolStripMenuItem1
+        '
+        Me.CompileToolStripMenuItem1.Name = "CompileToolStripMenuItem1"
+        Me.CompileToolStripMenuItem1.Size = New System.Drawing.Size(119, 22)
+        Me.CompileToolStripMenuItem1.Text = "Compile"
+        '
         'TabPage7
         '
         Me.TabPage7.Controls.Add(Me.Button3)
@@ -673,18 +706,6 @@ Partial Class Form1
         Me.RichTextBoxCompile.TabIndex = 12
         Me.RichTextBoxCompile.Text = ""
         '
-        'ContextMenuStrip4
-        '
-        Me.ContextMenuStrip4.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.CompileToolStripMenuItem1})
-        Me.ContextMenuStrip4.Name = "ContextMenuStrip1"
-        Me.ContextMenuStrip4.Size = New System.Drawing.Size(120, 26)
-        '
-        'CompileToolStripMenuItem1
-        '
-        Me.CompileToolStripMenuItem1.Name = "CompileToolStripMenuItem1"
-        Me.CompileToolStripMenuItem1.Size = New System.Drawing.Size(119, 22)
-        Me.CompileToolStripMenuItem1.Text = "Compile"
-        '
         'RichTextBox2
         '
         Me.RichTextBox2.Location = New System.Drawing.Point(5, 5)
@@ -698,27 +719,6 @@ Partial Class Form1
         '
         'GradleWorker
         '
-        '
-        'RichTextBoxManifest
-        '
-        Me.RichTextBoxManifest.ContextMenuStrip = Me.ContextMenuStrip4
-        Me.RichTextBoxManifest.ForeColor = System.Drawing.Color.Gray
-        Me.RichTextBoxManifest.Location = New System.Drawing.Point(3, 3)
-        Me.RichTextBoxManifest.Name = "RichTextBoxManifest"
-        Me.RichTextBoxManifest.ReadOnly = True
-        Me.RichTextBoxManifest.Size = New System.Drawing.Size(557, 340)
-        Me.RichTextBoxManifest.TabIndex = 13
-        Me.RichTextBoxManifest.Text = ""
-        '
-        'RichTextBoxGenerate
-        '
-        Me.RichTextBoxGenerate.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
-        Me.RichTextBoxGenerate.Enabled = False
-        Me.RichTextBoxGenerate.Location = New System.Drawing.Point(12, 90)
-        Me.RichTextBoxGenerate.Name = "RichTextBoxGenerate"
-        Me.RichTextBoxGenerate.Size = New System.Drawing.Size(542, 199)
-        Me.RichTextBoxGenerate.TabIndex = 7
-        Me.RichTextBoxGenerate.Text = ""
         '
         'Form1
         '
@@ -746,9 +746,9 @@ Partial Class Form1
         Me.TabPage4.PerformLayout()
         Me.TabPage5.ResumeLayout(False)
         Me.TabPage6.ResumeLayout(False)
+        Me.ContextMenuStrip4.ResumeLayout(False)
         Me.TabPage7.ResumeLayout(False)
         Me.TabPage7.PerformLayout()
-        Me.ContextMenuStrip4.ResumeLayout(False)
         Me.ResumeLayout(False)
 
     End Sub
