@@ -281,8 +281,8 @@ Public Class CompileForm
         Dim buildFiles() As String = System.IO.Directory.GetFiles(ProjectPath, "*gradle.properties*", SearchOption.AllDirectories)
         If buildFiles.Count > 0 Then
             Dim fileContents As String = File.ReadAllText(buildFiles(0))
-            fileContents = fileContents.Insert(fileContents.Length, vbNewLine + "android.useAndroidX=true")
-            fileContents = fileContents.Insert(fileContents.Length, vbNewLine + "android.enableJetifier=true")
+            If fileContents.Contains("android.useAndroidX=true") = False Then fileContents = fileContents.Insert(fileContents.Length, vbNewLine + "android.useAndroidX=true")
+            If fileContents.Contains("android.enableJetifier=true") = False Then fileContents = fileContents.Insert(fileContents.Length, vbNewLine + "android.enableJetifier=true")
             Using writer As New StreamWriter(buildFiles(0), False, Encoding.GetEncoding("Windows-1252"))
                 writer.Write(fileContents)
             End Using

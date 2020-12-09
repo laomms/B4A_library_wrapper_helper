@@ -1769,7 +1769,7 @@ Public Class Form1
             p1.StartInfo.Verb = "runas"
             p1.StartInfo.FileName = "cmd.exe"
             p1.StartInfo.WorkingDirectory = ProjectPath
-            p1.StartInfo.Arguments = String.Format(" /c {0} -Xmaxerrs 1 -Xlint:none -J-Xmx512m  -version -encoding UTF-8 -d {1} -sourcepath {2} -cp {3} {4}  2>>&1", javac, "bin/classes", "src", cp, javafiles)
+            p1.StartInfo.Arguments = String.Format(" /c {0} -Xmaxerrs 1 -Xlint:none -J-Xmx512m  -version -encoding UTF-8 -source 1.8 -target 1.8 -d {1} -sourcepath {2} -cp {3} {4}  2>>&1", javac, "bin/classes", "src", cp, javafiles)
             Debug.Print(p1.StartInfo.Arguments)
             p1.StartInfo.WindowStyle = ProcessWindowStyle.Hidden
             p1.StartInfo.UseShellExecute = False
@@ -1813,7 +1813,7 @@ Public Class Form1
             'End If
 
             If SysEnvironment.CheckSysEnvironmentExist("JAVA_HOME") = False Then MsgBox("The JAVA_HOME environment has not been set", vbInformation + vbMsgBoxSetForeground, "Error") : Return
-            Dim javadoc = SysEnvironment.GetSysEnvironmentByName("JAVA_HOME") + "\bin\javadoc"
+            Dim javadoc = SysEnvironment.GetSysEnvironmentByName("JAVA_HOME") + "\bin\javadoc" ' My.Computer.FileSystem.SpecialDirectories.Temp + "\B4X\bin\javadoc" '
             Dim savefile = AdditionalLibrariesPath + "\" + New CultureInfo("en-US").TextInfo.ToTitleCase(Path.GetFileName(ProjectPath)) + ".xml"
             If File.Exists(savefile) Then File.Delete(savefile)
             Using p1 As New Process
@@ -1852,8 +1852,8 @@ Public Class Form1
         Dim buildFiles() As String = System.IO.Directory.GetFiles(ProjectPath, "*gradle.properties*", SearchOption.AllDirectories)
         If buildFiles.Count > 0 Then
             Dim fileContents As String = File.ReadAllText(buildFiles(0))
-            fileContents = fileContents.Insert(fileContents.Length, vbNewLine + "android.useAndroidX=true")
-            fileContents = fileContents.Insert(fileContents.Length, vbNewLine + "android.enableJetifier=true")
+            If fileContents.Contains("android.useAndroidX=true") = False Then fileContents = fileContents.Insert(fileContents.Length, vbNewLine + "android.useAndroidX=true")
+            If fileContents.Contains("android.enableJetifier=true") = False Then fileContents = fileContents.Insert(fileContents.Length, vbNewLine + "android.enableJetifier=true")
             Using writer As New StreamWriter(buildFiles(0), False, Encoding.GetEncoding("Windows-1252"))
                 writer.Write(fileContents)
             End Using
