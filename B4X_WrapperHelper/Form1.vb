@@ -2317,9 +2317,9 @@ GoOn:
                             If MainActivityPath <> "" Then
                                 If File.Exists(WrapperJavaPath) Then
                                     Dim fileContents As String = File.ReadAllText(WrapperJavaPath)
-                                    Dim OldDependsOn = New Regex("\@DependsOn.[\s\S]*?(?=\}\))").Match(fileContents).Value.Trim
+                                    Dim OldDependsOn = New Regex("\@DependsOn.[\s\S]*?(?=\}\s+\))").Match(fileContents).Value.Trim
                                     Dim NewDependsOn = "@DependsOn(values={""" + String.Join(""", """, dependenciesList) + """"
-                                    fileContents = fileContents.Replace(OldDependsOn, NewDependsOn)
+                                    If OldDependsOn <> "" Then fileContents = fileContents.Replace(OldDependsOn, NewDependsOn)
                                     Using writer As New StreamWriter(WrapperJavaPath, False, Encoding.GetEncoding("ISO-8859-1"))
                                         writer.Write(fileContents)
                                     End Using
