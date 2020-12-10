@@ -216,8 +216,8 @@ Public Class Form1
                     txt_b4a.Text = subRegKey.GetValue("B4aPath")
                     B4AShared = Path.GetDirectoryName(txt_b4a.Text) + "\libraries\B4AShared.jar"
                     Core = Path.GetDirectoryName(txt_b4a.Text) + "\libraries\Core.jar"
-                    If Directory.Exists(Path.GetDirectoryName(txt_b4a.Text) + "Additional Libraries") = False Then
-                        Directory.CreateDirectory(Path.GetDirectoryName(txt_b4a.Text) + "Additional Libraries")
+                    If Directory.Exists(Path.GetDirectoryName(txt_b4a.Text) + "\Additional Libraries") = False Then
+                        Directory.CreateDirectory(Path.GetDirectoryName(txt_b4a.Text) + "\Additional Libraries")
                     End If
                     AdditionalLibrariesPath = Path.GetDirectoryName(txt_b4a.Text) + "\Additional Libraries"
                 End If
