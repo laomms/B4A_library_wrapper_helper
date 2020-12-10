@@ -198,8 +198,6 @@
   <ItemGroup>
     <EmbeddedResource Include="aidl.exe" />
     <Content Include="icon.ico" />
-    <EmbeddedResource Include="jar.exe" />
-    <EmbeddedResource Include="jli.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
   <Import Project="..\packages\Fody.6.0.0\build\Fody.targets" Condition="Exists('..\packages\Fody.6.0.0\build\Fody.targets')" />

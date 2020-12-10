@@ -70,14 +70,10 @@ Public Class CompileForm
         Dim cp As String = ""
         Dim cp_javadoc As String = ""
         If ProjectPath = "" Or ProjectPath.Contains("\") = False Then Return
-        If B4AShared = "" Then
-            MsgBox("No B4AShared.jar path specified", vbInformation + vbMsgBoxSetForeground, "Error") : Return
-        ElseIf Core = "" Then
-            MsgBox("No Core.jar path specified", vbInformation + vbMsgBoxSetForeground, "Error") : Return
-        ElseIf androidjarPath = "" Then
-            MsgBox("No android platforms path specified", vbInformation + vbMsgBoxSetForeground, "Error") : Return
-        End If
-
+        If B4AShared = "" Then MsgBox("No B4AShared.jar path specified", vbInformation + vbMsgBoxSetForeground, "Error") : Return
+        If Core = "" Then MsgBox("No Core.jar path specified", vbInformation + vbMsgBoxSetForeground, "Error") : Return
+        If androidjarPath = "" Then MsgBox("No android platforms path specified", vbInformation + vbMsgBoxSetForeground, "Error") : Return
+        If SysEnvironment.CheckSysEnvironmentExist("JAVA_HOME") = False Then MsgBox("The JAVA_HOME environment has not been set", vbInformation + vbMsgBoxSetForeground, "Error") : Return
 
         If Directory.Exists(ProjectPath + "\bin\classes") = False Then
             Directory.CreateDirectory(ProjectPath + "\bin\classes")
@@ -187,7 +183,7 @@ Public Class CompileForm
             javafiles = String.Join(" ", javaList).Replace(ProjectPath + "\", "").Replace("\", "/")
         End If
 
-        If SysEnvironment.CheckSysEnvironmentExist("JAVA_HOME") = False Then MsgBox("The JAVA_HOME environment has not been set", vbInformation + vbMsgBoxSetForeground, "Error") : Return
+
         Dim javac = SysEnvironment.GetSysEnvironmentByName("JAVA_HOME") + "\bin\javac"
 
         Using p1 As New Process
@@ -218,7 +214,7 @@ Public Class CompileForm
 
         End If
         If HasSubfoldersAlternate(ProjectPath + "\bin\classes") And RichTextBox1.Text.Contains("error") = False Then
-            Dim startInfo = New ProcessStartInfo(My.Computer.FileSystem.SpecialDirectories.Temp + "\B4X\jar.exe")
+            Dim startInfo = New ProcessStartInfo(SysEnvironment.GetSysEnvironmentByName("JAVA_HOME") + "\bin\jar.exe")
             Dim args As String = String.Format(" cvf ""{0}"" .", jarfile)
             startInfo.Arguments = args
             startInfo.UseShellExecute = False
@@ -264,7 +260,7 @@ Public Class CompileForm
             RichTextBox1.ScrollToCaret()
         End If
 
-    End Sub
+        End Sub
 
     Private Sub CheckBox1_CheckedChanged(sender As Object, e As EventArgs) Handles CheckBox1.CheckedChanged
         RichTextBox1.Text = ""
