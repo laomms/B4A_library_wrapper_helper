@@ -1,4 +1,5 @@
-﻿Imports System.Globalization
+﻿Imports System.ComponentModel
+Imports System.Globalization
 Imports System.IO
 Imports System.IO.Compression
 Imports System.Net
@@ -428,6 +429,10 @@ Public Class Form1
                     End If
                 Next
             End If
+            If dependenciesList.Count > 0 Then
+                RichBoxDependsOn.Text = "@DependsOn(values={""" + String.Join(""", """, dependenciesList) + """})"
+            End If
+
             If ComboBox1.Items.Count > 0 Then ComboBox1.Invoke(New MethodInvoker(Sub() ComboBox1.SelectedIndex = 0))
             Dim matchFiles() As String
             If buildFilePath <> "" Then
@@ -699,7 +704,7 @@ Public Class Form1
             If match.Value.Contains("android:resource") = False Then metadataList.Add("        " + match.Value.ToString.Replace(""".", """" + packageName + "."))
         Next
 
-        Dim filePath As String = TextBox2.Text + "\B4X_Manifest.txt"
+        Dim filePath As String = ProjectPath + "\B4X_Manifest.txt"
         Using outputFile As New StreamWriter(filePath, False, Encoding.UTF8)
             outputFile.WriteLine("AddManifestText(")
             If minSdkVersion <> "" Then outputFile.WriteLine("<uses-sdk android:minSdkVersion=""" + minSdkVersion + """ android:targetSdkVersion=""" + targetSdkVersion + """/>") Else outputFile.WriteLine("<uses-sdk android:minSdkVersion=""19"" android:targetSdkVersion=""28""/>")
@@ -1405,6 +1410,7 @@ Public Class Form1
         '    dependenciesList = Directory.GetFiles(ProjectPath + "\libs", "*.*", SearchOption.TopDirectoryOnly).Where(Function(f) New List(Of String) From {".jar", ".aar"}.IndexOf(Path.GetExtension(f)) >= 0).Select(Function(x) Path.GetFileName(x)).ToList
         If dependenciesList.Count > 0 Then
             DependsOn = "@DependsOn(values={""" + String.Join(""", """, dependenciesList) + """})"
+            RichBoxDependsOn.Text = "@DependsOn(values={""" + String.Join(""", """, dependenciesList) + """})"
         End If
         '    Debug.Print(DependsOn)
         'End If
@@ -1414,49 +1420,49 @@ Public Class Form1
         Debug.Print(className)
         If className.Contains("extends View") Or className.Contains("extends Activity") = False AndAlso className.Contains("AppCompatActivity") = False Then
             If fileContent.Contains("OnCheckedChangeListener") Then
-                wrapperText = My.Resources.ViewWrapper1
+                WrapperText = My.Resources.ViewWrapper1
             Else
-                wrapperText = My.Resources.ViewWrapper2
+                WrapperText = My.Resources.ViewWrapper2
             End If
             Dim viewName = New Regex("(?<=class\s{1,}).*?(?=\s)").Match(className).Value.Trim
-            wrapperText = wrapperText.Replace("B4AWrapperClass", New CultureInfo("en-US").TextInfo.ToTitleCase(Path.GetFileName(ProjectPath)) + "Wrapper")
-            wrapperText = wrapperText.Replace("LibraryName", New CultureInfo("en-US").TextInfo.ToTitleCase(Path.GetFileName(ProjectPath)))
-            wrapperText = wrapperText.Replace("ViewName", viewName)
-            wrapperText = wrapperText.Insert(wrapperText.IndexOf("public class"), DependsOn + vbNewLine)
-            wrapperText = wrapperText.Insert(wrapperText.IndexOf("@Version"), String.Join(";" + vbNewLine, importList) + ";" + vbNewLine + vbNewLine)
+            WrapperText = WrapperText.Replace("B4AWrapperClass", New CultureInfo("en-US").TextInfo.ToTitleCase(Path.GetFileName(ProjectPath)) + "Wrapper")
+            WrapperText = WrapperText.Replace("LibraryName", New CultureInfo("en-US").TextInfo.ToTitleCase(Path.GetFileName(ProjectPath)))
+            WrapperText = WrapperText.Replace("ViewName", viewName)
+            WrapperText = WrapperText.Insert(WrapperText.IndexOf("public class"), DependsOn + vbNewLine)
+            WrapperText = WrapperText.Insert(WrapperText.IndexOf("@Version"), String.Join(";" + vbNewLine, importList) + ";" + vbNewLine + vbNewLine)
             If Not WrapperList Is Nothing Then
                 If WrapperList.Count > 0 Then
-                    wrapperText = wrapperText.Insert(wrapperText.LastIndexOf("}") - 1, vbNewLine + vbNewLine + String.Join(vbNewLine + vbNewLine, WrapperList) + vbNewLine + vbNewLine)
+                    WrapperText = WrapperText.Insert(WrapperText.LastIndexOf("}") - 1, vbNewLine + vbNewLine + String.Join(vbNewLine + vbNewLine, WrapperList) + vbNewLine + vbNewLine)
                 End If
             End If
         ElseIf className.Contains("extends Activity") Or className.Contains("extends AppCompatActivity") Then
-            wrapperText = My.Resources.AbsObjectWrapper
-            wrapperText = wrapperText.Replace("B4AWrapperClass", New CultureInfo("en-US").TextInfo.ToTitleCase(Path.GetFileName(ProjectPath)) + "Wrapper")
-            wrapperText = wrapperText.Replace("LibraryName", New CultureInfo("en-US").TextInfo.ToTitleCase(Path.GetFileName(ProjectPath)))
-            wrapperText = wrapperText.Replace("ActivityName", Path.GetFileName(ComboBox2.Text).Replace(".java", ""))
-            wrapperText = wrapperText.Insert(wrapperText.IndexOf("public class"), DependsOn + vbNewLine)
-            wrapperText = wrapperText.Insert(wrapperText.IndexOf("@Version"), String.Join(";" + vbNewLine, importList) + ";" + vbNewLine + vbNewLine)
+            WrapperText = My.Resources.AbsObjectWrapper
+            WrapperText = WrapperText.Replace("B4AWrapperClass", New CultureInfo("en-US").TextInfo.ToTitleCase(Path.GetFileName(ProjectPath)) + "Wrapper")
+            WrapperText = WrapperText.Replace("LibraryName", New CultureInfo("en-US").TextInfo.ToTitleCase(Path.GetFileName(ProjectPath)))
+            WrapperText = WrapperText.Replace("ActivityName", Path.GetFileName(ComboBox2.Text).Replace(".java", ""))
+            WrapperText = WrapperText.Insert(WrapperText.IndexOf("public class"), DependsOn + vbNewLine)
+            WrapperText = WrapperText.Insert(WrapperText.IndexOf("@Version"), String.Join(";" + vbNewLine, importList) + ";" + vbNewLine + vbNewLine)
             If Not WrapperList Is Nothing Then
                 If WrapperList.Count > 0 Then
-                    wrapperText = wrapperText.Insert(wrapperText.LastIndexOf("}") - 1, vbNewLine + vbNewLine + String.Join(vbNewLine + vbNewLine, WrapperList) + vbNewLine + vbNewLine)
+                    WrapperText = WrapperText.Insert(WrapperText.LastIndexOf("}") - 1, vbNewLine + vbNewLine + String.Join(vbNewLine + vbNewLine, WrapperList) + vbNewLine + vbNewLine)
                 End If
             End If
         Else
-            wrapperText = My.Resources.FunctionWrapper
-            wrapperText = wrapperText.Replace("B4AWrapperClass", New CultureInfo("en-US").TextInfo.ToTitleCase(Path.GetFileName(ProjectPath)) + "Wrapper")
-            wrapperText = wrapperText.Replace("LibraryName", New CultureInfo("en-US").TextInfo.ToTitleCase(Path.GetFileName(ProjectPath)))
-            wrapperText = wrapperText.Replace("ActivityName", Path.GetFileName(ComboBox2.Text).Replace(".java", ""))
-            wrapperText = wrapperText.Insert(wrapperText.IndexOf("public class"), DependsOn + vbNewLine)
-            wrapperText = wrapperText.Insert(wrapperText.IndexOf("@Version"), String.Join(";" + vbNewLine, importList) + ";" + vbNewLine + vbNewLine)
+            WrapperText = My.Resources.FunctionWrapper
+            WrapperText = WrapperText.Replace("B4AWrapperClass", New CultureInfo("en-US").TextInfo.ToTitleCase(Path.GetFileName(ProjectPath)) + "Wrapper")
+            WrapperText = WrapperText.Replace("LibraryName", New CultureInfo("en-US").TextInfo.ToTitleCase(Path.GetFileName(ProjectPath)))
+            WrapperText = WrapperText.Replace("ActivityName", Path.GetFileName(ComboBox2.Text).Replace(".java", ""))
+            WrapperText = WrapperText.Insert(WrapperText.IndexOf("public class"), DependsOn + vbNewLine)
+            WrapperText = WrapperText.Insert(WrapperText.IndexOf("@Version"), String.Join(";" + vbNewLine, importList) + ";" + vbNewLine + vbNewLine)
             If Not WrapperList Is Nothing Then
                 If WrapperList.Count > 0 Then
-                    wrapperText = wrapperText.Insert(wrapperText.LastIndexOf("}") - 1, vbNewLine + vbNewLine + String.Join(vbNewLine + vbNewLine, WrapperList) + vbNewLine + vbNewLine)
+                    WrapperText = WrapperText.Insert(WrapperText.LastIndexOf("}") - 1, vbNewLine + vbNewLine + String.Join(vbNewLine + vbNewLine, WrapperList) + vbNewLine + vbNewLine)
                 End If
             End If
         End If
 
 
-        WrapperText = wrapperText.Insert(wrapperText.IndexOf("@Version"), "import " + packageName + "." + Path.GetFileName(ComboBox2.Text).Replace(".java", ";") + vbNewLine + vbNewLine)
+        WrapperText = WrapperText.Insert(WrapperText.IndexOf("@Version"), "import " + packageName + "." + Path.GetFileName(ComboBox2.Text).Replace(".java", ";") + vbNewLine + vbNewLine)
         Debug.Print(WrapperText)
         If File.Exists(WrapperJavaPath) = False Then File.WriteAllText(WrapperJavaPath, WrapperText)
         lbl_Status.Invoke(New MethodInvoker(Sub() lbl_Status.Text = "wrapper b4a class finished"))
@@ -1641,7 +1647,7 @@ Public Class Form1
 
 
     Private Sub btn_Compile_Click(sender As Object, e As EventArgs) Handles btn_Compile.Click
-        RichTextBoxCompile.Text = ""
+        RichTextBoxCompile.Invoke(New MethodInvoker(Sub() RichTextBoxCompile.Text = ""))
         Dim javafiles As String = ""
         Dim cp As String = ""
         Dim cp_javadoc As String = ""
@@ -1653,8 +1659,6 @@ Public Class Form1
         ElseIf androidjarPath = "" Then
             MsgBox("No android platforms path specified", vbInformation + vbMsgBoxSetForeground, "Error") : Return
         End If
-
-
         If Directory.Exists(ProjectPath + "\bin\classes") = False Then
             Directory.CreateDirectory(ProjectPath + "\bin\classes")
         Else
@@ -1712,7 +1716,7 @@ Public Class Form1
                 Using streamreader As System.IO.StreamReader = p1.StandardOutput
                     output = streamreader.ReadToEnd()
                     Debug.Print(output)
-                    RichTextBoxCompile.Text = output
+                    RichTextBoxCompile.Invoke(New MethodInvoker(Sub() RichTextBoxCompile.Text = output))
                 End Using
             End Using
         End If
@@ -1727,16 +1731,31 @@ Public Class Form1
         'End If
         Dim KotlinList = Directory.GetFiles(ProjectPath, "*.*", SearchOption.AllDirectories).Where(Function(f) New List(Of String) From {".kt"}.IndexOf(Path.GetExtension(f)) >= 0).ToArray()
         If KotlinList.Count > 0 Then
+            lbl_Status.Invoke(New MethodInvoker(Sub() lbl_Status.Text = "Search kotlin-java files..."))
             For Each item In KotlinList
                 Dim kotlinName = Path.GetFileName(item).Split(".")(0).Trim
                 If AndroidProjectPath <> "" Then
                     Dim KotlinSource = Directory.GetFiles(AndroidProjectPath, "*.*", SearchOption.AllDirectories).Where(Function(f) New List(Of String) From {"" + kotlinName + ".java"}.IndexOf(Path.GetFileName(f)) >= 0).ToArray()
                     If KotlinSource.Count > 0 Then
+                        lbl_Status.Invoke(New MethodInvoker(Sub() lbl_Status.Text = "find " + KotlinSource(0)))
                         File.Copy(KotlinSource(0), Path.GetDirectoryName(item) + "\" + kotlinName + ".java", True)
                         'File.Delete(item)
+                    Else
+                        GoTo CompileOldProject
                     End If
                 End If
             Next
+            GoTo GoOn
+
+CompileOldProject:
+            'RichTextBoxCompile.Text = ""
+            If GradleWorker.IsBusy = False Then
+                Dim arguments As New List(Of String)
+                arguments.Add(AndroidProjectPath)
+                GradleWorker.RunWorkerAsync(arguments)
+            End If
+            Return
+
             '    If KotlinPath = "" Then MsgBox("No kotlin compiler found", vbInformation + vbMsgBoxSetForeground, "Error") : Return
             '    Dim kotlin_stdlib_jdk7 = Path.GetDirectoryName(Kotlinfile) + "\lib\kotlin-stdlib-jdk7.jar"
             '    Using p1 As New Process
@@ -1758,6 +1777,8 @@ Public Class Form1
             '        End Using
             '    End Using
         End If
+
+GoOn:
         Dim javaList = Directory.GetDirectories(ProjectPath + "\src", "*.*", SearchOption.AllDirectories).Where(Function(f) Directory.GetFiles(f, "*.java", SearchOption.TopDirectoryOnly).Count > 0).Select(Function(x) x + "\*.java").ToList.ToArray()
         If javaList.Count > 0 Then
             javafiles = String.Join(" ", javaList).Replace(ProjectPath + "\", "").Replace("\", "/")
@@ -1781,7 +1802,7 @@ Public Class Form1
             Using streamreader As System.IO.StreamReader = p1.StandardOutput
                 output = streamreader.ReadToEnd()
                 Debug.Print(output)
-                RichTextBoxCompile.Text = output
+                RichTextBoxCompile.Invoke(New MethodInvoker(Sub() RichTextBoxCompile.Text = output))
             End Using
         End Using
         Dim jarfile As String = AdditionalLibrariesPath + "\" + New CultureInfo("en-US").TextInfo.ToTitleCase(Path.GetFileName(ProjectPath)) + ".jar"
@@ -1833,19 +1854,21 @@ Public Class Form1
                 Using streamreader As System.IO.StreamReader = p1.StandardOutput
                     output = streamreader.ReadToEnd()
                     Debug.Print(output)
-                    RichTextBoxCompile.AppendText(vbNewLine + output)
+                    RichTextBoxCompile.Invoke(New MethodInvoker(Sub() RichTextBoxCompile.AppendText(vbNewLine + output)))
                 End Using
             End Using
-            RichTextBoxCompile.AppendText("Compilation is complete")
-            RichTextBoxCompile.SelectionStart = RichTextBoxCompile.Text.Length
-            RichTextBoxCompile.ScrollToCaret()
+            RichTextBoxCompile.Invoke(New MethodInvoker(Sub() RichTextBoxCompile.AppendText("Compilation is complete")))
+            RichTextBoxCompile.Invoke(New MethodInvoker(Sub() RichTextBoxCompile.SelectionStart = RichTextBoxCompile.Text.Length))
+            RichTextBoxCompile.Invoke(New MethodInvoker(Sub() RichTextBoxCompile.ScrollToCaret()))
         End If
     End Sub
 
     Private Sub Button3_Click(sender As Object, e As EventArgs) Handles Button3.Click
         RichTextBoxCompile.Text = ""
         If GradleWorker.IsBusy = False Then
-            GradleWorker.RunWorkerAsync()
+            Dim arguments As New List(Of String)
+            arguments.Add(ProjectPath)
+            GradleWorker.RunWorkerAsync(arguments)
         End If
     End Sub
 
@@ -2013,17 +2036,161 @@ Public Class Form1
         End If
     End Sub
 
+    Private Sub GradleWorker_RunWorkerCompleted(sender As Object, e As RunWorkerCompletedEventArgs) Handles GradleWorker.RunWorkerCompleted
+
+        If e.Result.ToString = AndroidProjectPath Then
+            lbl_Status.Invoke(New MethodInvoker(Sub() lbl_Status.Text = "Search kotlin-java files..."))
+            Dim KotlinList = Directory.GetFiles(ProjectPath, "*.*", SearchOption.AllDirectories).Where(Function(f) New List(Of String) From {".kt"}.IndexOf(Path.GetExtension(f)) >= 0).ToArray()
+            If KotlinList.Count > 0 Then
+                For Each item In KotlinList
+                    Dim kotlinName = Path.GetFileName(item).Split(".")(0).Trim
+                    If AndroidProjectPath <> "" Then
+                        Dim KotlinSource = Directory.GetFiles(AndroidProjectPath, "*.*", SearchOption.AllDirectories).Where(Function(f) New List(Of String) From {"" + kotlinName + ".java"}.IndexOf(Path.GetFileName(f)) >= 0).ToArray()
+                        If KotlinSource.Count > 0 Then
+                            lbl_Status.Invoke(New MethodInvoker(Sub() lbl_Status.Text = "find " + KotlinSource(0)))
+                            File.Copy(KotlinSource(0), Path.GetDirectoryName(item) + "\" + kotlinName + ".java", True)
+                        Else
+                            Return
+                        End If
+                    End If
+                Next
+            End If
+
+            Dim cp As String = ""
+            Dim cp_javadoc As String = ""
+            If Directory.Exists(ProjectPath + "\libs") Then
+                Dim cpList = Directory.GetFiles(ProjectPath + "\libs", "*.*", SearchOption.TopDirectoryOnly).Where(Function(f) New List(Of String) From {".jar", ".aar"}.IndexOf(Path.GetExtension(f)) >= 0).ToArray()
+                If cpList.Count > 0 Then
+                    cp = """" + androidjarPath + """;""" + B4AShared + """;""" + Core + """;" + "libs/*;libs;"
+                    cp_javadoc = """" + B4AShared + """;""" + Core + """;" + "libs/*;libs;"
+                Else
+                    cp = """" + androidjarPath + """;""" + B4AShared + """;""" + Core + """;"
+                    cp_javadoc = """" + B4AShared + """;""" + Core + """;"
+                End If
+            Else
+                cp = """" + androidjarPath + """;""" + B4AShared + """;""" + Core + """;"
+                cp_javadoc = """" + B4AShared + """;""" + Core + """;"
+            End If
+
+
+
+            Dim javafiles As String = ""
+            Dim javaList = Directory.GetDirectories(ProjectPath + "\src", "*.*", SearchOption.AllDirectories).Where(Function(f) Directory.GetFiles(f, "*.java", SearchOption.TopDirectoryOnly).Count > 0).Select(Function(x) x + "\*.java").ToList.ToArray()
+            If javaList.Count > 0 Then
+                javafiles = String.Join(" ", javaList).Replace(ProjectPath + "\", "").Replace("\", "/")
+            End If
+
+            If SysEnvironment.CheckSysEnvironmentExist("JAVA_HOME") = False Then MsgBox("The JAVA_HOME environment has not been set", vbInformation + vbMsgBoxSetForeground, "Error") : Return
+            Dim javac = SysEnvironment.GetSysEnvironmentByName("JAVA_HOME") + "\bin\javac"
+
+            Using p1 As New Process
+                p1.StartInfo.CreateNoWindow = True
+                p1.StartInfo.Verb = "runas"
+                p1.StartInfo.FileName = "cmd.exe"
+                p1.StartInfo.WorkingDirectory = ProjectPath
+                p1.StartInfo.Arguments = String.Format(" /c {0} -Xmaxerrs 1 -Xlint:none -J-Xmx512m  -version -encoding UTF-8 -source 1.8 -target 1.8 -d {1} -sourcepath {2} -cp {3} {4}  2>>&1", javac, "bin/classes", "src", cp, javafiles)
+                Debug.Print(p1.StartInfo.Arguments)
+                p1.StartInfo.WindowStyle = ProcessWindowStyle.Hidden
+                p1.StartInfo.UseShellExecute = False
+                p1.StartInfo.RedirectStandardOutput = True
+                p1.Start()
+                Dim output As String
+                Using streamreader As System.IO.StreamReader = p1.StandardOutput
+                    output = streamreader.ReadToEnd()
+                    Debug.Print(output)
+                    RichTextBoxCompile.Invoke(New MethodInvoker(Sub() RichTextBoxCompile.Text = output))
+                End Using
+            End Using
+            Dim jarfile As String = AdditionalLibrariesPath + "\" + New CultureInfo("en-US").TextInfo.ToTitleCase(Path.GetFileName(ProjectPath)) + ".jar"
+            If File.Exists(jarfile) Then
+                Try
+                    File.Delete(jarfile)
+                Catch ex As Exception
+
+                End Try
+            End If
+            If HasSubfoldersAlternate(ProjectPath + "\bin\classes") And RichTextBoxCompile.Text.Contains("error") = False Then
+                Dim startInfo = New ProcessStartInfo(My.Computer.FileSystem.SpecialDirectories.Temp + "\B4X\jar.exe")
+                startInfo.Arguments = String.Format(" cvf ""{0}"" .", jarfile)
+                Debug.Print(startInfo.Arguments)
+                startInfo.UseShellExecute = False
+                startInfo.RedirectStandardOutput = True
+                startInfo.WorkingDirectory = ProjectPath + "\bin\classes"
+                startInfo.CreateNoWindow = True
+                startInfo.WindowStyle = ProcessWindowStyle.Hidden
+                Using process As System.Diagnostics.Process = System.Diagnostics.Process.Start(startInfo)
+                    Dim sr = process.StandardOutput
+                    Debug.Print(sr.ReadToEnd)
+                End Using
+
+                lbl_Status.Invoke(New MethodInvoker(Sub() lbl_Status.Text = "Successfully generated:" + jarfile))
+
+                'Dim docletfiles = ""
+                'javaList = Directory.GetFiles(ProjectPath + "\src", "*.*", SearchOption.AllDirectories).Where(Function(f) New List(Of String) From {".java"}.IndexOf(Path.GetExtension(f)) >= 0).ToArray()
+                'If javaList.Count > 0 Then
+                '    docletfiles = String.Join(" ", javaList)
+                'End If
+
+                If SysEnvironment.CheckSysEnvironmentExist("JAVA_HOME") = False Then MsgBox("The JAVA_HOME environment has not been set", vbInformation + vbMsgBoxSetForeground, "Error") : Return
+                Dim javadoc = SysEnvironment.GetSysEnvironmentByName("JAVA_HOME") + "\bin\javadoc" ' My.Computer.FileSystem.SpecialDirectories.Temp + "\B4X\bin\javadoc" '
+                Dim savefile = AdditionalLibrariesPath + "\" + New CultureInfo("en-US").TextInfo.ToTitleCase(Path.GetFileName(ProjectPath)) + ".xml"
+                If File.Exists(savefile) Then File.Delete(savefile)
+                Using p1 As New Process
+                    p1.StartInfo.CreateNoWindow = True
+                    p1.StartInfo.Verb = "runas"
+                    p1.StartInfo.FileName = "cmd.exe"
+                    p1.StartInfo.WorkingDirectory = ProjectPath
+                    p1.StartInfo.Arguments = String.Format(" /c {0} -doclet BADoclet -docletpath {1} -sourcepath {2} -classpath {3} -b4atarget ""{4}"" -b4aignore org,com.android,com.example,com.hoho {5}  2>>&1", javadoc, My.Computer.FileSystem.SpecialDirectories.Temp + "\B4X\", "src", cp_javadoc, savefile, javafiles)
+                    Debug.Print(p1.StartInfo.Arguments)
+                    p1.StartInfo.WindowStyle = ProcessWindowStyle.Hidden
+                    p1.StartInfo.UseShellExecute = False
+                    p1.StartInfo.RedirectStandardOutput = True
+                    p1.Start()
+                    Dim output As String
+                    Using streamreader As System.IO.StreamReader = p1.StandardOutput
+                        output = streamreader.ReadToEnd()
+                        Debug.Print(output)
+                        RichTextBoxCompile.Invoke(New MethodInvoker(Sub() RichTextBoxCompile.AppendText(vbNewLine + output)))
+                    End Using
+                End Using
+                RichTextBoxCompile.Invoke(New MethodInvoker(Sub() RichTextBoxCompile.AppendText("Compilation is complete")))
+                RichTextBoxCompile.Invoke(New MethodInvoker(Sub() RichTextBoxCompile.SelectionStart = RichTextBoxCompile.Text.Length))
+                RichTextBoxCompile.Invoke(New MethodInvoker(Sub() RichTextBoxCompile.ScrollToCaret()))
+            End If
+        End If
+
+
+    End Sub
     Private Sub GradleWorker_DoWork(sender As Object, e As System.ComponentModel.DoWorkEventArgs) Handles GradleWorker.DoWork
         If SysEnvironment.CheckSysEnvironmentExist("GRADLE_HOME") = False Then MsgBox("The GRADLE_HOME environment has not been set", vbInformation + vbMsgBoxSetForeground, "Error") : Return
 
         lbl_Status.Invoke(New MethodInvoker(Sub() lbl_Status.Text = "Compile with gradle..."))
 
-        If File.Exists(ProjectPath + "\gradlew") Then
+        Dim arguments As List(Of String) = TryCast(e.Argument, List(Of String))
+        Dim GradlewPath As String = arguments(0)
+        e.Result = arguments(0)
+
+        Dim buildFiles() As String = System.IO.Directory.GetFiles(GradlewPath, "*build.gradle*", SearchOption.AllDirectories)
+        If buildFiles.Count > 0 Then
+            For Each buildFile In buildFiles
+                Dim fileContent As String = File.ReadAllText(buildFile)
+                fileContent = fileContent.Replace("minifyEnabled true", "//minifyEnabled true")
+                fileContent = fileContent.Replace("zipAlignEnabled true", "//zipAlignEnabled true")
+                fileContent = fileContent.Replace("shrinkResources true", "//shrinkResources true")
+                If fileContent.Contains("task clean") Then
+                    fileContent = Regex.Replace(fileContent, "task clean.[\s\S]*\}", "")
+                End If
+                Using writer As New StreamWriter(buildFile, False, Encoding.GetEncoding("ISO-8859-1"))
+                    writer.Write(fileContent)
+                End Using
+            Next
+        End If
+        If File.Exists(GradlewPath + "\gradlew") Then
             'Using p1 As New Process
             '    p1.StartInfo.CreateNoWindow = True
             '    p1.StartInfo.Verb = "runas"
             '    p1.StartInfo.FileName = "cmd.exe"
-            '    p1.StartInfo.WorkingDirectory = ProjectPath
+            '    p1.StartInfo.WorkingDirectory = GradlewPath
             '    p1.StartInfo.Arguments = String.Format(" /c gradlew build 2>>&1")
             '    Debug.Print(p1.StartInfo.Arguments)
             '    p1.StartInfo.WindowStyle = ProcessWindowStyle.Hidden
@@ -2042,7 +2209,7 @@ Public Class Form1
                 p1.StartInfo.CreateNoWindow = True
                 p1.StartInfo.Verb = "runas"
                 p1.StartInfo.FileName = "cmd.exe"
-                p1.StartInfo.WorkingDirectory = ProjectPath
+                p1.StartInfo.WorkingDirectory = GradlewPath
                 p1.StartInfo.Arguments = String.Format(" /c gradlew clean 2>>&1")
                 Debug.Print(p1.StartInfo.Arguments)
                 p1.StartInfo.WindowStyle = ProcessWindowStyle.Hidden
@@ -2061,7 +2228,7 @@ Public Class Form1
                 p1.StartInfo.CreateNoWindow = True
                 p1.StartInfo.Verb = "runas"
                 p1.StartInfo.FileName = "cmd.exe"
-                p1.StartInfo.WorkingDirectory = ProjectPath
+                p1.StartInfo.WorkingDirectory = GradlewPath
                 p1.StartInfo.Arguments = String.Format(" /c gradlew build 2>>&1")
                 Debug.Print(p1.StartInfo.Arguments)
                 p1.StartInfo.WindowStyle = ProcessWindowStyle.Hidden
@@ -2075,8 +2242,8 @@ Public Class Form1
                     RichTextBoxCompile.Invoke(New MethodInvoker(Sub() RichTextBoxCompile.AppendText(vbNewLine + output)))
                 End Using
             End Using
-        ElseIf File.Exists(ProjectPath + "\gradlew.bat") Then
-            Dim command = ProjectPath + "\gradlew.bat"
+        ElseIf File.Exists(GradlewPath + "\gradlew.bat") Then
+            Dim command = GradlewPath + "\gradlew.bat"
             Dim processInfo = New ProcessStartInfo("cmd.exe", "/c " + command)
             processInfo.CreateNoWindow = True
             processInfo.UseShellExecute = False
@@ -2160,16 +2327,19 @@ Public Class Form1
                                 End If
                             End If
                             Dim libList = Directory.GetFiles(ProjectPath + "\libs", "*.*", SearchOption.AllDirectories).Where(Function(f) New List(Of String) From {".jar", ".aar"}.IndexOf(Path.GetExtension(f)) >= 0).ToArray()
-                                If libList.Count > 0 Then
+                            If libList.Count > 0 Then
                                 'cmb_lib.Invoke(New MethodInvoker(Sub() cmb_lib.Items.Clear()))
                                 Dim bs As New BindingSource()
-                                    bs.DataSource = libList
-                                    cmb_lib.Invoke(New MethodInvoker(Sub() cmb_lib.DataSource = bs))
-                                End If
+                                bs.DataSource = libList
+                                cmb_lib.Invoke(New MethodInvoker(Sub() cmb_lib.DataSource = bs))
                             End If
+                        End If
                     Next
                 End If
             End If
+        End If
+        If dependenciesList.Count > 0 Then
+            RichBoxDependsOn.Text = "@DependsOn(values={""" + String.Join(""", """, dependenciesList) + """})"
         End If
         lbl_Status.Invoke(New MethodInvoker(Sub() lbl_Status.Text = "Download finished"))
     End Sub
@@ -2183,5 +2353,28 @@ Public Class Form1
             End Try
         End If
     End Sub
+    Private Sub btn_Modify_Click(sender As Object, e As EventArgs) Handles btn_Modify.Click
+        If RichTextBoxManifest.Text = "" Then Return
+        Dim filePath As String = ProjectPath + "\B4X_Manifest.txt"
+        Using outputFile As New StreamWriter(filePath, False, Encoding.UTF8)
+            outputFile.WriteLine(RichTextBoxManifest.Text)
+        End Using
+    End Sub
+
+    Private Sub ModifyToolStripMenuItem1_Click(sender As Object, e As EventArgs) Handles ModifyToolStripMenuItem1.Click
+        If RichBoxDependsOn.Text = "" Then Return
+        If MainActivityPath <> "" Then
+            If File.Exists(WrapperJavaPath) Then
+                Dim fileContents As String = File.ReadAllText(WrapperJavaPath)
+                Dim OldDependsOn = New Regex("\@DependsOn.[\s\S]*?(?=\}\))").Match(fileContents).Value.Trim
+                fileContents = fileContents.Replace(OldDependsOn, RichBoxDependsOn.Text)
+                Using writer As New StreamWriter(WrapperJavaPath, False, Encoding.GetEncoding("ISO-8859-1"))
+                    writer.Write(fileContents)
+                End Using
+            End If
+        End If
+    End Sub
+
+
 End Class
 

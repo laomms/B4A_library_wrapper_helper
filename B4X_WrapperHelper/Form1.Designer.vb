@@ -72,6 +72,7 @@ Partial Class Form1
         Me.TabPage2 = New System.Windows.Forms.TabPage()
         Me.RichTextBoxGenerate = New System.Windows.Forms.RichTextBox()
         Me.TabPage3 = New System.Windows.Forms.TabPage()
+        Me.RichBoxDependsOn = New System.Windows.Forms.RichTextBox()
         Me.cmb_lib = New System.Windows.Forms.ComboBox()
         Me.btn_deletelib = New System.Windows.Forms.Button()
         Me.Label3 = New System.Windows.Forms.Label()
@@ -82,18 +83,21 @@ Partial Class Form1
         Me.Label7 = New System.Windows.Forms.Label()
         Me.TabPage5 = New System.Windows.Forms.TabPage()
         Me.TabPage6 = New System.Windows.Forms.TabPage()
+        Me.btn_Modify = New System.Windows.Forms.Button()
         Me.RichTextBoxManifest = New System.Windows.Forms.RichTextBox()
-        Me.ContextMenuStrip4 = New System.Windows.Forms.ContextMenuStrip(Me.components)
-        Me.CompileToolStripMenuItem1 = New System.Windows.Forms.ToolStripMenuItem()
         Me.TabPage7 = New System.Windows.Forms.TabPage()
         Me.Button3 = New System.Windows.Forms.Button()
         Me.CheckBox2 = New System.Windows.Forms.CheckBox()
         Me.CheckBox1 = New System.Windows.Forms.CheckBox()
         Me.btn_Compile = New System.Windows.Forms.Button()
         Me.RichTextBoxCompile = New System.Windows.Forms.RichTextBox()
+        Me.ContextMenuStrip4 = New System.Windows.Forms.ContextMenuStrip(Me.components)
+        Me.CompileToolStripMenuItem1 = New System.Windows.Forms.ToolStripMenuItem()
         Me.RichTextBox2 = New System.Windows.Forms.RichTextBox()
         Me.CompileWorker1 = New System.ComponentModel.BackgroundWorker()
         Me.GradleWorker = New System.ComponentModel.BackgroundWorker()
+        Me.ContextMenuStrip5 = New System.Windows.Forms.ContextMenuStrip(Me.components)
+        Me.ModifyToolStripMenuItem1 = New System.Windows.Forms.ToolStripMenuItem()
         Me.ContextMenuStrip1.SuspendLayout()
         Me.ContextMenuStrip2.SuspendLayout()
         Me.TabControl1.SuspendLayout()
@@ -104,8 +108,9 @@ Partial Class Form1
         Me.TabPage4.SuspendLayout()
         Me.TabPage5.SuspendLayout()
         Me.TabPage6.SuspendLayout()
-        Me.ContextMenuStrip4.SuspendLayout()
         Me.TabPage7.SuspendLayout()
+        Me.ContextMenuStrip4.SuspendLayout()
+        Me.ContextMenuStrip5.SuspendLayout()
         Me.SuspendLayout()
         '
         'TextBox1
@@ -148,7 +153,7 @@ Partial Class Form1
         '
         'btn_Generator
         '
-        Me.btn_Generator.Location = New System.Drawing.Point(201, 300)
+        Me.btn_Generator.Location = New System.Drawing.Point(201, 299)
         Me.btn_Generator.Name = "btn_Generator"
         Me.btn_Generator.Size = New System.Drawing.Size(139, 40)
         Me.btn_Generator.TabIndex = 6
@@ -164,15 +169,16 @@ Partial Class Form1
         'ComboBox1
         '
         Me.ComboBox1.FormattingEnabled = True
-        Me.ComboBox1.Location = New System.Drawing.Point(86, 20)
+        Me.ComboBox1.Location = New System.Drawing.Point(86, 13)
         Me.ComboBox1.Name = "ComboBox1"
         Me.ComboBox1.Size = New System.Drawing.Size(390, 21)
         Me.ComboBox1.TabIndex = 8
+        Me.ToolTip1.SetToolTip(Me.ComboBox1, "Select or enter the item to download")
         '
         'Label1
         '
         Me.Label1.AutoSize = True
-        Me.Label1.Location = New System.Drawing.Point(13, 23)
+        Me.Label1.Location = New System.Drawing.Point(13, 16)
         Me.Label1.Name = "Label1"
         Me.Label1.Size = New System.Drawing.Size(67, 13)
         Me.Label1.TabIndex = 9
@@ -194,10 +200,11 @@ Partial Class Form1
         Me.ComboBox2.Name = "ComboBox2"
         Me.ComboBox2.Size = New System.Drawing.Size(398, 21)
         Me.ComboBox2.TabIndex = 10
+        Me.ToolTip1.SetToolTip(Me.ComboBox2, "Select main activity to wrapper")
         '
         'btn_Download
         '
-        Me.btn_Download.Location = New System.Drawing.Point(487, 15)
+        Me.btn_Download.Location = New System.Drawing.Point(487, 8)
         Me.btn_Download.Name = "btn_Download"
         Me.btn_Download.Size = New System.Drawing.Size(68, 28)
         Me.btn_Download.TabIndex = 12
@@ -219,7 +226,7 @@ Partial Class Form1
         Me.btn_listener.Name = "btn_listener"
         Me.btn_listener.Size = New System.Drawing.Size(68, 28)
         Me.btn_listener.TabIndex = 15
-        Me.btn_listener.Text = "listener"
+        Me.btn_listener.Text = "Listener"
         Me.btn_listener.UseVisualStyleBackColor = True
         '
         'CheckBox_CLASSPATH
@@ -231,6 +238,7 @@ Partial Class Form1
         Me.CheckBox_CLASSPATH.Size = New System.Drawing.Size(89, 17)
         Me.CheckBox_CLASSPATH.TabIndex = 20
         Me.CheckBox_CLASSPATH.Text = "CLASSPATH"
+        Me.ToolTip1.SetToolTip(Me.CheckBox_CLASSPATH, ".;%JAVA_HOME%\lib\dt.jar;%JAVA_HOME%\lib\tools.jar;  (Non-essential)")
         Me.CheckBox_CLASSPATH.UseVisualStyleBackColor = True
         '
         'CheckBox_MAVEN_HOME
@@ -242,6 +250,7 @@ Partial Class Form1
         Me.CheckBox_MAVEN_HOME.Size = New System.Drawing.Size(102, 17)
         Me.CheckBox_MAVEN_HOME.TabIndex = 2
         Me.CheckBox_MAVEN_HOME.Text = "MAVEN_HOME"
+        Me.ToolTip1.SetToolTip(Me.CheckBox_MAVEN_HOME, "X:\apache-maven\apache-maven-3.6.3   (Non-essential)")
         Me.CheckBox_MAVEN_HOME.UseVisualStyleBackColor = True
         '
         'CheckBox_ANDROID_SDK_HOME
@@ -277,6 +286,7 @@ Partial Class Form1
         Me.ListView1.Name = "ListView1"
         Me.ListView1.Size = New System.Drawing.Size(555, 323)
         Me.ListView1.TabIndex = 0
+        Me.ToolTip1.SetToolTip(Me.ListView1, "Right click to add selected item to R.java")
         Me.ListView1.UseCompatibleStateImageBehavior = False
         '
         'ContextMenuStrip1
@@ -301,6 +311,7 @@ Partial Class Form1
         Me.RichTextBox1.Size = New System.Drawing.Size(550, 254)
         Me.RichTextBox1.TabIndex = 1
         Me.RichTextBox1.Text = ""
+        Me.ToolTip1.SetToolTip(Me.RichTextBox1, "Right click to modify code")
         '
         'ContextMenuStrip2
         '
@@ -323,6 +334,7 @@ Partial Class Form1
         Me.ComboBox3.Name = "ComboBox3"
         Me.ComboBox3.Size = New System.Drawing.Size(398, 21)
         Me.ComboBox3.TabIndex = 0
+        Me.ToolTip1.SetToolTip(Me.ComboBox3, "Select the event code to be modified")
         '
         'btn_androidjar
         '
@@ -383,10 +395,6 @@ Partial Class Form1
         'OpenFileDialog1
         '
         Me.OpenFileDialog1.FileName = "OpenFileDialog1"
-        '
-        'ToolTip1
-        '
-        Me.ToolTip1.ToolTipTitle = "X:\..\jdk-xx"
         '
         'lbl_Status
         '
@@ -503,6 +511,7 @@ Partial Class Form1
         Me.CheckBox_KOTLIN_HOME.Size = New System.Drawing.Size(103, 17)
         Me.CheckBox_KOTLIN_HOME.TabIndex = 22
         Me.CheckBox_KOTLIN_HOME.Text = "KOTLIN_HOME"
+        Me.ToolTip1.SetToolTip(Me.CheckBox_KOTLIN_HOME, "X:\Kotlin\kotlinc (Non-essential)")
         Me.CheckBox_KOTLIN_HOME.UseVisualStyleBackColor = True
         '
         'CheckBox_GRADLE_HOME
@@ -514,6 +523,7 @@ Partial Class Form1
         Me.CheckBox_GRADLE_HOME.Size = New System.Drawing.Size(108, 17)
         Me.CheckBox_GRADLE_HOME.TabIndex = 21
         Me.CheckBox_GRADLE_HOME.Text = "GRADLE_HOME"
+        Me.ToolTip1.SetToolTip(Me.CheckBox_GRADLE_HOME, "X:\Gradle\gradle-6.7.1   (Non-essential)")
         Me.CheckBox_GRADLE_HOME.UseVisualStyleBackColor = True
         '
         'TabPage2
@@ -544,6 +554,7 @@ Partial Class Form1
         '
         'TabPage3
         '
+        Me.TabPage3.Controls.Add(Me.RichBoxDependsOn)
         Me.TabPage3.Controls.Add(Me.cmb_lib)
         Me.TabPage3.Controls.Add(Me.btn_deletelib)
         Me.TabPage3.Controls.Add(Me.Label3)
@@ -558,17 +569,29 @@ Partial Class Form1
         Me.TabPage3.Text = "DependsOn"
         Me.TabPage3.UseVisualStyleBackColor = True
         '
+        'RichBoxDependsOn
+        '
+        Me.RichBoxDependsOn.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+        Me.RichBoxDependsOn.ContextMenuStrip = Me.ContextMenuStrip5
+        Me.RichBoxDependsOn.Location = New System.Drawing.Point(11, 257)
+        Me.RichBoxDependsOn.Name = "RichBoxDependsOn"
+        Me.RichBoxDependsOn.Size = New System.Drawing.Size(543, 82)
+        Me.RichBoxDependsOn.TabIndex = 17
+        Me.RichBoxDependsOn.Text = ""
+        Me.ToolTip1.SetToolTip(Me.RichBoxDependsOn, "Right click to modify dependent items")
+        '
         'cmb_lib
         '
         Me.cmb_lib.FormattingEnabled = True
-        Me.cmb_lib.Location = New System.Drawing.Point(61, 314)
+        Me.cmb_lib.Location = New System.Drawing.Point(63, 228)
         Me.cmb_lib.Name = "cmb_lib"
         Me.cmb_lib.Size = New System.Drawing.Size(413, 21)
         Me.cmb_lib.TabIndex = 14
+        Me.ToolTip1.SetToolTip(Me.cmb_lib, "Delete selected dependent libraries")
         '
         'btn_deletelib
         '
-        Me.btn_deletelib.Location = New System.Drawing.Point(485, 309)
+        Me.btn_deletelib.Location = New System.Drawing.Point(487, 223)
         Me.btn_deletelib.Name = "btn_deletelib"
         Me.btn_deletelib.Size = New System.Drawing.Size(68, 28)
         Me.btn_deletelib.TabIndex = 16
@@ -578,7 +601,7 @@ Partial Class Form1
         'Label3
         '
         Me.Label3.AutoSize = True
-        Me.Label3.Location = New System.Drawing.Point(11, 317)
+        Me.Label3.Location = New System.Drawing.Point(13, 231)
         Me.Label3.Name = "Label3"
         Me.Label3.Size = New System.Drawing.Size(44, 13)
         Me.Label3.TabIndex = 15
@@ -589,10 +612,11 @@ Partial Class Form1
         Me.ListView2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
         Me.ListView2.ContextMenuStrip = Me.ContextMenuStrip3
         Me.ListView2.HideSelection = False
-        Me.ListView2.Location = New System.Drawing.Point(11, 56)
+        Me.ListView2.Location = New System.Drawing.Point(11, 45)
         Me.ListView2.Name = "ListView2"
-        Me.ListView2.Size = New System.Drawing.Size(544, 248)
+        Me.ListView2.Size = New System.Drawing.Size(544, 172)
         Me.ListView2.TabIndex = 13
+        Me.ToolTip1.SetToolTip(Me.ListView2, "Right click to download selected items")
         Me.ListView2.UseCompatibleStateImageBehavior = False
         '
         'ContextMenuStrip3
@@ -644,6 +668,7 @@ Partial Class Form1
         '
         'TabPage6
         '
+        Me.TabPage6.Controls.Add(Me.btn_Modify)
         Me.TabPage6.Controls.Add(Me.RichTextBoxManifest)
         Me.TabPage6.Location = New System.Drawing.Point(4, 22)
         Me.TabPage6.Name = "TabPage6"
@@ -652,27 +677,24 @@ Partial Class Form1
         Me.TabPage6.Text = "ManifestEditor"
         Me.TabPage6.UseVisualStyleBackColor = True
         '
+        'btn_Modify
+        '
+        Me.btn_Modify.Location = New System.Drawing.Point(238, 302)
+        Me.btn_Modify.Name = "btn_Modify"
+        Me.btn_Modify.Size = New System.Drawing.Size(92, 35)
+        Me.btn_Modify.TabIndex = 14
+        Me.btn_Modify.Text = "Modify"
+        Me.btn_Modify.UseVisualStyleBackColor = True
+        '
         'RichTextBoxManifest
         '
         Me.RichTextBoxManifest.ForeColor = System.Drawing.Color.Gray
-        Me.RichTextBoxManifest.Location = New System.Drawing.Point(3, 3)
+        Me.RichTextBoxManifest.Location = New System.Drawing.Point(3, 5)
         Me.RichTextBoxManifest.Name = "RichTextBoxManifest"
         Me.RichTextBoxManifest.ReadOnly = True
-        Me.RichTextBoxManifest.Size = New System.Drawing.Size(557, 340)
+        Me.RichTextBoxManifest.Size = New System.Drawing.Size(557, 289)
         Me.RichTextBoxManifest.TabIndex = 13
         Me.RichTextBoxManifest.Text = ""
-        '
-        'ContextMenuStrip4
-        '
-        Me.ContextMenuStrip4.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.CompileToolStripMenuItem1})
-        Me.ContextMenuStrip4.Name = "ContextMenuStrip1"
-        Me.ContextMenuStrip4.Size = New System.Drawing.Size(120, 26)
-        '
-        'CompileToolStripMenuItem1
-        '
-        Me.CompileToolStripMenuItem1.Name = "CompileToolStripMenuItem1"
-        Me.CompileToolStripMenuItem1.Size = New System.Drawing.Size(119, 22)
-        Me.CompileToolStripMenuItem1.Text = "Compile"
         '
         'TabPage7
         '
@@ -701,26 +723,28 @@ Partial Class Form1
         'CheckBox2
         '
         Me.CheckBox2.AutoSize = True
-        Me.CheckBox2.Location = New System.Drawing.Point(501, 315)
+        Me.CheckBox2.Location = New System.Drawing.Point(495, 315)
         Me.CheckBox2.Name = "CheckBox2"
         Me.CheckBox2.Size = New System.Drawing.Size(61, 17)
         Me.CheckBox2.TabIndex = 15
         Me.CheckBox2.Text = "AutoFix"
+        Me.ToolTip1.SetToolTip(Me.CheckBox2, "Automatically fix compilation errors (test)")
         Me.CheckBox2.UseVisualStyleBackColor = True
         '
         'CheckBox1
         '
         Me.CheckBox1.AutoSize = True
-        Me.CheckBox1.Location = New System.Drawing.Point(10, 315)
+        Me.CheckBox1.Location = New System.Drawing.Point(11, 315)
         Me.CheckBox1.Name = "CheckBox1"
         Me.CheckBox1.Size = New System.Drawing.Size(118, 17)
         Me.CheckBox1.TabIndex = 14
         Me.CheckBox1.Text = "Android X Migration"
+        Me.ToolTip1.SetToolTip(Me.CheckBox1, "Convert project to androidx")
         Me.CheckBox1.UseVisualStyleBackColor = True
         '
         'btn_Compile
         '
-        Me.btn_Compile.Location = New System.Drawing.Point(144, 304)
+        Me.btn_Compile.Location = New System.Drawing.Point(147, 304)
         Me.btn_Compile.Name = "btn_Compile"
         Me.btn_Compile.Size = New System.Drawing.Size(107, 37)
         Me.btn_Compile.TabIndex = 13
@@ -736,6 +760,19 @@ Partial Class Form1
         Me.RichTextBoxCompile.Size = New System.Drawing.Size(557, 293)
         Me.RichTextBoxCompile.TabIndex = 12
         Me.RichTextBoxCompile.Text = ""
+        Me.ToolTip1.SetToolTip(Me.RichTextBoxCompile, "Right click to compile other projects")
+        '
+        'ContextMenuStrip4
+        '
+        Me.ContextMenuStrip4.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.CompileToolStripMenuItem1})
+        Me.ContextMenuStrip4.Name = "ContextMenuStrip1"
+        Me.ContextMenuStrip4.Size = New System.Drawing.Size(120, 26)
+        '
+        'CompileToolStripMenuItem1
+        '
+        Me.CompileToolStripMenuItem1.Name = "CompileToolStripMenuItem1"
+        Me.CompileToolStripMenuItem1.Size = New System.Drawing.Size(119, 22)
+        Me.CompileToolStripMenuItem1.Text = "Compile"
         '
         'RichTextBox2
         '
@@ -750,6 +787,18 @@ Partial Class Form1
         '
         'GradleWorker
         '
+        '
+        'ContextMenuStrip5
+        '
+        Me.ContextMenuStrip5.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ModifyToolStripMenuItem1})
+        Me.ContextMenuStrip5.Name = "ContextMenuStrip1"
+        Me.ContextMenuStrip5.Size = New System.Drawing.Size(113, 26)
+        '
+        'ModifyToolStripMenuItem1
+        '
+        Me.ModifyToolStripMenuItem1.Name = "ModifyToolStripMenuItem1"
+        Me.ModifyToolStripMenuItem1.Size = New System.Drawing.Size(112, 22)
+        Me.ModifyToolStripMenuItem1.Text = "Modify"
         '
         'Form1
         '
@@ -777,9 +826,10 @@ Partial Class Form1
         Me.TabPage4.PerformLayout()
         Me.TabPage5.ResumeLayout(False)
         Me.TabPage6.ResumeLayout(False)
-        Me.ContextMenuStrip4.ResumeLayout(False)
         Me.TabPage7.ResumeLayout(False)
         Me.TabPage7.PerformLayout()
+        Me.ContextMenuStrip4.ResumeLayout(False)
+        Me.ContextMenuStrip5.ResumeLayout(False)
         Me.ResumeLayout(False)
 
     End Sub
@@ -853,4 +903,8 @@ Partial Class Form1
     Friend WithEvents cmb_lib As ComboBox
     Friend WithEvents btn_deletelib As Button
     Friend WithEvents Label3 As Label
+    Friend WithEvents RichBoxDependsOn As RichTextBox
+    Friend WithEvents btn_Modify As Button
+    Friend WithEvents ContextMenuStrip5 As ContextMenuStrip
+    Friend WithEvents ModifyToolStripMenuItem1 As ToolStripMenuItem
 End Class
