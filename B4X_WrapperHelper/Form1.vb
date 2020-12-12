@@ -350,20 +350,25 @@ Public Class Form1
                             For Each match As Match In matches
                                 For Each line In match.Value.Split({vbCrLf, vbLf, vbCr}, StringSplitOptions.RemoveEmptyEntries)
                                     If line.Contains("implementation") And line.Contains("*.jar") = False And line.Contains("libs/") = False Then
-                                        dependenciesList.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'"))
-                                        ComboBox1.Invoke(New MethodInvoker(Sub() ComboBox1.Items.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'"))))
+                                        Dim libName = New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'")
+                                        If libName.Contains("com.android") = False Then dependenciesList.Add(libName)
+                                        ComboBox1.Invoke(New MethodInvoker(Sub() ComboBox1.Items.Add(libName)))
                                     ElseIf line.Contains("compile") And line.Contains("*.jar") = False And line.Contains("libs/") = False Then
-                                        dependenciesList.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'"))
-                                        ComboBox1.Invoke(New MethodInvoker(Sub() ComboBox1.Items.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'"))))
+                                        Dim libName = New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'")
+                                        If libName.Contains("com.android") = False Then dependenciesList.Add(libName)
+                                        ComboBox1.Invoke(New MethodInvoker(Sub() ComboBox1.Items.Add(libName)))
                                     ElseIf line.Contains("androidTestImplementation") And line.Contains("*.jar") = False And line.Contains("libs/") = False Then
-                                        dependenciesList.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'"))
-                                        ComboBox1.Invoke(New MethodInvoker(Sub() ComboBox1.Items.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'"))))
+                                        Dim libName = New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'")
+                                        If libName.Contains("com.android") = False Then dependenciesList.Add(libName)
+                                        ComboBox1.Invoke(New MethodInvoker(Sub() ComboBox1.Items.Add(libName)))
                                     ElseIf line.Contains("testImplementation") And line.Contains("*.jar") = False And line.Contains("libs/") = False Then
-                                        dependenciesList.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'"))
-                                        ComboBox1.Invoke(New MethodInvoker(Sub() ComboBox1.Items.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'"))))
+                                        Dim libName = New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'")
+                                        If libName.Contains("com.android") = False Then dependenciesList.Add(libName)
+                                        ComboBox1.Invoke(New MethodInvoker(Sub() ComboBox1.Items.Add(libName)))
                                     ElseIf line.Contains("implementation") And line.Contains("*.jar") = False And line.Contains("libs/") Then
-                                        dependenciesList.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'").Replace("libs/", ""))
-                                        ComboBox1.Invoke(New MethodInvoker(Sub() ComboBox1.Items.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'").Replace("libs/", ""))))
+                                        Dim libName = New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'")
+                                        If libName.Contains("com.android") = False Then dependenciesList.Add(libName.Replace("libs/", ""))
+                                        ComboBox1.Invoke(New MethodInvoker(Sub() ComboBox1.Items.Add(libName.Replace("libs/", ""))))
                                     End If
                                 Next
                                 'DependsOn = "@DependsOn(values={""" + String.Join(""", """, dependenciesList) + """})"
@@ -379,20 +384,25 @@ Public Class Form1
                             For Each match As Match In matches
                                 For Each line In match.Value.Split({vbCrLf, vbLf, vbCr}, StringSplitOptions.RemoveEmptyEntries)
                                     If line.Contains("implementation") And line.Contains("*.jar") = False And line.Contains("libs/") = False Then
-                                        dependenciesList.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'"))
-                                        ComboBox1.Invoke(New MethodInvoker(Sub() ComboBox1.Items.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'"))))
+                                        Dim libName = New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'")
+                                        If libName.Contains("com.android") = False Then dependenciesList.Add(libName)
+                                        ComboBox1.Invoke(New MethodInvoker(Sub() ComboBox1.Items.Add(libName)))
                                     ElseIf line.Contains("compile") And line.Contains("*.jar") = False And line.Contains("libs/") = False Then
-                                        dependenciesList.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'"))
-                                        ComboBox1.Invoke(New MethodInvoker(Sub() ComboBox1.Items.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'"))))
+                                        Dim libName = New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'")
+                                        If libName.Contains("com.android") = False Then dependenciesList.Add(libName)
+                                        ComboBox1.Invoke(New MethodInvoker(Sub() ComboBox1.Items.Add(libName)))
                                     ElseIf line.Contains("androidTestImplementation") And line.Contains("*.jar") = False And line.Contains("libs/") = False Then
-                                        dependenciesList.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'"))
-                                        ComboBox1.Invoke(New MethodInvoker(Sub() ComboBox1.Items.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'"))))
+                                        Dim libName = New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'")
+                                        If libName.Contains("com.android") = False Then dependenciesList.Add(libName)
+                                        ComboBox1.Invoke(New MethodInvoker(Sub() ComboBox1.Items.Add(libName)))
                                     ElseIf line.Contains("testImplementation") And line.Contains("*.jar") = False And line.Contains("libs/") = False Then
-                                        dependenciesList.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'"))
-                                        ComboBox1.Invoke(New MethodInvoker(Sub() ComboBox1.Items.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'"))))
+                                        Dim libName = New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'")
+                                        If libName.Contains("com.android") = False Then dependenciesList.Add(libName)
+                                        ComboBox1.Invoke(New MethodInvoker(Sub() ComboBox1.Items.Add(libName)))
                                     ElseIf line.Contains("implementation") And line.Contains("*.jar") = False And line.Contains("libs/") Then
-                                        dependenciesList.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'").Replace("libs/", ""))
-                                        ComboBox1.Invoke(New MethodInvoker(Sub() ComboBox1.Items.Add(New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'").Replace("libs/", ""))))
+                                        Dim libName = New Regex("'([^']*)'").Match(line).Value.Trim.TrimStart("'").TrimEnd("'")
+                                        If libName.Contains("com.android") = False Then dependenciesList.Add(libName.Replace("libs/", ""))
+                                        ComboBox1.Invoke(New MethodInvoker(Sub() ComboBox1.Items.Add(libName.Replace("libs/", ""))))
                                     End If
                                 Next
                                 'DependsOn = "@DependsOn(values={""" + String.Join(""", """, dependenciesList) + """})"
